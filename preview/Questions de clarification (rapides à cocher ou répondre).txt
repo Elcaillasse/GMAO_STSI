@@ -1,0 +1,82 @@
+Questions de clarification (rapides à cocher/répondre)
+1) Portée & utilisateurs
+
+Combien d’utilisateurs et quels rôles ? (ex. Technicien, Chef d’équipe, Achats, Stock, Qualité, Admin)
+
+Multi-sites / multi-ateliers ? Faut-il cloisonner la visibilité par site/atelier/zone ?
+
+Authentification : SAML/SSO, mot de passe classique, ou OAuth (Google/Microsoft) ?
+
+2) Interventions (curatif)
+
+Workflow souhaité : Demande → Qualification → Planif → En cours → Terminé → Validé ? D’autres statuts ?
+
+SLA/ délais par priorité ? (ex. P1 4h, P2 24h…)
+
+Pièces & main-d’œuvre : veux-tu temps passé, taux horaire, coûts et pièces consommées attachés à chaque intervention ?
+
+Pièces “réservées” lors de la planif (blocage de stock) : oui/non ?
+
+Photos / documents en PJ (avant/après, schémas) : oui/non ; quelles tailles/formats max ?
+
+3) Préventif / planification
+
+Modèle de planif : périodique (jours/semaines/mois), compteur (heures machine, cycles), mixte ?
+
+Génération automatique des OT préventifs (ordre de travail) + rappels (email/in-app) ?
+
+Report automatique si non réalisé à date (glissement) : oui/non ?
+
+4) Parc & hiérarchie
+
+Granularité : Site → Zone → Machine → Sous-ensemble → Composant ? Faut-il gérer la BOM (nomenclature) ?
+
+Attributs équipement : n° série, modèle, fabricant, année, criticité, MTBF/MTTR, documents techniques ?
+
+5) Stock & achats
+
+Seuils d’alerte (min, max, réappro) + emplacements multiples (magasin, atelier) ?
+
+Codes-barres / QR pour pièces et équipements (scan mobile) ?
+
+Flux Entrées/Sorties : nécessite une validation à 2 niveaux ? Historique des mouvements ?
+
+Intégration achats : simple suivi “commandes en cours” ou process complet (demande d’achat → approbation → commande → réception) ?
+
+Intégrations externes (ERP/Compta : Sage, Cegid, SAP, Odoo…) à prévoir maintenant ou plus tard ?
+
+6) Tableaux de bord & exports
+
+Indicateurs clés : disponibilité, taux de réalisation préventif, backlog, coût par machine, consommation pièces, top pannes, MTBF/MTTR… lesquels en priorité ?
+
+Exports CSV/Excel/PDF et modèles d’étiquettes à reprendre tels quels ?
+
+7) Expérience utilisateur
+
+Mobile-first pour les techniciens (scan, photos, hors-ligne) : oui/non ?
+
+Langues : FR uniquement ou FR+EN ?
+
+Accessibilité & UI : thèmes sombres/clairs, raccourcis, recherche globale, filtres avancés ?
+
+8) Sécurité / conformité / hébergement
+
+Hébergement : Cloud (SaaS) vs on-premise ? Contraintes RGPD, localisation des données (UE) ?
+
+Sauvegardes, journal d’audit (qui a fait quoi/quand), rétention des données/logs ?
+
+Droits fins par champ / par module (ex. Achats voit le coût, Technicien non) ?
+
+9) Migration & reprise de données
+
+Souhaites-tu importer le contenu actuel (toutes les feuilles) ? Veux-tu que je définisse des mappings de colonnes explicites par feuille ?
+
+As-tu des nettoyages à imposer (ex. normaliser “Lieux”, convertir dates Excel, fusionner intervenants doublons) ?
+
+10) Périmètre & délivrables
+
+Tu vises un MVP (2–3 mois de dev) avec quels modules en v1 ?
+
+Contraintes techniques préférées (stack) : ex. React + Node + Postgres, API REST/GraphQL, hébergement OVH/Scaleway ?
+
+Budget & priorités (ex. Préventif et Stock d’abord ; Graphiques plus tard) ?

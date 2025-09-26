@@ -122,12 +122,31 @@
     .chip{border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);padding:6px 10px;border-radius:999px;font-size:12px}
     :root[data-theme="light"] .chip{border:1px solid rgba(148,163,184,.4);background:rgba(226,232,240,.6)}
 
-    /* Styles pour l'encart des deux sites */
+    /* Bloc sites du tableau de bord */
     .sites-card{margin-bottom:16px}
-    .sites{display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start}
-    .site-box{flex:1;background:var(--muted);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:12px;color:var(--ink);min-width:280px}
-    .site-box strong:first-of-type{display:block;font-size:15px;margin-bottom:6px}
-    :root[data-theme="light"] .site-box{border:1px solid rgba(148,163,184,.35)}
+    .site-panels{display:flex;gap:16px;flex-wrap:wrap;align-items:stretch}
+    .site-panel{flex:1 1 320px;background:var(--card);border:1px solid rgba(255,255,255,.08);border-radius:18px;padding:18px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:18px;min-width:280px}
+    :root[data-theme="light"] .site-panel{border:1px solid rgba(15,23,42,.08)}
+    .site-header{display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .site-title{font-size:16px;font-weight:700;letter-spacing:.4px;text-transform:uppercase}
+    .site-badge{padding:4px 10px;border-radius:999px;background:rgba(167,139,250,.12);border:1px solid rgba(167,139,250,.28);font-size:12px}
+    .site-section{display:flex;flex-direction:column;gap:12px}
+    .site-section h4{margin:0;font-size:12px;color:var(--ink-dim);letter-spacing:.3px;text-transform:uppercase}
+    .availability-summary{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+    .availability-value{font-size:42px;font-weight:800;line-height:1}
+    .availability-meta{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--ink-dim)}
+    .trend-up{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:rgba(16,185,129,.15);color:var(--ok);font-size:14px;font-weight:700}
+    .legend-list{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+    .legend-list li{display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:8px 12px;gap:12px}
+    :root[data-theme="light"] .legend-list li{border:1px solid rgba(148,163,184,.18);background:rgba(148,163,184,.08)}
+    .legend-item{display:flex;align-items:center;gap:10px;font-weight:600}
+    .legend-count{font-variant-numeric:tabular-nums;font-weight:600}
+    .dot{width:12px;height:12px;border-radius:50%;display:inline-block}
+    .dot.ok{background:var(--ok)}
+    .dot.warn{background:var(--warn)}
+    .dot.bad{background:var(--bad)}
+    .dot.info{background:var(--brand)}
+    .dot.attn{background:#facc15}
 
     @media (max-width:1100px){
       .app{grid-template-columns:1fr;grid-template-rows:auto 1fr}
@@ -179,33 +198,115 @@
         <!-- Encart sites -->
         <div class="card sites-card">
           <h3>Sites suivis</h3>
-          <div class="sites">
-            <div class="site-box">
-              <strong>Site 1</strong>
-              Taux de Disponibilité : <strong>95%</strong> <span class="status ok">⬆</span> <em>(2 machines à l’arrêt)</em><br /><br />
-              Répartition des Demandes :
-              <span class="status bad">●</span> Attente : 3 &nbsp;
-              <span style="color:#3b82f6">●</span> En cours : 5 &nbsp;
-              <span class="status ok">●</span> Terminé : 12<br /><br />
-              État des Équipements :
-              <span class="status ok">●</span> Opérationnelles : 10 &nbsp;
-              <span class="status warn">●</span> En maintenance : 2 &nbsp;
-              <span class="status bad">●</span> À l’arrêt : 1 &nbsp;
-              <span class="status warn">●</span> Préventifs : 3
-            </div>
-            <div class="site-box">
-              <strong>Site 2</strong>
-              Taux de Disponibilité : <strong>89%</strong> <span class="status ok">⬆</span> <em>(1 machine à l’arrêt)</em><br /><br />
-              Répartition des Demandes :
-              <span class="status bad">●</span> Attente : 1 &nbsp;
-              <span style="color:#3b82f6">●</span> En cours : 4 &nbsp;
-              <span class="status ok">●</span> Terminé : 8<br /><br />
-              État des Équipements :
-              <span class="status ok">●</span> Opérationnelles : 8 &nbsp;
-              <span class="status warn">●</span> En maintenance : 1 &nbsp;
-              <span class="status bad">●</span> À l’arrêt : 2 &nbsp;
-              <span class="status warn">●</span> Préventifs : 4
-            </div>
+          <div class="site-panels">
+            <article class="site-panel">
+              <div class="site-header">
+                <span class="site-title">Site A</span>
+                <span class="site-badge">Zone Nord</span>
+              </div>
+              <div class="site-section">
+                <h4>Taux de Disponibilité</h4>
+                <div class="availability-summary">
+                  <span class="availability-value">50%</span>
+                  <div class="availability-meta">
+                    <span class="trend-up" aria-hidden="true">▲</span>
+                    <span>2 machine(s) à l’arrêt</span>
+                  </div>
+                </div>
+              </div>
+              <div class="site-section">
+                <h4>Répartition des Demandes d’intervention</h4>
+                <ul class="legend-list" aria-label="Répartition des demandes">
+                  <li>
+                    <div class="legend-item"><span class="dot bad"></span><span>Attente</span></div>
+                    <span class="legend-count">6</span>
+                  </li>
+                  <li>
+                    <div class="legend-item"><span class="dot info"></span><span>En cours</span></div>
+                    <span class="legend-count">9</span>
+                  </li>
+                  <li>
+                    <div class="legend-item"><span class="dot ok"></span><span>Terminé</span></div>
+                    <span class="legend-count">21</span>
+                  </li>
+                </ul>
+              </div>
+              <div class="site-section">
+                <h4>État des Équipements</h4>
+                <ul class="legend-list" aria-label="État des équipements">
+                  <li>
+                    <div class="legend-item"><span class="dot ok"></span><span>Opérationnelles</span></div>
+                    <span class="legend-count">32</span>
+                  </li>
+                  <li>
+                    <div class="legend-item"><span class="dot warn"></span><span>En maintenance</span></div>
+                    <span class="legend-count">5</span>
+                  </li>
+                  <li>
+                    <div class="legend-item"><span class="dot bad"></span><span>À l’arrêt</span></div>
+                    <span class="legend-count">2</span>
+                  </li>
+                  <li>
+                    <div class="legend-item"><span class="dot attn"></span><span>Préventifs à réaliser</span></div>
+                    <span class="legend-count">7</span>
+                  </li>
+                </ul>
+              </div>
+            </article>
+            <article class="site-panel">
+              <div class="site-header">
+                <span class="site-title">Site B</span>
+                <span class="site-badge">Zone Sud</span>
+              </div>
+              <div class="site-section">
+                <h4>Taux de Disponibilité</h4>
+                <div class="availability-summary">
+                  <span class="availability-value">78%</span>
+                  <div class="availability-meta">
+                    <span class="trend-up" aria-hidden="true">▲</span>
+                    <span>1 machine(s) à l’arrêt</span>
+                  </div>
+                </div>
+              </div>
+              <div class="site-section">
+                <h4>Répartition des Demandes d’intervention</h4>
+                <ul class="legend-list" aria-label="Répartition des demandes">
+                  <li>
+                    <div class="legend-item"><span class="dot bad"></span><span>Attente</span></div>
+                    <span class="legend-count">3</span>
+                  </li>
+                  <li>
+                    <div class="legend-item"><span class="dot info"></span><span>En cours</span></div>
+                    <span class="legend-count">4</span>
+                  </li>
+                  <li>
+                    <div class="legend-item"><span class="dot ok"></span><span>Terminé</span></div>
+                    <span class="legend-count">15</span>
+                  </li>
+                </ul>
+              </div>
+              <div class="site-section">
+                <h4>État des Équipements</h4>
+                <ul class="legend-list" aria-label="État des équipements">
+                  <li>
+                    <div class="legend-item"><span class="dot ok"></span><span>Opérationnelles</span></div>
+                    <span class="legend-count">18</span>
+                  </li>
+                  <li>
+                    <div class="legend-item"><span class="dot warn"></span><span>En maintenance</span></div>
+                    <span class="legend-count">3</span>
+                  </li>
+                  <li>
+                    <div class="legend-item"><span class="dot bad"></span><span>À l’arrêt</span></div>
+                    <span class="legend-count">1</span>
+                  </li>
+                  <li>
+                    <div class="legend-item"><span class="dot attn"></span><span>Préventifs à réaliser</span></div>
+                    <span class="legend-count">2</span>
+                  </li>
+                </ul>
+              </div>
+            </article>
           </div>
         </div>
 

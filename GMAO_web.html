@@ -124,8 +124,9 @@
 
     /* Styles pour l'encart des deux sites */
     .sites-card{margin-bottom:16px}
-    .sites{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-start}
-    .site-box{background:var(--muted);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:8px 12px;color:var(--ink);font-weight:600}
+    .sites{display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start}
+    .site-box{flex:1;background:var(--muted);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:12px;color:var(--ink);min-width:280px}
+    .site-box strong:first-of-type{display:block;font-size:15px;margin-bottom:6px}
     :root[data-theme="light"] .site-box{border:1px solid rgba(148,163,184,.35)}
 
     @media (max-width:1100px){
@@ -179,8 +180,32 @@
         <div class="card sites-card">
           <h3>Sites suivis</h3>
           <div class="sites">
-            <div class="site-box">Site 1</div>
-            <div class="site-box">Site 2</div>
+            <div class="site-box">
+              <strong>Site 1</strong>
+              Taux de Disponibilité : <strong>95%</strong> <span class="status ok">⬆</span> <em>(2 machines à l’arrêt)</em><br /><br />
+              Répartition des Demandes :
+              <span class="status bad">●</span> Attente : 3 &nbsp;
+              <span style="color:#3b82f6">●</span> En cours : 5 &nbsp;
+              <span class="status ok">●</span> Terminé : 12<br /><br />
+              État des Équipements :
+              <span class="status ok">●</span> Opérationnelles : 10 &nbsp;
+              <span class="status warn">●</span> En maintenance : 2 &nbsp;
+              <span class="status bad">●</span> À l’arrêt : 1 &nbsp;
+              <span class="status warn">●</span> Préventifs : 3
+            </div>
+            <div class="site-box">
+              <strong>Site 2</strong>
+              Taux de Disponibilité : <strong>89%</strong> <span class="status ok">⬆</span> <em>(1 machine à l’arrêt)</em><br /><br />
+              Répartition des Demandes :
+              <span class="status bad">●</span> Attente : 1 &nbsp;
+              <span style="color:#3b82f6">●</span> En cours : 4 &nbsp;
+              <span class="status ok">●</span> Terminé : 8<br /><br />
+              État des Équipements :
+              <span class="status ok">●</span> Opérationnelles : 8 &nbsp;
+              <span class="status warn">●</span> En maintenance : 1 &nbsp;
+              <span class="status bad">●</span> À l’arrêt : 2 &nbsp;
+              <span class="status warn">●</span> Préventifs : 4
+            </div>
           </div>
         </div>
 

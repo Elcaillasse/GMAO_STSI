@@ -76,16 +76,24 @@
     .section.active{display:block}
 
     .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}
-    .card{background:var(--card);border:1px solid rgba(255,255,255,.06);border-radius:16px;padding:14px;box-shadow:var(--shadow)}
+    .card{background:var(--card);border:1px solid rgba(255,255,255,.06);border-radius:16px;padding:14px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:12px}
     :root[data-theme="light"] .card{border:1px solid rgba(15,23,42,.08)}
-    .card h3{margin:0 0 6px 0;font-size:12px;color:var(--ink-dim);font-weight:600;letter-spacing:.3px;text-transform:uppercase}
+    .card h3{margin:0;font-size:12px;color:var(--ink-dim);font-weight:600;letter-spacing:.3px;text-transform:uppercase}
     .card .value{font-size:24px;font-weight:800}
+    .card-header{display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .card-header h3{margin:0}
+    .stack{display:flex;flex-direction:column;gap:16px}
     .card.backlog-card{display:flex;flex-direction:column;gap:12px}
     .card.backlog-card .table-wrapper{flex:1;min-height:440px;overflow:auto}
     .tag{display:inline-flex;align-items:center;gap:6px;padding:4px 8px;border-radius:999px;font-size:12px;border:1px solid rgba(255,255,255,.12)}
     .tag.ok{background:rgba(16,185,129,.15);border-color:rgba(16,185,129,.35)}
     .tag.warn{background:rgba(245,158,11,.15);border-color:rgba(245,158,11,.35)}
     .tag.bad{background:rgba(239,68,68,.15);border-color:rgba(239,68,68,.35)}
+    .status-badge{display:inline-flex;align-items:center;gap:6px;padding:2px 8px;border-radius:999px;font-size:12px;font-weight:600;background:rgba(148,163,184,.12);color:var(--ink)}
+    .status-badge.ok{background:rgba(16,185,129,.18);color:var(--ok)}
+    .status-badge.warn{background:rgba(245,158,11,.18);color:var(--warn)}
+    .status-badge.bad{background:rgba(239,68,68,.18);color:var(--bad)}
+    .status-badge.info{background:rgba(14,165,233,.18);color:var(--brand)}
 
     table{width:100%;border-collapse:separate;border-spacing:0 8px}
     th,td{padding:10px}
@@ -152,6 +160,27 @@
     .dot.bad{background:var(--bad)}
     .dot.info{background:var(--brand)}
     .dot.attn{background:#facc15}
+    .dashboard-layout{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:16px;align-items:start}
+    .timeline{display:flex;flex-direction:column;gap:12px}
+    .timeline-item{display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:start}
+    .timeline-time{font-size:12px;color:var(--ink-dim);font-variant-numeric:tabular-nums;font-weight:600;padding-top:2px}
+    .timeline-content{display:flex;flex-direction:column;gap:4px}
+    .timeline-title{font-weight:600;font-size:14px}
+    .timeline-meta{font-size:12px;color:var(--ink-dim);display:flex;gap:10px;flex-wrap:wrap}
+    .alert-list{display:flex;flex-direction:column;gap:12px}
+    .alert-item{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:10px 12px}
+    :root[data-theme="light"] .alert-item{background:rgba(148,163,184,.08);border:1px solid rgba(148,163,184,.24)}
+    .alert-machine{font-weight:600;font-size:14px}
+    .alert-meta{font-size:12px;color:var(--ink-dim);display:flex;gap:10px;flex-wrap:wrap;margin-top:4px}
+    .progress{position:relative;height:8px;border-radius:999px;background:rgba(255,255,255,.08);overflow:hidden}
+    :root[data-theme="light"] .progress{background:rgba(148,163,184,.25)}
+    .progress span{position:absolute;inset:0;border-radius:inherit;background:linear-gradient(90deg,var(--brand),var(--accent))}
+    .mini-bars{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+    .mini-bars li{display:flex;flex-direction:column;gap:6px}
+    .bar-meta{display:flex;justify-content:space-between;font-size:12px;color:var(--ink-dim)}
+    .bar{height:8px;background:rgba(255,255,255,.08);border-radius:999px;overflow:hidden}
+    :root[data-theme="light"] .bar{background:rgba(148,163,184,.25)}
+    .bar span{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--brand))}
 
     @media (max-width:1100px){
       .app{grid-template-columns:1fr;grid-template-rows:auto 1fr}
@@ -160,6 +189,7 @@
       header{order:1}
       .kpis{grid-template-columns:repeat(2,1fr)}
       .grid{grid-template-columns:1fr}
+      .dashboard-layout{grid-template-columns:1fr}
     }
   </style>
 </head>
@@ -316,27 +346,127 @@
         </div>
 
         <div class="kpis">
-          <div class="card"><h3>OT Ouverts</h3><div class="value">18</div><span class="tag warn">+3 cette semaine</span></div>
-          <div class="card"><h3>Taux préventif réalisé</h3><div class="value">86%</div><span class="tag ok">Objectif ≥ 80%</span></div>
+          <div class="card"><div class="card-header"><h3>OT Ouverts</h3><span class="tag warn">+3 cette semaine</span></div><div class="value">18</div></div>
+          <div class="card"><div class="card-header"><h3>Taux préventif réalisé</h3><span class="tag ok">Objectif ≥ 80%</span></div><div class="value">86%</div></div>
+          <div class="card"><div class="card-header"><h3>Temps moyen de résolution</h3><span class="tag">30 derniers jours</span></div><div class="value">7h45</div></div>
+          <div class="card"><div class="card-header"><h3>Coût maintenance mensuel</h3><span class="tag">Budget: 18 k€</span></div><div class="value">14,6 k€</div></div>
         </div>
 
-        <div class="card backlog-card">
-          <h3>Backlog par priorité</h3>
-          <div class="toolbar">
-            <span class="chip">P1: 4</span>
-            <span class="chip">P2: 9</span>
-            <span class="chip">P3: 5</span>
-            <button class="btn" onclick="openModal('reportModal')">📈 Export rapide</button>
+        <div class="dashboard-layout">
+          <div class="stack">
+            <div class="card backlog-card">
+              <div class="card-header">
+                <h3>Backlog par priorité</h3>
+                <button class="btn" onclick="openModal('reportModal')">📈 Export rapide</button>
+              </div>
+              <div class="toolbar" style="margin:0">
+                <span class="chip">P1: 4</span>
+                <span class="chip">P2: 9</span>
+                <span class="chip">P3: 5</span>
+              </div>
+              <div class="table-wrapper">
+                <table aria-label="Backlog OT">
+                  <thead><tr><th>OT</th><th>Machine</th><th>Type</th><th>Priorité</th><th>Statut</th><th>Prévu</th></tr></thead>
+                  <tbody id="tblBacklog">
+                    <tr><td>OT-1024</td><td>DMU 70</td><td>Correctif</td><td>P1</td><td><span class="status warn">En cours</span></td><td>24/09/2025</td></tr>
+                    <tr><td>OT-1025</td><td>Tornos Deco</td><td>Qualité</td><td>P2</td><td><span class="status ok">Planifié</span></td><td>26/09/2025</td></tr>
+                    <tr><td>OT-1026</td><td>Compresseur KAESER</td><td>Sécurité</td><td>P1</td><td><span class="status bad">En retard</span></td><td>22/09/2025</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-header"><h3>Activité du jour</h3><span class="chip">Mise à jour 14h35</span></div>
+              <div class="timeline" role="list">
+                <div class="timeline-item" role="listitem">
+                  <span class="timeline-time">08:45</span>
+                  <div class="timeline-content">
+                    <div class="timeline-title">DI #452 – Presse hydraulique</div>
+                    <div class="timeline-meta"><span class="status-badge bad">P1</span><span>Déclarée par J. Martin</span></div>
+                  </div>
+                </div>
+                <div class="timeline-item" role="listitem">
+                  <span class="timeline-time">10:20</span>
+                  <div class="timeline-content">
+                    <div class="timeline-title">OT-1025 passé en intervention</div>
+                    <div class="timeline-meta"><span class="status-badge warn">En cours</span><span>Technicien: L. Durand</span></div>
+                  </div>
+                </div>
+                <div class="timeline-item" role="listitem">
+                  <span class="timeline-time">13:05</span>
+                  <div class="timeline-content">
+                    <div class="timeline-title">Réception pièces Courroie HTD</div>
+                    <div class="timeline-meta"><span class="status-badge info">Stock</span><span>Magasin C3</span></div>
+                  </div>
+                </div>
+                <div class="timeline-item" role="listitem">
+                  <span class="timeline-time">15:30</span>
+                  <div class="timeline-content">
+                    <div class="timeline-title">Validation OT-1017 – Laveuse</div>
+                    <div class="timeline-meta"><span class="status-badge ok">Clôturé</span><span>Temps passé: 2h10</span></div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
-          <div class="table-wrapper">
-            <table aria-label="Backlog OT">
-              <thead><tr><th>OT</th><th>Machine</th><th>Type</th><th>Priorité</th><th>Statut</th><th>Prévu</th></tr></thead>
-              <tbody id="tblBacklog">
-                <tr><td>OT-1024</td><td>DMU 70</td><td>Correctif</td><td>P1</td><td><span class="status warn">En cours</span></td><td>24/09/2025</td></tr>
-                <tr><td>OT-1025</td><td>Tornos Deco</td><td>Qualité</td><td>P2</td><td><span class="status ok">Planifié</span></td><td>26/09/2025</td></tr>
-                <tr><td>OT-1026</td><td>Compresseur KAESER</td><td>Sécurité</td><td>P1</td><td><span class="status bad">En retard</span></td><td>22/09/2025</td></tr>
-              </tbody>
-            </table>
+
+          <div class="stack">
+            <div class="card">
+              <div class="card-header"><h3>Alertes critiques</h3><span class="tag bad">2 urgences</span></div>
+              <div class="alert-list">
+                <div class="alert-item">
+                  <div>
+                    <div class="alert-machine">Compresseur KAESER</div>
+                    <div class="alert-meta"><span class="status-badge bad">P1</span><span>Pression instable</span></div>
+                  </div>
+                  <button class="btn" onclick="navigateToSection('interventions')">Voir OT</button>
+                </div>
+                <div class="alert-item">
+                  <div>
+                    <div class="alert-machine">Presse 250T – Zone Nord</div>
+                    <div class="alert-meta"><span class="status-badge warn">P2</span><span>Remontée DI #452</span></div>
+                  </div>
+                  <button class="btn" onclick="openModal('diModal')">Traiter</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-header"><h3>Préventif à venir</h3><span class="tag">7 jours</span></div>
+              <div class="mini-bars">
+                <div>
+                  <div class="bar-meta"><span>DMU 70 – Contrôle géométrie</span><span>Due 28/09</span></div>
+                  <div class="progress"><span style="width:78%"></span></div>
+                </div>
+                <div>
+                  <div class="bar-meta"><span>Compresseur KAESER – Filtration</span><span>Due 10/10</span></div>
+                  <div class="progress"><span style="width:45%"></span></div>
+                </div>
+                <div>
+                  <div class="bar-meta"><span>Chaîne convoyeur – Graissage</span><span>Due 25/09</span></div>
+                  <div class="progress"><span style="width:92%"></span></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-header"><h3>Consommation pièces</h3><span class="tag">30 derniers jours</span></div>
+              <ul class="mini-bars" aria-label="Consommation de pièces">
+                <li>
+                  <div class="bar-meta"><span>Cartouche filtre CF-45</span><span>12 u.</span></div>
+                  <div class="bar"><span style="width:70%"></span></div>
+                </li>
+                <li>
+                  <div class="bar-meta"><span>Courroie HTD-560</span><span>7 u.</span></div>
+                  <div class="bar"><span style="width:50%"></span></div>
+                </li>
+                <li>
+                  <div class="bar-meta"><span>Graisse SKF-G1</span><span>18 u.</span></div>
+                  <div class="bar"><span style="width:82%"></span></div>
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
       </section>
@@ -606,6 +736,14 @@
       document.querySelectorAll('.menu a').forEach(a=>a.classList.toggle('active', a.getAttribute('data-target')===target));
       document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
       document.getElementById(target).classList.add('active');
+    }
+
+    function navigateToSection(target){
+      const link = document.querySelector(`.menu a[data-target="${target}"]`);
+      if(link){
+        link.click();
+        link.focus({preventScroll:true});
+      }
     }
 
     function applyTheme(theme,{persist=true}={}){

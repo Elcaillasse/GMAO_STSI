@@ -76,16 +76,24 @@
     .section.active{display:block}
 
     .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}
-    .card{background:var(--card);border:1px solid rgba(255,255,255,.06);border-radius:16px;padding:14px;box-shadow:var(--shadow)}
+    .card{background:var(--card);border:1px solid rgba(255,255,255,.06);border-radius:16px;padding:14px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:12px}
     :root[data-theme="light"] .card{border:1px solid rgba(15,23,42,.08)}
-    .card h3{margin:0 0 6px 0;font-size:12px;color:var(--ink-dim);font-weight:600;letter-spacing:.3px;text-transform:uppercase}
+    .card h3{margin:0;font-size:12px;color:var(--ink-dim);font-weight:600;letter-spacing:.3px;text-transform:uppercase}
     .card .value{font-size:24px;font-weight:800}
+    .card-header{display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .card-header h3{margin:0}
+    .stack{display:flex;flex-direction:column;gap:16px}
     .card.backlog-card{display:flex;flex-direction:column;gap:12px}
     .card.backlog-card .table-wrapper{flex:1;min-height:440px;overflow:auto}
     .tag{display:inline-flex;align-items:center;gap:6px;padding:4px 8px;border-radius:999px;font-size:12px;border:1px solid rgba(255,255,255,.12)}
     .tag.ok{background:rgba(16,185,129,.15);border-color:rgba(16,185,129,.35)}
     .tag.warn{background:rgba(245,158,11,.15);border-color:rgba(245,158,11,.35)}
     .tag.bad{background:rgba(239,68,68,.15);border-color:rgba(239,68,68,.35)}
+    .status-badge{display:inline-flex;align-items:center;gap:6px;padding:2px 8px;border-radius:999px;font-size:12px;font-weight:600;background:rgba(148,163,184,.12);color:var(--ink)}
+    .status-badge.ok{background:rgba(16,185,129,.18);color:var(--ok)}
+    .status-badge.warn{background:rgba(245,158,11,.18);color:var(--warn)}
+    .status-badge.bad{background:rgba(239,68,68,.18);color:var(--bad)}
+    .status-badge.info{background:rgba(14,165,233,.18);color:var(--brand)}
 
     table{width:100%;border-collapse:separate;border-spacing:0 8px}
     th,td{padding:10px}
@@ -103,6 +111,51 @@
     .toolbar .input, .toolbar select{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:8px 10px;color:var(--ink)}
     :root[data-theme="light"] .toolbar .input,
     :root[data-theme="light"] .toolbar select{background:rgba(148,163,184,.12);border:1px solid rgba(148,163,184,.28)}
+
+    /* Parc machines */
+    .parc-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:8px}
+    .parc-kpi{gap:10px}
+    .parc-kpi .parc-kpi-value{font-size:28px;font-weight:800}
+    .parc-kpi .parc-kpi-meta{margin:0;color:var(--ink-dim);font-size:12px}
+    .parc-toolbar{justify-content:space-between}
+    .parc-toolbar .toolbar-group{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+    .parc-layout{display:grid;grid-template-columns:320px minmax(0,1fr);gap:16px;align-items:start;margin-top:16px}
+    .machine-directory{display:flex;flex-direction:column;gap:12px}
+    .machine-directory .card-header{margin-bottom:4px}
+    .machine-directory-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+    .machine-tile{width:100%;display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);color:inherit;text-align:left;cursor:pointer;transition:.2s ease;border-left:3px solid transparent;font:inherit}
+    .machine-tile:hover,.machine-tile:focus-visible{border-color:rgba(167,139,250,.35);box-shadow:0 0 0 2px rgba(167,139,250,.15)}
+    .machine-tile[data-status="ok"]{border-left-color:var(--ok)}
+    .machine-tile[data-status="warn"]{border-left-color:var(--warn)}
+    .machine-tile[data-status="bad"]{border-left-color:var(--bad)}
+    .machine-tile.active{border-color:rgba(34,211,238,.45);box-shadow:0 0 0 2px rgba(34,211,238,.18);background:rgba(34,211,238,.08)}
+    .machine-name{font-weight:600}
+    .machine-meta{font-size:12px;color:var(--ink-dim)}
+    .parc-detail{display:flex;flex-direction:column;gap:16px}
+    .parc-detail header{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+    .parc-detail-code{font-size:12px;color:var(--ink-dim);letter-spacing:.4px;text-transform:uppercase}
+    .parc-detail-name{margin:0;font-size:20px}
+    .parc-detail-meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+    .parc-metric{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:6px}
+    .parc-metric-label{font-size:12px;color:var(--ink-dim);text-transform:uppercase;letter-spacing:.3px}
+    .parc-metric-value{font-weight:700}
+    .parc-progress{position:relative;height:6px;border-radius:999px;background:rgba(255,255,255,.08);overflow:hidden}
+    .parc-progress span{position:absolute;inset:0;border-radius:inherit;background:linear-gradient(90deg,var(--brand),var(--accent))}
+    .detail-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+    .detail-grid dl{margin:0;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:6px}
+    .detail-grid dt{font-size:12px;color:var(--ink-dim);text-transform:uppercase;letter-spacing:.3px}
+    .detail-grid dd{margin:0;font-weight:600}
+    .parc-timeline,.parc-todo{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+    .parc-timeline li,.parc-todo li{display:flex;gap:12px;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03)}
+    .parc-timeline time{font-size:12px;color:var(--ink-dim);min-width:80px;display:inline-flex;align-items:center;font-variant-numeric:tabular-nums}
+    .parc-note{font-size:13px;color:var(--ink-dim);margin:0}
+    .table-card{margin-top:16px}
+    tbody tr.selected{outline:2px solid var(--accent);outline-offset:-4px}
+    tbody tr:focus-visible{outline:2px solid var(--accent);outline-offset:-4px}
+    @media (max-width:1100px){
+      .parc-summary{grid-template-columns:repeat(2,minmax(0,1fr))}
+      .parc-layout{grid-template-columns:1fr}
+    }
 
     /* modal */
     .modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.55);padding:24px}
@@ -152,6 +205,27 @@
     .dot.bad{background:var(--bad)}
     .dot.info{background:var(--brand)}
     .dot.attn{background:#facc15}
+    .dashboard-layout{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:16px;align-items:start}
+    .timeline{display:flex;flex-direction:column;gap:12px}
+    .timeline-item{display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:start}
+    .timeline-time{font-size:12px;color:var(--ink-dim);font-variant-numeric:tabular-nums;font-weight:600;padding-top:2px}
+    .timeline-content{display:flex;flex-direction:column;gap:4px}
+    .timeline-title{font-weight:600;font-size:14px}
+    .timeline-meta{font-size:12px;color:var(--ink-dim);display:flex;gap:10px;flex-wrap:wrap}
+    .alert-list{display:flex;flex-direction:column;gap:12px}
+    .alert-item{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:10px 12px}
+    :root[data-theme="light"] .alert-item{background:rgba(148,163,184,.08);border:1px solid rgba(148,163,184,.24)}
+    .alert-machine{font-weight:600;font-size:14px}
+    .alert-meta{font-size:12px;color:var(--ink-dim);display:flex;gap:10px;flex-wrap:wrap;margin-top:4px}
+    .progress{position:relative;height:8px;border-radius:999px;background:rgba(255,255,255,.08);overflow:hidden}
+    :root[data-theme="light"] .progress{background:rgba(148,163,184,.25)}
+    .progress span{position:absolute;inset:0;border-radius:inherit;background:linear-gradient(90deg,var(--brand),var(--accent))}
+    .mini-bars{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+    .mini-bars li{display:flex;flex-direction:column;gap:6px}
+    .bar-meta{display:flex;justify-content:space-between;font-size:12px;color:var(--ink-dim)}
+    .bar{height:8px;background:rgba(255,255,255,.08);border-radius:999px;overflow:hidden}
+    :root[data-theme="light"] .bar{background:rgba(148,163,184,.25)}
+    .bar span{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--brand))}
 
     @media (max-width:1100px){
       .app{grid-template-columns:1fr;grid-template-rows:auto 1fr}
@@ -160,6 +234,7 @@
       header{order:1}
       .kpis{grid-template-columns:repeat(2,1fr)}
       .grid{grid-template-columns:1fr}
+      .dashboard-layout{grid-template-columns:1fr}
     }
   </style>
 </head>
@@ -316,51 +391,240 @@
         </div>
 
         <div class="kpis">
-          <div class="card"><h3>OT Ouverts</h3><div class="value">18</div><span class="tag warn">+3 cette semaine</span></div>
-          <div class="card"><h3>Taux préventif réalisé</h3><div class="value">86%</div><span class="tag ok">Objectif ≥ 80%</span></div>
+          <div class="card"><div class="card-header"><h3>OT Ouverts</h3><span class="tag warn">+3 cette semaine</span></div><div class="value">18</div></div>
+          <div class="card"><div class="card-header"><h3>Taux préventif réalisé</h3><span class="tag ok">Objectif ≥ 80%</span></div><div class="value">86%</div></div>
+          <div class="card"><div class="card-header"><h3>Temps moyen de résolution</h3><span class="tag">30 derniers jours</span></div><div class="value">7h45</div></div>
+          <div class="card"><div class="card-header"><h3>Coût maintenance mensuel</h3><span class="tag">Budget: 18 k€</span></div><div class="value">14,6 k€</div></div>
         </div>
 
-        <div class="card backlog-card">
-          <h3>Backlog par priorité</h3>
-          <div class="toolbar">
-            <span class="chip">P1: 4</span>
-            <span class="chip">P2: 9</span>
-            <span class="chip">P3: 5</span>
-            <button class="btn" onclick="openModal('reportModal')">📈 Export rapide</button>
+        <div class="dashboard-layout">
+          <div class="stack">
+            <div class="card backlog-card">
+              <div class="card-header">
+                <h3>Backlog par priorité</h3>
+                <button class="btn" onclick="openModal('reportModal')">📈 Export rapide</button>
+              </div>
+              <div class="toolbar" style="margin:0">
+                <span class="chip">P1: 4</span>
+                <span class="chip">P2: 9</span>
+                <span class="chip">P3: 5</span>
+              </div>
+              <div class="table-wrapper">
+                <table aria-label="Backlog OT">
+                  <thead><tr><th>OT</th><th>Machine</th><th>Type</th><th>Priorité</th><th>Statut</th><th>Prévu</th></tr></thead>
+                  <tbody id="tblBacklog">
+                    <tr><td>OT-1024</td><td>DMU 70</td><td>Correctif</td><td>P1</td><td><span class="status warn">En cours</span></td><td>24/09/2025</td></tr>
+                    <tr><td>OT-1025</td><td>Tornos Deco</td><td>Qualité</td><td>P2</td><td><span class="status ok">Planifié</span></td><td>26/09/2025</td></tr>
+                    <tr><td>OT-1026</td><td>Compresseur KAESER</td><td>Sécurité</td><td>P1</td><td><span class="status bad">En retard</span></td><td>22/09/2025</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-header"><h3>Activité du jour</h3><span class="chip">Mise à jour 14h35</span></div>
+              <div class="timeline" role="list">
+                <div class="timeline-item" role="listitem">
+                  <span class="timeline-time">08:45</span>
+                  <div class="timeline-content">
+                    <div class="timeline-title">DI #452 – Presse hydraulique</div>
+                    <div class="timeline-meta"><span class="status-badge bad">P1</span><span>Déclarée par J. Martin</span></div>
+                  </div>
+                </div>
+                <div class="timeline-item" role="listitem">
+                  <span class="timeline-time">10:20</span>
+                  <div class="timeline-content">
+                    <div class="timeline-title">OT-1025 passé en intervention</div>
+                    <div class="timeline-meta"><span class="status-badge warn">En cours</span><span>Technicien: L. Durand</span></div>
+                  </div>
+                </div>
+                <div class="timeline-item" role="listitem">
+                  <span class="timeline-time">13:05</span>
+                  <div class="timeline-content">
+                    <div class="timeline-title">Réception pièces Courroie HTD</div>
+                    <div class="timeline-meta"><span class="status-badge info">Stock</span><span>Magasin C3</span></div>
+                  </div>
+                </div>
+                <div class="timeline-item" role="listitem">
+                  <span class="timeline-time">15:30</span>
+                  <div class="timeline-content">
+                    <div class="timeline-title">Validation OT-1017 – Laveuse</div>
+                    <div class="timeline-meta"><span class="status-badge ok">Clôturé</span><span>Temps passé: 2h10</span></div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
-          <div class="table-wrapper">
-            <table aria-label="Backlog OT">
-              <thead><tr><th>OT</th><th>Machine</th><th>Type</th><th>Priorité</th><th>Statut</th><th>Prévu</th></tr></thead>
-              <tbody id="tblBacklog">
-                <tr><td>OT-1024</td><td>DMU 70</td><td>Correctif</td><td>P1</td><td><span class="status warn">En cours</span></td><td>24/09/2025</td></tr>
-                <tr><td>OT-1025</td><td>Tornos Deco</td><td>Qualité</td><td>P2</td><td><span class="status ok">Planifié</span></td><td>26/09/2025</td></tr>
-                <tr><td>OT-1026</td><td>Compresseur KAESER</td><td>Sécurité</td><td>P1</td><td><span class="status bad">En retard</span></td><td>22/09/2025</td></tr>
-              </tbody>
-            </table>
+
+          <div class="stack">
+            <div class="card">
+              <div class="card-header"><h3>Alertes critiques</h3><span class="tag bad">2 urgences</span></div>
+              <div class="alert-list">
+                <div class="alert-item">
+                  <div>
+                    <div class="alert-machine">Compresseur KAESER</div>
+                    <div class="alert-meta"><span class="status-badge bad">P1</span><span>Pression instable</span></div>
+                  </div>
+                  <button class="btn" onclick="navigateToSection('interventions')">Voir OT</button>
+                </div>
+                <div class="alert-item">
+                  <div>
+                    <div class="alert-machine">Presse 250T – Zone Nord</div>
+                    <div class="alert-meta"><span class="status-badge warn">P2</span><span>Remontée DI #452</span></div>
+                  </div>
+                  <button class="btn" onclick="openModal('diModal')">Traiter</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-header"><h3>Préventif à venir</h3><span class="tag">7 jours</span></div>
+              <div class="mini-bars">
+                <div>
+                  <div class="bar-meta"><span>DMU 70 – Contrôle géométrie</span><span>Due 28/09</span></div>
+                  <div class="progress"><span style="width:78%"></span></div>
+                </div>
+                <div>
+                  <div class="bar-meta"><span>Compresseur KAESER – Filtration</span><span>Due 10/10</span></div>
+                  <div class="progress"><span style="width:45%"></span></div>
+                </div>
+                <div>
+                  <div class="bar-meta"><span>Chaîne convoyeur – Graissage</span><span>Due 25/09</span></div>
+                  <div class="progress"><span style="width:92%"></span></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-header"><h3>Consommation pièces</h3><span class="tag">30 derniers jours</span></div>
+              <ul class="mini-bars" aria-label="Consommation de pièces">
+                <li>
+                  <div class="bar-meta"><span>Cartouche filtre CF-45</span><span>12 u.</span></div>
+                  <div class="bar"><span style="width:70%"></span></div>
+                </li>
+                <li>
+                  <div class="bar-meta"><span>Courroie HTD-560</span><span>7 u.</span></div>
+                  <div class="bar"><span style="width:50%"></span></div>
+                </li>
+                <li>
+                  <div class="bar-meta"><span>Graisse SKF-G1</span><span>18 u.</span></div>
+                  <div class="bar"><span style="width:82%"></span></div>
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
       </section>
 
       <!-- Parc -->
       <section id="parc" class="section" aria-label="Parc machines">
-        <div class="toolbar">
-          <input class="input" placeholder="Filtrer par zone…" oninput="filterTable('tblParc', this.value, [1])">
-          <select onchange="filterStatus('tblParc', this.value)">
-            <option value="">Tous statuts</option>
-            <option value="ok">OK</option>
-            <option value="warn">Surveillance</option>
-            <option value="bad">Critique</option>
-          </select>
-          <button class="btn" onclick="openModal('equipModal')">➕ Ajouter équipement</button>
+        <div class="parc-summary">
+          <article class="card parc-kpi">
+            <h3>Équipements suivis</h3>
+            <div class="parc-kpi-value" data-parc-count="total">0</div>
+            <p class="parc-kpi-meta">Inventaire machines actives</p>
+          </article>
+          <article class="card parc-kpi">
+            <h3>Disponibles</h3>
+            <div class="parc-kpi-value" data-parc-count="ok">0</div>
+            <p class="parc-kpi-meta">Fonctionnent sans alerte</p>
+          </article>
+          <article class="card parc-kpi">
+            <h3>Surveillance</h3>
+            <div class="parc-kpi-value" data-parc-count="warn">0</div>
+            <p class="parc-kpi-meta">Alertes mineures en cours</p>
+          </article>
+          <article class="card parc-kpi">
+            <h3>Critiques</h3>
+            <div class="parc-kpi-value" data-parc-count="bad">0</div>
+            <p class="parc-kpi-meta">À traiter immédiatement</p>
+          </article>
         </div>
-        <table aria-label="Parc">
-          <thead><tr><th>Code</th><th>Zone</th><th>Machine</th><th>Sous-ensemble</th><th>Criticité</th><th>Statut</th></tr></thead>
-          <tbody id="tblParc">
-            <tr data-status="ok"><td>EQ-001</td><td>Fraisage</td><td>DMU 70</td><td>Broche</td><td>Moyenne</td><td><span class="status ok">OK</span></td></tr>
-            <tr data-status="warn"><td>EQ-014</td><td>Tournage</td><td>Tornos Deco</td><td>Hydraulique</td><td>Haute</td><td><span class="status warn">Surveillance</span></td></tr>
-            <tr data-status="bad"><td>EQ-022</td><td>Utilities</td><td>Compresseur KAESER</td><td>Filtration</td><td>Haute</td><td><span class="status bad">Critique</span></td></tr>
-          </tbody>
-        </table>
+
+        <div class="toolbar parc-toolbar">
+          <div class="toolbar-group" role="group" aria-label="Filtres du parc">
+            <input class="input" placeholder="Filtrer par zone…" oninput="filterTable('tblParc', this.value, [1])">
+            <select onchange="filterStatus('tblParc', this.value)">
+              <option value="">Tous statuts</option>
+              <option value="ok">OK</option>
+              <option value="warn">Surveillance</option>
+              <option value="bad">Critique</option>
+            </select>
+          </div>
+          <div class="toolbar-group">
+            <button class="btn" onclick="exportParc()">⬇️ Export rapide</button>
+            <button class="btn" onclick="openModal('equipModal')">➕ Ajouter équipement</button>
+          </div>
+        </div>
+
+        <div class="parc-layout">
+          <aside class="card machine-directory" aria-label="Sélection équipements critiques">
+            <div class="card-header">
+              <h3>Suivi temps réel</h3>
+              <span class="tag warn">Priorité atelier</span>
+            </div>
+            <ul class="machine-directory-list" id="machineDirectory">
+              <li><button class="machine-tile" data-code="EQ-022" data-status="bad" type="button"><div><div class="machine-name">Compresseur KAESER</div><div class="machine-meta">Utilities • Filtration</div></div><span class="status-badge bad">Arrêt</span></button></li>
+              <li><button class="machine-tile" data-code="EQ-014" data-status="warn" type="button"><div><div class="machine-name">Tornos Deco</div><div class="machine-meta">Tournage • Hydraulique</div></div><span class="status-badge warn">Surveillance</span></button></li>
+              <li><button class="machine-tile" data-code="EQ-031" data-status="warn" type="button"><div><div class="machine-name">Presse Hydraulique PH-200</div><div class="machine-meta">Assemblage • Circuit huile</div></div><span class="status-badge warn">Planifiée</span></button></li>
+              <li><button class="machine-tile" data-code="EQ-001" data-status="ok" type="button"><div><div class="machine-name">DMU 70</div><div class="machine-meta">Fraisage • Broche</div></div><span class="status-badge ok">Disponible</span></button></li>
+              <li><button class="machine-tile" data-code="EQ-045" data-status="ok" type="button"><div><div class="machine-name">Laser Trumpf TruLaser</div><div class="machine-meta">Découpe • Optiques</div></div><span class="status-badge ok">En service</span></button></li>
+            </ul>
+          </aside>
+
+          <article class="card parc-detail" id="parcDetail" aria-live="polite">
+            <header>
+              <div>
+                <span class="parc-detail-code" data-field="code">Sélection</span>
+                <h3 class="parc-detail-name" data-field="name">Choisir un équipement</h3>
+              </div>
+              <span class="status-badge info" data-field="status">En attente</span>
+            </header>
+            <div class="parc-detail-meta">
+              <div class="parc-metric">
+                <span class="parc-metric-label">Disponibilité 30j</span>
+                <div class="parc-progress"><span data-field="availability-bar" style="width:0%"></span></div>
+                <span class="parc-metric-value" data-field="availability">--</span>
+              </div>
+              <div class="parc-metric">
+                <span class="parc-metric-label">Heures depuis maintenance</span>
+                <span class="parc-metric-value" data-field="hours">--</span>
+              </div>
+            </div>
+            <div class="detail-grid">
+              <dl><dt>Zone</dt><dd data-field="zone">-</dd></dl>
+              <dl><dt>Sous-ensemble</dt><dd data-field="subset">-</dd></dl>
+              <dl><dt>Criticité</dt><dd data-field="criticite">-</dd></dl>
+              <dl><dt>Dernière intervention</dt><dd data-field="last">-</dd></dl>
+            </div>
+            <div>
+              <h4>Interventions récentes</h4>
+              <ul class="parc-timeline" data-field="history"><li><time>—</time><div>Aucune donnée</div></li></ul>
+            </div>
+            <div>
+              <h4>Actions planifiées</h4>
+              <ul class="parc-todo" data-field="upcoming"><li><time>—</time><div>Planifier une action</div></li></ul>
+            </div>
+            <p class="parc-note" data-field="notes">Sélectionnez une machine pour afficher les détails contextuels, les maintenances à venir et les consignes.</p>
+          </article>
+        </div>
+
+        <div class="card table-card">
+          <div class="card-header"><h3>Inventaire du parc</h3><span class="tag">Vue tableau</span></div>
+          <div class="table-wrapper">
+            <table aria-label="Parc">
+              <thead><tr><th>Code</th><th>Zone</th><th>Machine</th><th>Sous-ensemble</th><th>Criticité</th><th>Statut</th></tr></thead>
+              <tbody id="tblParc">
+                <tr data-code="EQ-022" data-status="bad" tabindex="0"><td>EQ-022</td><td>Utilities</td><td>Compresseur KAESER</td><td>Filtration</td><td>Haute</td><td><span class="status bad">Critique</span></td></tr>
+                <tr data-code="EQ-014" data-status="warn" tabindex="0"><td>EQ-014</td><td>Tournage</td><td>Tornos Deco</td><td>Hydraulique</td><td>Haute</td><td><span class="status warn">Surveillance</span></td></tr>
+                <tr data-code="EQ-031" data-status="warn" tabindex="0"><td>EQ-031</td><td>Assemblage</td><td>Presse Hydraulique PH-200</td><td>Circuit huile</td><td>Moyenne</td><td><span class="status warn">Planifiée</span></td></tr>
+                <tr data-code="EQ-001" data-status="ok" tabindex="0"><td>EQ-001</td><td>Fraisage</td><td>DMU 70</td><td>Broche</td><td>Moyenne</td><td><span class="status ok">Disponible</span></td></tr>
+                <tr data-code="EQ-045" data-status="ok" tabindex="0"><td>EQ-045</td><td>Découpe</td><td>Laser Trumpf TruLaser</td><td>Optiques</td><td>Basse</td><td><span class="status ok">En service</span></td></tr>
+                <tr data-code="EQ-055" data-status="ok" tabindex="0"><td>EQ-055</td><td>Peinture</td><td>Cabine poudre</td><td>Filtration</td><td>Moyenne</td><td><span class="status ok">Disponible</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
       </section>
 
       <!-- Interventions -->
@@ -608,6 +872,14 @@
       document.getElementById(target).classList.add('active');
     }
 
+    function navigateToSection(target){
+      const link = document.querySelector(`.menu a[data-target="${target}"]`);
+      if(link){
+        link.click();
+        link.focus({preventScroll:true});
+      }
+    }
+
     function applyTheme(theme,{persist=true}={}){
       if(!THEMES[theme]) theme='dark';
       currentTheme = theme;
@@ -714,6 +986,231 @@
       }
     }
 
+    const PARC_DETAILS = {
+      'EQ-022': {
+        code:'EQ-022',
+        name:'Compresseur KAESER',
+        zone:'Utilities',
+        sousEnsemble:'Filtration',
+        criticite:'Haute',
+        status:{label:'Arrêt', tone:'bad'},
+        availability:'42%',
+        availabilityBar:'42%',
+        hours:'12 h',
+        last:'22/09/2025 – Cartouche saturée',
+        notes:'Arrêt complet suite à dérive pression. Intervention sécurité prioritaire avant reprise.',
+        history:[
+          {date:'22/09/2025', text:'Arrêt urgence – pression insuffisante, cartouche colmatée'},
+          {date:'18/09/2025', text:'Contrôle routine filtres (alerte fine particules)'}
+        ],
+        upcoming:[
+          {date:'24/09/2025', text:'Remplacement cartouche CF-45 et purge circuit'},
+          {date:'30/09/2025', text:'Analyse huile compresseur'}
+        ]
+      },
+      'EQ-014': {
+        code:'EQ-014',
+        name:'Tornos Deco',
+        zone:'Tournage',
+        sousEnsemble:'Hydraulique',
+        criticite:'Haute',
+        status:{label:'Surveillance', tone:'warn'},
+        availability:'76%',
+        availabilityBar:'76%',
+        hours:'46 h',
+        last:'20/09/2025 – Purge hydraulique partielle',
+        notes:'Micro-fuites détectées sur flexibles retour. Prévoir remplacement lors du prochain arrêt planifié.',
+        history:[
+          {date:'20/09/2025', text:'Purge circuit hydraulique et ajout additif anti-mousse'},
+          {date:'12/09/2025', text:'Diagnostic capteur pression hydraulique'}
+        ],
+        upcoming:[
+          {date:'27/09/2025', text:'Remplacement flexible retour HP'},
+          {date:'05/10/2025', text:'Vérification capteur pression'}
+        ]
+      },
+      'EQ-031': {
+        code:'EQ-031',
+        name:'Presse Hydraulique PH-200',
+        zone:'Assemblage',
+        sousEnsemble:'Circuit huile',
+        criticite:'Moyenne',
+        status:{label:'Planifiée', tone:'warn'},
+        availability:'88%',
+        availabilityBar:'88%',
+        hours:'72 h',
+        last:'16/09/2025 – Contrôle vérins',
+        notes:'Prévoir arrêt de 2 h pour remplacement kit joints lors du créneau de nuit.',
+        history:[
+          {date:'16/09/2025', text:'Inspection vérins + étanchéité OK'},
+          {date:'03/09/2025', text:'Remplacement capteur fin de course'}
+        ],
+        upcoming:[
+          {date:'26/09/2025', text:'Remplacement kit joints circuit huile'},
+          {date:'15/10/2025', text:'Calibration cellule effort'}
+        ]
+      },
+      'EQ-001': {
+        code:'EQ-001',
+        name:'DMU 70',
+        zone:'Fraisage',
+        sousEnsemble:'Broche',
+        criticite:'Moyenne',
+        status:{label:'Disponible', tone:'ok'},
+        availability:'98%',
+        availabilityBar:'98%',
+        hours:'124 h',
+        last:'18/09/2025 – Contrôle vibrations',
+        notes:'Surveiller la montée en température du palier en début de poste. Aucun écart critique relevé.',
+        history:[
+          {date:'18/09/2025', text:'Contrôle vibrations broche – valeurs nominales'},
+          {date:'02/09/2025', text:'Vidange huile broche'}
+        ],
+        upcoming:[
+          {date:'05/10/2025', text:'Graissage paliers automatiques'},
+          {date:'20/10/2025', text:'Vérification alignement axes'}
+        ]
+      },
+      'EQ-045': {
+        code:'EQ-045',
+        name:'Laser Trumpf TruLaser',
+        zone:'Découpe',
+        sousEnsemble:'Optiques',
+        criticite:'Basse',
+        status:{label:'En service', tone:'ok'},
+        availability:'94%',
+        availabilityBar:'94%',
+        hours:'38 h',
+        last:'15/09/2025 – Nettoyage optiques',
+        notes:'Surveillance du refroidissement. Prévoir remplacement filtre eau si delta T > 6°C.',
+        history:[
+          {date:'15/09/2025', text:'Nettoyage optiques + recalage faisceau'},
+          {date:'01/09/2025', text:'Remplacement buse découpe inox'}
+        ],
+        upcoming:[
+          {date:'29/09/2025', text:'Remplacement filtre eau refroidissement'},
+          {date:'12/10/2025', text:'Contrôle alignement axes'}
+        ]
+      },
+      'EQ-055': {
+        code:'EQ-055',
+        name:'Cabine poudre',
+        zone:'Peinture',
+        sousEnsemble:'Filtration',
+        criticite:'Moyenne',
+        status:{label:'Disponible', tone:'ok'},
+        availability:'91%',
+        availabilityBar:'91%',
+        hours:'58 h',
+        last:'19/09/2025 – Changement cartouches',
+        notes:'Vérifier le différentiel de pression collecteur 1 fois / semaine.',
+        history:[
+          {date:'19/09/2025', text:'Remplacement cartouches filtre poudre'},
+          {date:'08/09/2025', text:'Contrôle ventilation cabine'}
+        ],
+        upcoming:[
+          {date:'28/09/2025', text:'Nettoyage complet cabine'},
+          {date:'18/10/2025', text:'Mesure aéraulique réglementaire'}
+        ]
+      }
+    };
+
+    function updateParcCounters(){
+      const rows = Array.from(document.querySelectorAll('#tblParc tr'));
+      const counters = {total:rows.length, ok:0, warn:0, bad:0};
+      rows.forEach(tr=>{
+        const status = tr.getAttribute('data-status');
+        if(status && counters[status]!==undefined) counters[status]++;
+      });
+      Object.entries(counters).forEach(([key,value])=>{
+        const target = document.querySelector(`[data-parc-count="${key}"]`);
+        if(target) target.textContent = value;
+      });
+    }
+
+    function updateParcDetail(code){
+      const detail = PARC_DETAILS[code];
+      const card = document.getElementById('parcDetail');
+      if(!card || !detail) return;
+      card.querySelector('[data-field="code"]').textContent = detail.code;
+      card.querySelector('[data-field="name"]').textContent = detail.name;
+      const statusEl = card.querySelector('[data-field="status"]');
+      statusEl.textContent = detail.status.label;
+      statusEl.className = `status-badge ${detail.status.tone}`;
+      card.querySelector('[data-field="availability"]').textContent = detail.availability;
+      const bar = card.querySelector('[data-field="availability-bar"]');
+      if(bar) bar.style.width = detail.availabilityBar;
+      card.querySelector('[data-field="hours"]').textContent = detail.hours;
+      card.querySelector('[data-field="zone"]').textContent = detail.zone;
+      card.querySelector('[data-field="subset"]').textContent = detail.sousEnsemble;
+      card.querySelector('[data-field="criticite"]').textContent = detail.criticite;
+      card.querySelector('[data-field="last"]').textContent = detail.last;
+      card.querySelector('[data-field="notes"]').textContent = detail.notes;
+
+      const historyList = card.querySelector('[data-field="history"]');
+      if(historyList){
+        historyList.innerHTML = '';
+        detail.history.forEach(item=>{
+          const li = document.createElement('li');
+          const time = document.createElement('time');
+          time.textContent = item.date;
+          const txt = document.createElement('div');
+          txt.textContent = item.text;
+          li.appendChild(time);
+          li.appendChild(txt);
+          historyList.appendChild(li);
+        });
+      }
+
+      const todoList = card.querySelector('[data-field="upcoming"]');
+      if(todoList){
+        todoList.innerHTML = '';
+        detail.upcoming.forEach(item=>{
+          const li = document.createElement('li');
+          const time = document.createElement('time');
+          time.textContent = item.date;
+          const txt = document.createElement('div');
+          txt.textContent = item.text;
+          li.appendChild(time);
+          li.appendChild(txt);
+          todoList.appendChild(li);
+        });
+      }
+    }
+
+    function selectParcMachine(code){
+      if(!code) return;
+      document.querySelectorAll('.machine-tile').forEach(btn=>{
+        btn.classList.toggle('active', btn.getAttribute('data-code')===code);
+      });
+      document.querySelectorAll('#tblParc tr').forEach(tr=>{
+        tr.classList.toggle('selected', tr.getAttribute('data-code')===code);
+      });
+      updateParcDetail(code);
+    }
+
+    function setupParcInteractions(){
+      updateParcCounters();
+      const directory = document.getElementById('machineDirectory');
+      if(directory){
+        directory.querySelectorAll('.machine-tile').forEach(btn=>{
+          btn.addEventListener('click', ()=>selectParcMachine(btn.getAttribute('data-code')));
+        });
+      }
+      document.querySelectorAll('#tblParc tr').forEach(tr=>{
+        tr.addEventListener('click', ()=>selectParcMachine(tr.getAttribute('data-code')));
+        tr.addEventListener('keydown', evt=>{
+          if(evt.key==='Enter' || evt.key===' '){
+            evt.preventDefault();
+            selectParcMachine(tr.getAttribute('data-code'));
+          }
+        });
+      });
+      const firstActive = directory?.querySelector('.machine-tile')?.getAttribute('data-code')
+        || document.querySelector('#tblParc tr')?.getAttribute('data-code');
+      if(firstActive) selectParcMachine(firstActive);
+    }
+
     function renderLabels(filter){
       const data = [
         {code:'EQ-001', ref:'PI-0001', text:'DMU 70 – Broche'},
@@ -756,6 +1253,20 @@
       URL.revokeObjectURL(url);
     }
 
+    function exportParc(){
+      const head = ['Code','Zone','Machine','Sous-ensemble','Criticité','Statut'];
+      const rows = Array.from(document.querySelectorAll('#tblParc tr'))
+        .map(tr=>Array.from(tr.cells).map(td=>td.innerText.trim()));
+      const csv = [head, ...rows].map(r=>r.join(';')).join('\n');
+      const blob = new Blob([csv],{type:'text/csv;charset=utf-8;'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'parc_machines.csv';
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
     function init(){
       let savedTheme = null;
       try{ savedTheme = localStorage.getItem('gmao-theme'); }catch(_e){ savedTheme = null; }
@@ -787,6 +1298,7 @@
         }
       });
 
+      setupParcInteractions();
       renderLabels('');
     }
 

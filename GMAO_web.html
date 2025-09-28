@@ -171,6 +171,7 @@
       </div>
       <div class="header-actions">
         <button class="btn" id="themeToggle" type="button" onclick="toggleTheme()" title="Basculer le thème" aria-pressed="false">🌙 Mode sombre</button>
+        <button class="btn primary" onclick="openModal('diModal')">➕ Demande d’intervention</button>
         <button class="btn primary" onclick="openModal('otModal')">➕ Nouvel OT</button>
       </div>
     </header>
@@ -493,6 +494,52 @@
       <div class="actions">
         <button class="btn" onclick="closeModal('otModal')">Annuler</button>
         <button class="btn primary" onclick="closeModal('otModal')">Créer</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="diModal" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Créer une demande d’intervention">
+    <div class="sheet">
+      <header>
+        <div class="brand">
+          <div class="logo" style="width:28px;height:28px"></div>
+          <h1>Nouvelle demande d’intervention</h1>
+        </div>
+      </header>
+      <div class="content">
+        <div class="grid">
+          <div class="field">
+            <label>Date de la demande</label>
+            <input type="date"/>
+          </div>
+          <div class="field">
+            <label>Machine</label>
+            <input type="text" placeholder="Nom de la machine…"/>
+          </div>
+          <div class="field">
+            <label>Priorité</label>
+            <select>
+              <option value="P1">P1 — Urgent (machine à l’arrêt)</option>
+              <option value="P2">P2 — Moyen (défaut sans interruption)</option>
+              <option value="P3">P3 — Faible</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Machine à l’arrêt</label>
+            <select>
+              <option value="oui">Oui</option>
+              <option value="non">Non</option>
+            </select>
+          </div>
+          <div class="field" style="grid-column:1/-1">
+            <label>Travaux à effectuer</label>
+            <textarea rows="3" placeholder="Décrire les travaux demandés…"></textarea>
+          </div>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="btn" onclick="closeModal('diModal')">Annuler</button>
+        <button class="btn primary" onclick="closeModal('diModal')">Envoyer</button>
       </div>
     </div>
   </div>

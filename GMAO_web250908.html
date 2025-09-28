@@ -344,21 +344,21 @@
       <!-- Parc -->
       <section id="parc" class="section" aria-label="Parc machines">
         <div class="toolbar">
-          <input class="input" placeholder="Filtrer par zone…" oninput="filterTable('tblParc', this.value, [1])">
-          <select onchange="filterStatus('tblParc', this.value)">
-            <option value="">Tous statuts</option>
-            <option value="ok">OK</option>
-            <option value="warn">Surveillance</option>
-            <option value="bad">Critique</option>
+          <input class="input" placeholder="Filtrer par zone…" oninput="filterTable('tblParc', this.value, [0])">
+          <select onchange="filterTable('tblParc', this.value, [2])">
+            <option value="">Tous fabricants</option>
+            <option>DMG Mori</option>
+            <option>Tornos</option>
+            <option>Kaeser</option>
           </select>
           <button class="btn" onclick="openModal('equipModal')">➕ Ajouter équipement</button>
         </div>
         <table aria-label="Parc">
-          <thead><tr><th>Code</th><th>Zone</th><th>Machine</th><th>Sous-ensemble</th><th>Criticité</th><th>Statut</th></tr></thead>
+          <thead><tr><th>Zone</th><th>Machine</th><th>Fabricant</th><th>Modèle</th><th>Numéro série</th><th>Année</th></tr></thead>
           <tbody id="tblParc">
-            <tr data-status="ok"><td>EQ-001</td><td>Fraisage</td><td>DMU 70</td><td>Broche</td><td>Moyenne</td><td><span class="status ok">OK</span></td></tr>
-            <tr data-status="warn"><td>EQ-014</td><td>Tournage</td><td>Tornos Deco</td><td>Hydraulique</td><td>Haute</td><td><span class="status warn">Surveillance</span></td></tr>
-            <tr data-status="bad"><td>EQ-022</td><td>Utilities</td><td>Compresseur KAESER</td><td>Filtration</td><td>Haute</td><td><span class="status bad">Critique</span></td></tr>
+            <tr><td>Fraisage</td><td>Centre d'usinage 5 axes</td><td>DMG Mori</td><td>DMU 70</td><td>FR-DMU70-2021</td><td>2021</td></tr>
+            <tr><td>Tournage</td><td>Tour CN polyvalent</td><td>Tornos</td><td>Deco 2000</td><td>TN-DEC-2018</td><td>2018</td></tr>
+            <tr><td>Utilities</td><td>Compresseur d'air</td><td>Kaeser</td><td>SX 6</td><td>KS-SX6-2016</td><td>2016</td></tr>
           </tbody>
         </table>
       </section>

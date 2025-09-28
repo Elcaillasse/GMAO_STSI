@@ -111,6 +111,8 @@
     .toolbar .input, .toolbar select{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:8px 10px;color:var(--ink)}
     :root[data-theme="light"] .toolbar .input,
     :root[data-theme="light"] .toolbar select{background:rgba(148,163,184,.12);border:1px solid rgba(148,163,184,.28)}
+    select option{background:var(--panel);color:var(--ink)}
+    :root[data-theme="light"] select option{background:rgba(226,232,240,.95);color:var(--ink)}
 
     /* Parc machines */
     .parc-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:8px}
@@ -130,7 +132,11 @@
     .machine-tile[data-status="bad"]{border-left-color:var(--bad)}
     .machine-tile.active{border-color:rgba(34,211,238,.45);box-shadow:0 0 0 2px rgba(34,211,238,.18);background:rgba(34,211,238,.08)}
     .machine-name{font-weight:600}
-    .machine-meta{font-size:12px;color:var(--ink-dim)}
+    .machine-code{font-size:11px;color:var(--ink-dim);letter-spacing:.3px;text-transform:uppercase;margin-top:2px}
+    .machine-meta{margin-top:8px;display:grid;gap:4px;font-size:12px;color:var(--ink-dim)}
+    .machine-meta div{display:flex;gap:6px;align-items:baseline;flex-wrap:wrap}
+    .machine-meta .label{font-size:11px;text-transform:uppercase;letter-spacing:.3px;color:var(--ink-dim)}
+    .machine-meta .value{color:var(--ink);font-weight:600}
     .parc-detail{display:flex;flex-direction:column;gap:16px}
     .parc-detail header{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
     .parc-detail-code{font-size:12px;color:var(--ink-dim);letter-spacing:.4px;text-transform:uppercase}
@@ -148,6 +154,10 @@
     .parc-timeline,.parc-todo{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
     .parc-timeline li,.parc-todo li{display:flex;gap:12px;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03)}
     .parc-timeline time{font-size:12px;color:var(--ink-dim);min-width:80px;display:inline-flex;align-items:center;font-variant-numeric:tabular-nums}
+    .peripherals-list{list-style:none;margin:8px 0 0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
+    .peripherals-list .chip{background:rgba(255,255,255,.06)}
+    :root[data-theme="light"] .peripherals-list .chip{background:rgba(148,163,184,.18)}
+    .peripheral-empty{font-size:12px;color:var(--ink-dim)}
     .parc-note{font-size:13px;color:var(--ink-dim);margin:0}
     .table-card{margin-top:16px}
     tbody tr.selected{outline:2px solid var(--accent);outline-offset:-4px}
@@ -177,7 +187,7 @@
     .actions{display:flex;gap:8px;justify-content:flex-end;padding:0 16px 16px}
 
     /* chips */
-    .chip{border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);padding:6px 10px;border-radius:999px;font-size:12px}
+    .chip{border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);padding:6px 10px;border-radius:999px;font-size:12px;display:inline-flex;align-items:center;gap:6px}
     :root[data-theme="light"] .chip{border:1px solid rgba(148,163,184,.4);background:rgba(226,232,240,.6)}
 
     /* Bloc sites du tableau de bord */
@@ -543,7 +553,7 @@
 
         <div class="toolbar parc-toolbar">
           <div class="toolbar-group" role="group" aria-label="Filtres du parc">
-            <input class="input" placeholder="Filtrer par zone…" oninput="filterTable('tblParc', this.value, [1])">
+            <input class="input" placeholder="Filtrer (zone, fabricant, machine…)" oninput="filterTable('tblParc', this.value, [1,2,3,4,5,6])">
             <select onchange="filterStatus('tblParc', this.value)">
               <option value="">Tous statuts</option>
               <option value="ok">OK</option>
@@ -564,11 +574,91 @@
               <span class="tag warn">Priorité atelier</span>
             </div>
             <ul class="machine-directory-list" id="machineDirectory">
-              <li><button class="machine-tile" data-code="EQ-022" data-status="bad" type="button"><div><div class="machine-name">Compresseur KAESER</div><div class="machine-meta">Utilities • Filtration</div></div><span class="status-badge bad">Arrêt</span></button></li>
-              <li><button class="machine-tile" data-code="EQ-014" data-status="warn" type="button"><div><div class="machine-name">Tornos Deco</div><div class="machine-meta">Tournage • Hydraulique</div></div><span class="status-badge warn">Surveillance</span></button></li>
-              <li><button class="machine-tile" data-code="EQ-031" data-status="warn" type="button"><div><div class="machine-name">Presse Hydraulique PH-200</div><div class="machine-meta">Assemblage • Circuit huile</div></div><span class="status-badge warn">Planifiée</span></button></li>
-              <li><button class="machine-tile" data-code="EQ-001" data-status="ok" type="button"><div><div class="machine-name">DMU 70</div><div class="machine-meta">Fraisage • Broche</div></div><span class="status-badge ok">Disponible</span></button></li>
-              <li><button class="machine-tile" data-code="EQ-045" data-status="ok" type="button"><div><div class="machine-name">Laser Trumpf TruLaser</div><div class="machine-meta">Découpe • Optiques</div></div><span class="status-badge ok">En service</span></button></li>
+              <li>
+                <button class="machine-tile" data-code="EQ-022" data-status="bad" type="button">
+                  <div>
+                    <div class="machine-name">Compresseur KAESER</div>
+                    <div class="machine-code">EQ-022</div>
+                    <div class="machine-meta">
+                      <div><span class="label">Zone</span><span class="value">Utilities</span></div>
+                      <div><span class="label">Fabricant</span><span class="value">KAESER</span></div>
+                      <div><span class="label">Machine</span><span class="value">Compresseur à vis</span></div>
+                      <div><span class="label">Modèle</span><span class="value">SK 25</span></div>
+                      <div><span class="label">N° série</span><span class="value">KS-25-8821</span></div>
+                      <div><span class="label">Année</span><span class="value">2015</span></div>
+                    </div>
+                  </div>
+                  <span class="status-badge bad">Arrêt</span>
+                </button>
+              </li>
+              <li>
+                <button class="machine-tile" data-code="EQ-014" data-status="warn" type="button">
+                  <div>
+                    <div class="machine-name">Tornos Deco</div>
+                    <div class="machine-code">EQ-014</div>
+                    <div class="machine-meta">
+                      <div><span class="label">Zone</span><span class="value">Tournage</span></div>
+                      <div><span class="label">Fabricant</span><span class="value">Tornos</span></div>
+                      <div><span class="label">Machine</span><span class="value">Tour à décolletage</span></div>
+                      <div><span class="label">Modèle</span><span class="value">Deco 13</span></div>
+                      <div><span class="label">N° série</span><span class="value">DEC13-7711</span></div>
+                      <div><span class="label">Année</span><span class="value">2014</span></div>
+                    </div>
+                  </div>
+                  <span class="status-badge warn">Surveillance</span>
+                </button>
+              </li>
+              <li>
+                <button class="machine-tile" data-code="EQ-031" data-status="warn" type="button">
+                  <div>
+                    <div class="machine-name">Presse Hydraulique PH-200</div>
+                    <div class="machine-code">EQ-031</div>
+                    <div class="machine-meta">
+                      <div><span class="label">Zone</span><span class="value">Assemblage</span></div>
+                      <div><span class="label">Fabricant</span><span class="value">Hydropress</span></div>
+                      <div><span class="label">Machine</span><span class="value">Presse hydraulique</span></div>
+                      <div><span class="label">Modèle</span><span class="value">PH-200</span></div>
+                      <div><span class="label">N° série</span><span class="value">PH200-1105</span></div>
+                      <div><span class="label">Année</span><span class="value">2012</span></div>
+                    </div>
+                  </div>
+                  <span class="status-badge warn">Planifiée</span>
+                </button>
+              </li>
+              <li>
+                <button class="machine-tile" data-code="EQ-001" data-status="ok" type="button">
+                  <div>
+                    <div class="machine-name">DMU 70</div>
+                    <div class="machine-code">EQ-001</div>
+                    <div class="machine-meta">
+                      <div><span class="label">Zone</span><span class="value">Fraisage</span></div>
+                      <div><span class="label">Fabricant</span><span class="value">DMG MORI</span></div>
+                      <div><span class="label">Machine</span><span class="value">Centre d&rsquo;usinage 5 axes</span></div>
+                      <div><span class="label">Modèle</span><span class="value">DMU 70</span></div>
+                      <div><span class="label">N° série</span><span class="value">DMU70-2019-102</span></div>
+                      <div><span class="label">Année</span><span class="value">2019</span></div>
+                    </div>
+                  </div>
+                  <span class="status-badge ok">Disponible</span>
+                </button>
+              </li>
+              <li>
+                <button class="machine-tile" data-code="EQ-045" data-status="ok" type="button">
+                  <div>
+                    <div class="machine-name">Laser Trumpf TruLaser</div>
+                    <div class="machine-code">EQ-045</div>
+                    <div class="machine-meta">
+                      <div><span class="label">Zone</span><span class="value">Découpe</span></div>
+                      <div><span class="label">Fabricant</span><span class="value">TRUMPF</span></div>
+                      <div><span class="label">Machine</span><span class="value">Laser fibre</span></div>
+                      <div><span class="label">Modèle</span><span class="value">TruLaser 3030</span></div>
+                      <div><span class="label">N° série</span><span class="value">TL3030-5521</span></div>
+                      <div><span class="label">Année</span><span class="value">2020</span></div>
+                    </div>
+                  </div>
+                  <span class="status-badge ok">En service</span>
+                </button>
+              </li>
             </ul>
           </aside>
 
@@ -593,9 +683,20 @@
             </div>
             <div class="detail-grid">
               <dl><dt>Zone</dt><dd data-field="zone">-</dd></dl>
+              <dl><dt>Fabricant</dt><dd data-field="fabricant">-</dd></dl>
+              <dl><dt>Machine</dt><dd data-field="machine">-</dd></dl>
+              <dl><dt>Modèle</dt><dd data-field="modele">-</dd></dl>
+              <dl><dt>N° série</dt><dd data-field="numeroSerie">-</dd></dl>
+              <dl><dt>Année</dt><dd data-field="annee">-</dd></dl>
               <dl><dt>Sous-ensemble</dt><dd data-field="subset">-</dd></dl>
               <dl><dt>Criticité</dt><dd data-field="criticite">-</dd></dl>
               <dl><dt>Dernière intervention</dt><dd data-field="last">-</dd></dl>
+            </div>
+            <div>
+              <h4>Périphériques associés</h4>
+              <ul class="peripherals-list" data-field="peripheriques">
+                <li class="peripheral-empty">Aucun périphérique renseigné</li>
+              </ul>
             </div>
             <div>
               <h4>Interventions récentes</h4>
@@ -613,14 +714,14 @@
           <div class="card-header"><h3>Inventaire du parc</h3><span class="tag">Vue tableau</span></div>
           <div class="table-wrapper">
             <table aria-label="Parc">
-              <thead><tr><th>Code</th><th>Zone</th><th>Machine</th><th>Sous-ensemble</th><th>Criticité</th><th>Statut</th></tr></thead>
+              <thead><tr><th>Code</th><th>Zone</th><th>Fabricant</th><th>Machine</th><th>Modèle</th><th>N° Série</th><th>Année</th><th>Statut</th></tr></thead>
               <tbody id="tblParc">
-                <tr data-code="EQ-022" data-status="bad" tabindex="0"><td>EQ-022</td><td>Utilities</td><td>Compresseur KAESER</td><td>Filtration</td><td>Haute</td><td><span class="status bad">Critique</span></td></tr>
-                <tr data-code="EQ-014" data-status="warn" tabindex="0"><td>EQ-014</td><td>Tournage</td><td>Tornos Deco</td><td>Hydraulique</td><td>Haute</td><td><span class="status warn">Surveillance</span></td></tr>
-                <tr data-code="EQ-031" data-status="warn" tabindex="0"><td>EQ-031</td><td>Assemblage</td><td>Presse Hydraulique PH-200</td><td>Circuit huile</td><td>Moyenne</td><td><span class="status warn">Planifiée</span></td></tr>
-                <tr data-code="EQ-001" data-status="ok" tabindex="0"><td>EQ-001</td><td>Fraisage</td><td>DMU 70</td><td>Broche</td><td>Moyenne</td><td><span class="status ok">Disponible</span></td></tr>
-                <tr data-code="EQ-045" data-status="ok" tabindex="0"><td>EQ-045</td><td>Découpe</td><td>Laser Trumpf TruLaser</td><td>Optiques</td><td>Basse</td><td><span class="status ok">En service</span></td></tr>
-                <tr data-code="EQ-055" data-status="ok" tabindex="0"><td>EQ-055</td><td>Peinture</td><td>Cabine poudre</td><td>Filtration</td><td>Moyenne</td><td><span class="status ok">Disponible</span></td></tr>
+                <tr data-code="EQ-022" data-status="bad" tabindex="0"><td>EQ-022</td><td>Utilities</td><td>KAESER</td><td>Compresseur à vis</td><td>SK 25</td><td>KS-25-8821</td><td>2015</td><td><span class="status bad">Critique</span></td></tr>
+                <tr data-code="EQ-014" data-status="warn" tabindex="0"><td>EQ-014</td><td>Tournage</td><td>Tornos</td><td>Tour à décolletage</td><td>Deco 13</td><td>DEC13-7711</td><td>2014</td><td><span class="status warn">Surveillance</span></td></tr>
+                <tr data-code="EQ-031" data-status="warn" tabindex="0"><td>EQ-031</td><td>Assemblage</td><td>Hydropress</td><td>Presse hydraulique</td><td>PH-200</td><td>PH200-1105</td><td>2012</td><td><span class="status warn">Planifiée</span></td></tr>
+                <tr data-code="EQ-001" data-status="ok" tabindex="0"><td>EQ-001</td><td>Fraisage</td><td>DMG MORI</td><td>Centre d&rsquo;usinage 5 axes</td><td>DMU 70</td><td>DMU70-2019-102</td><td>2019</td><td><span class="status ok">Disponible</span></td></tr>
+                <tr data-code="EQ-045" data-status="ok" tabindex="0"><td>EQ-045</td><td>Découpe</td><td>TRUMPF</td><td>Laser fibre</td><td>TruLaser 3030</td><td>TL3030-5521</td><td>2020</td><td><span class="status ok">En service</span></td></tr>
+                <tr data-code="EQ-055" data-status="ok" tabindex="0"><td>EQ-055</td><td>Peinture</td><td>Gema</td><td>Cabine de poudrage</td><td>MagicCompact EquiFlow</td><td>GEQ-3321</td><td>2017</td><td><span class="status ok">Disponible</span></td></tr>
               </tbody>
             </table>
           </div>
@@ -821,7 +922,33 @@
     </div>
   </div>
 
-  <div class="modal" id="equipModal" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Ajouter un équipement"><div class="sheet"><header><div class="brand"><div class="logo" style="width:28px;height:28px"></div><h1>Ajouter équipement</h1></div></header><div class="content"><div class="grid"><div class="field"><label>Code</label><input></div><div class="field"><label>Zone</label><input></div><div class="field"><label>Machine</label><input></div><div class="field"><label>Sous-ensemble</label><input></div><div class="field"><label>Criticité</label><select><option>Basse</option><option>Moyenne</option><option>Haute</option></select></div></div></div><div class="actions"><button class="btn" onclick="closeModal('equipModal')">Fermer</button><button class="btn primary" onclick="closeModal('equipModal')">Enregistrer</button></div></div></div>
+  <div class="modal" id="equipModal" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Ajouter un équipement">
+    <div class="sheet">
+      <header>
+        <div class="brand">
+          <div class="logo" style="width:28px;height:28px"></div>
+          <h1>Ajouter équipement</h1>
+        </div>
+      </header>
+      <div class="content">
+        <div class="grid">
+          <div class="field"><label>Code équipement</label><input placeholder="ex. EQ-120"></div>
+          <div class="field"><label>Zone</label><input placeholder="ex. Tournage"></div>
+          <div class="field"><label>Fabricant</label><input placeholder="ex. Tornos"></div>
+          <div class="field"><label>Machine</label><input placeholder="ex. Tour à décolletage"></div>
+          <div class="field"><label>Modèle</label><input placeholder="ex. Deco 13"></div>
+          <div class="field"><label>Numéro de série</label><input placeholder="ex. DEC13-7711"></div>
+          <div class="field"><label>Année</label><input type="number" min="1900" max="2100" placeholder="ex. 2020"></div>
+          <div class="field"><label>Criticité</label><select><option>Basse</option><option>Moyenne</option><option>Haute</option></select></div>
+          <div class="field" style="grid-column:1/-1"><label>Périphériques associés</label><textarea rows="3" placeholder="ex. Embarreur 1 (CTZ1), Chargeur barres 3 m"></textarea></div>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="btn" onclick="closeModal('equipModal')">Fermer</button>
+        <button class="btn primary" onclick="closeModal('equipModal')">Enregistrer</button>
+      </div>
+    </div>
+  </div>
   <div class="modal" id="pieceModal" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Créer une pièce"><div class="sheet"><header><div class="brand"><div class="logo" style="width:28px;height:28px"></div><h1>Nouvelle pièce</h1></div></header><div class="content"><div class="grid"><div class="field"><label>Réf interne</label><input></div><div class="field"><label>Désignation</label><input></div><div class="field"><label>Code</label><input></div><div class="field"><label>Emplacement</label><input></div><div class="field"><label>Seuil</label><input type="number"></div><div class="field"><label>Coût (€)</label><input type="number" step="0.01"></div></div></div><div class="actions"><button class="btn" onclick="closeModal('pieceModal')">Fermer</button><button class="btn primary" onclick="closeModal('pieceModal')">Enregistrer</button></div></div></div>
   <div class="modal" id="cmdModal" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Créer une commande"><div class="sheet"><header><div class="brand"><div class="logo" style="width:28px;height:28px"></div><h1>Nouvelle commande</h1></div></header><div class="content"><div class="grid"><div class="field"><label>Fournisseur</label><input></div><div class="field"><label>Réf interne</label><input></div><div class="field"><label>Code</label><input></div><div class="field"><label>Statut</label><select><option>Demandée</option><option>Commandée</option><option>Réceptionnée</option></select></div><div class="field"><label>Montant (€)</label><input type="number" step="0.01"></div></div></div><div class="actions"><button class="btn" onclick="closeModal('cmdModal')">Fermer</button><button class="btn primary" onclick="closeModal('cmdModal')">Enregistrer</button></div></div></div>
   <div class="modal" id="contactModal" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Créer un contact"><div class="sheet"><header><div class="brand"><div class="logo" style="width:28px;height:28px"></div><h1>Nouveau contact</h1></div></header><div class="content"><div class="grid"><div class="field"><label>Entreprise</label><input></div><div class="field"><label>Activité</label><input></div><div class="field"><label>Contact</label><input></div><div class="field"><label>Email</label><input type="email"></div><div class="field"><label>Téléphone</label><input></div></div></div><div class="actions"><button class="btn" onclick="closeModal('contactModal')">Fermer</button><button class="btn primary" onclick="closeModal('contactModal')">Enregistrer</button></div></div></div>
@@ -991,6 +1118,11 @@
         code:'EQ-022',
         name:'Compresseur KAESER',
         zone:'Utilities',
+        fabricant:'KAESER',
+        machine:'Compresseur à vis',
+        modele:'SK 25',
+        numeroSerie:'KS-25-8821',
+        annee:'2015',
         sousEnsemble:'Filtration',
         criticite:'Haute',
         status:{label:'Arrêt', tone:'bad'},
@@ -1006,12 +1138,18 @@
         upcoming:[
           {date:'24/09/2025', text:'Remplacement cartouche CF-45 et purge circuit'},
           {date:'30/09/2025', text:'Analyse huile compresseur'}
-        ]
+        ],
+        peripheriques:['Sécheur SEC-12','Réservoir tampon 500 L']
       },
       'EQ-014': {
         code:'EQ-014',
         name:'Tornos Deco',
         zone:'Tournage',
+        fabricant:'Tornos',
+        machine:'Tour à décolletage',
+        modele:'Deco 13',
+        numeroSerie:'DEC13-7711',
+        annee:'2014',
         sousEnsemble:'Hydraulique',
         criticite:'Haute',
         status:{label:'Surveillance', tone:'warn'},
@@ -1027,12 +1165,18 @@
         upcoming:[
           {date:'27/09/2025', text:'Remplacement flexible retour HP'},
           {date:'05/10/2025', text:'Vérification capteur pression'}
-        ]
+        ],
+        peripheriques:['Embarreur 1 (CTZ1)','Chargeur barres 3 m']
       },
       'EQ-031': {
         code:'EQ-031',
         name:'Presse Hydraulique PH-200',
         zone:'Assemblage',
+        fabricant:'Hydropress',
+        machine:'Presse hydraulique',
+        modele:'PH-200',
+        numeroSerie:'PH200-1105',
+        annee:'2012',
         sousEnsemble:'Circuit huile',
         criticite:'Moyenne',
         status:{label:'Planifiée', tone:'warn'},
@@ -1048,12 +1192,18 @@
         upcoming:[
           {date:'26/09/2025', text:'Remplacement kit joints circuit huile'},
           {date:'15/10/2025', text:'Calibration cellule effort'}
-        ]
+        ],
+        peripheriques:['Table de positionnement A','Armoire hydraulique dédiée']
       },
       'EQ-001': {
         code:'EQ-001',
         name:'DMU 70',
         zone:'Fraisage',
+        fabricant:'DMG MORI',
+        machine:'Centre d’usinage 5 axes',
+        modele:'DMU 70',
+        numeroSerie:'DMU70-2019-102',
+        annee:'2019',
         sousEnsemble:'Broche',
         criticite:'Moyenne',
         status:{label:'Disponible', tone:'ok'},
@@ -1069,12 +1219,18 @@
         upcoming:[
           {date:'05/10/2025', text:'Graissage paliers automatiques'},
           {date:'20/10/2025', text:'Vérification alignement axes'}
-        ]
+        ],
+        peripheriques:['Magasin outils 60 postes','Table rotative RT-125']
       },
       'EQ-045': {
         code:'EQ-045',
         name:'Laser Trumpf TruLaser',
         zone:'Découpe',
+        fabricant:'TRUMPF',
+        machine:'Laser fibre',
+        modele:'TruLaser 3030',
+        numeroSerie:'TL3030-5521',
+        annee:'2020',
         sousEnsemble:'Optiques',
         criticite:'Basse',
         status:{label:'En service', tone:'ok'},
@@ -1090,12 +1246,18 @@
         upcoming:[
           {date:'29/09/2025', text:'Remplacement filtre eau refroidissement'},
           {date:'12/10/2025', text:'Contrôle alignement axes'}
-        ]
+        ],
+        peripheriques:['TruStore 3030','Refroidisseur TCU 3030']
       },
       'EQ-055': {
         code:'EQ-055',
         name:'Cabine poudre',
         zone:'Peinture',
+        fabricant:'Gema',
+        machine:'Cabine de poudrage',
+        modele:'MagicCompact EquiFlow',
+        numeroSerie:'GEQ-3321',
+        annee:'2017',
         sousEnsemble:'Filtration',
         criticite:'Moyenne',
         status:{label:'Disponible', tone:'ok'},
@@ -1111,7 +1273,8 @@
         upcoming:[
           {date:'28/09/2025', text:'Nettoyage complet cabine'},
           {date:'18/10/2025', text:'Mesure aéraulique réglementaire'}
-        ]
+        ],
+        peripheriques:['Cyclone récupération poudre','Tunnel de cuisson intégré']
       }
     };
 
@@ -1141,11 +1304,41 @@
       const bar = card.querySelector('[data-field="availability-bar"]');
       if(bar) bar.style.width = detail.availabilityBar;
       card.querySelector('[data-field="hours"]').textContent = detail.hours;
-      card.querySelector('[data-field="zone"]').textContent = detail.zone;
-      card.querySelector('[data-field="subset"]').textContent = detail.sousEnsemble;
-      card.querySelector('[data-field="criticite"]').textContent = detail.criticite;
-      card.querySelector('[data-field="last"]').textContent = detail.last;
-      card.querySelector('[data-field="notes"]').textContent = detail.notes;
+      const textFields = {
+        zone: detail.zone,
+        fabricant: detail.fabricant,
+        machine: detail.machine || detail.name,
+        modele: detail.modele,
+        numeroSerie: detail.numeroSerie,
+        annee: detail.annee,
+        subset: detail.sousEnsemble,
+        criticite: detail.criticite,
+        last: detail.last,
+        notes: detail.notes
+      };
+      Object.entries(textFields).forEach(([field,value])=>{
+        const target = card.querySelector(`[data-field="${field}"]`);
+        if(target) target.textContent = value || '—';
+      });
+
+      const periphList = card.querySelector('[data-field="peripheriques"]');
+      if(periphList){
+        periphList.innerHTML = '';
+        const periph = Array.isArray(detail.peripheriques) ? detail.peripheriques.filter(Boolean) : [];
+        if(periph.length){
+          periph.forEach(item=>{
+            const li = document.createElement('li');
+            li.className = 'chip';
+            li.textContent = item;
+            periphList.appendChild(li);
+          });
+        }else{
+          const li = document.createElement('li');
+          li.className = 'peripheral-empty';
+          li.textContent = 'Aucun périphérique renseigné';
+          periphList.appendChild(li);
+        }
+      }
 
       const historyList = card.querySelector('[data-field="history"]');
       if(historyList){
@@ -1254,7 +1447,7 @@
     }
 
     function exportParc(){
-      const head = ['Code','Zone','Machine','Sous-ensemble','Criticité','Statut'];
+      const head = ['Code','Zone','Fabricant','Machine','Modèle','N° Série','Année','Statut'];
       const rows = Array.from(document.querySelectorAll('#tblParc tr'))
         .map(tr=>Array.from(tr.cells).map(td=>td.innerText.trim()));
       const csv = [head, ...rows].map(r=>r.join(';')).join('\n');

@@ -112,10 +112,12 @@
     .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
     .field{display:flex;flex-direction:column;gap:6px}
     .field label{font-size:12px;color:var(--ink-dim)}
-    .field input,.field select,.field textarea{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:8px 10px;color:var(--ink)}
+    .field input,.field select,.field textarea{background:rgba(15,23,42,.6);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:8px 10px;color:var(--ink)}
+    .field select option{background:var(--panel);color:var(--ink)}
     :root[data-theme="light"] .field input,
     :root[data-theme="light"] .field select,
     :root[data-theme="light"] .field textarea{background:rgba(226,232,240,.6);border:1px solid rgba(148,163,184,.4)}
+    :root[data-theme="light"] .field select option{background:rgba(226,232,240,.95);color:var(--ink)}
     .actions{display:flex;gap:8px;justify-content:flex-end;padding:0 16px 16px}
 
     /* chips */
@@ -171,6 +173,7 @@
       </div>
       <div class="header-actions">
         <button class="btn" id="themeToggle" type="button" onclick="toggleTheme()" title="Basculer le thème" aria-pressed="false">🌙 Mode sombre</button>
+        <button class="btn primary" onclick="openModal('diModal')">➕ Demande d’intervention</button>
         <button class="btn primary" onclick="openModal('otModal')">➕ Nouvel OT</button>
       </div>
     </header>
@@ -493,6 +496,61 @@
       <div class="actions">
         <button class="btn" onclick="closeModal('otModal')">Annuler</button>
         <button class="btn primary" onclick="closeModal('otModal')">Créer</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="diModal" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Créer une demande d’intervention">
+    <div class="sheet">
+      <header>
+        <div class="brand">
+          <div class="logo" style="width:28px;height:28px"></div>
+          <h1>Nouvelle demande d’intervention</h1>
+        </div>
+      </header>
+      <div class="content">
+        <div class="grid">
+          <div class="field">
+            <label>Date de la demande</label>
+            <input type="date"/>
+          </div>
+          <div class="field">
+            <label>Machine</label>
+            <input type="text" placeholder="Nom de la machine…"/>
+          </div>
+          <div class="field">
+            <label>Type</label>
+            <select>
+              <option value="correctif">Correctif</option>
+              <option value="palliatif">Palliatif</option>
+              <option value="qualite">Qualité</option>
+              <option value="securite">Sécurité</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Priorité</label>
+            <select>
+              <option value="P1">P1 — Urgent (machine à l’arrêt)</option>
+              <option value="P2">P2 — Moyen (défaut sans interruption)</option>
+              <option value="P3">P3 — Faible</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Machine à l’arrêt</label>
+            <select>
+              <option value="oui">Oui</option>
+              <option value="non">Non</option>
+            </select>
+          </div>
+          <div class="field" style="grid-column:1/-1">
+            <label>Travaux à effectuer</label>
+            <textarea rows="3" placeholder="Décrire les travaux demandés…"></textarea>
+          </div>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="btn" onclick="closeModal('diModal')">Annuler</button>
+        <button class="btn primary" onclick="closeModal('diModal')">Envoyer</button>
       </div>
     </div>
   </div>

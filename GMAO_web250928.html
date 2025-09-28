@@ -193,10 +193,7 @@
         <a href="#" data-target="parc" onclick="switchSection(event)">🏭 Parc machines</a>
         <a href="#" data-target="interventions" onclick="switchSection(event)">🛠️ Interventions</a>
         <a href="#" data-target="preventif" onclick="switchSection(event)">⏱️ Préventif</a>
-        <a href="#" data-target="stock" onclick="switchSection(event)">📦 Stock & pièces</a>
-        <a href="#" data-target="commandes" onclick="switchSection(event)">🧾 Commandes</a>
         <a href="#" data-target="contacts" onclick="switchSection(event)">📇 Contacts</a>
-        <a href="#" data-target="etiquettes" onclick="switchSection(event)">🏷️ Étiquettes / QR</a>
       </div>
     </nav>
 
@@ -416,47 +413,6 @@
         </table>
       </section>
 
-      <!-- Stock -->
-      <section id="stock" class="section" aria-label="Stock & pièces">
-        <div class="toolbar">
-          <input class="input" placeholder="Rechercher une pièce…" oninput="filterTable('tblStock', this.value, [1,2,3])">
-          <select class="input" onchange="filterStockAlerte(this.value)">
-            <option value="">Alerte stock</option>
-            <option value="seuil">Sous seuil</option>
-            <option value="ok">OK</option>
-          </select>
-          <button class="btn" onclick="openModal('pieceModal')">➕ Nouvelle pièce</button>
-        </div>
-        <table aria-label="Stock">
-          <thead><tr><th>Réf interne</th><th>Désignation</th><th>Code</th><th>Emplacement</th><th>Qté</th><th>Seuil</th><th>Coût (€)</th></tr></thead>
-          <tbody id="tblStock">
-            <tr data-qty="3" data-seuil="5"><td>PI-0001</td><td>Cartouche filtre</td><td>CF-45</td><td>Mag A1</td><td>3</td><td>5</td><td>48.50</td></tr>
-            <tr data-qty="22" data-seuil="10"><td>PI-0040</td><td>Courroie HTD</td><td>HTD-560</td><td>Mag C3</td><td>22</td><td>10</td><td>12.20</td></tr>
-            <tr data-qty="6" data-seuil="6"><td>PI-0099</td><td>Graisse SKF</td><td>SKF-G1</td><td>Atelier</td><td>6</td><td>6</td><td>9.80</td></tr>
-          </tbody>
-        </table>
-      </section>
-
-      <!-- Commandes -->
-      <section id="commandes" class="section" aria-label="Commandes">
-        <div class="toolbar">
-          <select class="input" onchange="filterTable('tblCmd', this.value, [5])">
-            <option value="">Statut</option>
-            <option>Demandée</option>
-            <option>Commandée</option>
-            <option>Réceptionnée</option>
-          </select>
-          <button class="btn" onclick="openModal('cmdModal')">➕ Nouvelle commande</button>
-        </div>
-        <table aria-label="Commandes">
-          <thead><tr><th>N°</th><th>Réf interne</th><th>Code</th><th>Désignation</th><th>Fournisseur</th><th>Statut</th><th>Montant (€)</th></tr></thead>
-          <tbody id="tblCmd">
-            <tr><td>CMD-2309-01</td><td>PI-0001</td><td>CF-45</td><td>Cartouche filtre</td><td>AirTech</td><td>Commandée</td><td>145.50</td></tr>
-            <tr><td>CMP-2309-15</td><td>PI-0040</td><td>HTD-560</td><td>Courroie HTD</td><td>MecaPro</td><td>Demandée</td><td>85.00</td></tr>
-          </tbody>
-        </table>
-      </section>
-
       <!-- Contacts -->
       <section id="contacts" class="section" aria-label="Contacts">
         <div class="toolbar">
@@ -472,14 +428,6 @@
         </table>
       </section>
 
-      <!-- Étiquettes -->
-      <section id="etiquettes" class="section" aria-label="Étiquettes">
-        <div class="toolbar">
-          <input class="input" placeholder="Code / Réf…" oninput="renderLabels(this.value)">
-          <button class="btn" onclick="window.print()">🖨️ Imprimer</button>
-        </div>
-        <div id="labels" class="grid"></div>
-      </section>
     </main>
   </div>
 
@@ -561,8 +509,6 @@
   </div>
 
   <div class="modal" id="equipModal" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Ajouter un équipement"><div class="sheet"><header><div class="brand"><div class="logo" style="width:28px;height:28px"></div><h1>Ajouter équipement</h1></div></header><div class="content"><div class="grid"><div class="field"><label for="equip-zone">Zone</label><input id="equip-zone" type="text" placeholder="Zone de l'équipement"></div><div class="field"><label for="equip-machine">Machine</label><input id="equip-machine" type="text" placeholder="Nom de la machine"></div><div class="field"><label for="equip-fabricant">Fabricant</label><input id="equip-fabricant" type="text" placeholder="Fabricant"></div><div class="field"><label for="equip-modele">Modèle</label><input id="equip-modele" type="text" placeholder="Référence ou modèle"></div><div class="field"><label for="equip-serial">Numéro de série</label><input id="equip-serial" type="text" placeholder="Numéro de série"></div><div class="field"><label for="equip-annee">Année</label><input id="equip-annee" type="number" inputmode="numeric" min="1900" max="2100" placeholder="Année de mise en service"></div></div></div><div class="actions"><button class="btn" onclick="closeModal('equipModal')">Fermer</button><button class="btn primary" onclick="closeModal('equipModal')">Enregistrer</button></div></div></div>
-  <div class="modal" id="pieceModal" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Créer une pièce"><div class="sheet"><header><div class="brand"><div class="logo" style="width:28px;height:28px"></div><h1>Nouvelle pièce</h1></div></header><div class="content"><div class="grid"><div class="field"><label>Réf interne</label><input></div><div class="field"><label>Désignation</label><input></div><div class="field"><label>Code</label><input></div><div class="field"><label>Emplacement</label><input></div><div class="field"><label>Seuil</label><input type="number"></div><div class="field"><label>Coût (€)</label><input type="number" step="0.01"></div></div></div><div class="actions"><button class="btn" onclick="closeModal('pieceModal')">Fermer</button><button class="btn primary" onclick="closeModal('pieceModal')">Enregistrer</button></div></div></div>
-  <div class="modal" id="cmdModal" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Créer une commande"><div class="sheet"><header><div class="brand"><div class="logo" style="width:28px;height:28px"></div><h1>Nouvelle commande</h1></div></header><div class="content"><div class="grid"><div class="field"><label>Fournisseur</label><input></div><div class="field"><label>Réf interne</label><input></div><div class="field"><label>Code</label><input></div><div class="field"><label>Statut</label><select><option>Demandée</option><option>Commandée</option><option>Réceptionnée</option></select></div><div class="field"><label>Montant (€)</label><input type="number" step="0.01"></div></div></div><div class="actions"><button class="btn" onclick="closeModal('cmdModal')">Fermer</button><button class="btn primary" onclick="closeModal('cmdModal')">Enregistrer</button></div></div></div>
   <div class="modal" id="contactModal" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Créer un contact"><div class="sheet"><header><div class="brand"><div class="logo" style="width:28px;height:28px"></div><h1>Nouveau contact</h1></div></header><div class="content"><div class="grid"><div class="field"><label>Entreprise</label><input></div><div class="field"><label>Activité</label><input></div><div class="field"><label>Contact</label><input></div><div class="field"><label>Email</label><input type="email"></div><div class="field"><label>Téléphone</label><input></div></div></div><div class="actions"><button class="btn" onclick="closeModal('contactModal')">Fermer</button><button class="btn primary" onclick="closeModal('contactModal')">Enregistrer</button></div></div></div>
   <div class="modal" id="planModal" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Générer des OT préventifs"><div class="sheet"><header><div class="brand"><div class="logo" style="width:28px;height:28px"></div><h1>Générer OT préventifs</h1></div></header><div class="content"><p>Sélectionner l'horizon de planification et la périodicité.</p><div class="grid"><div class="field"><label>Horizon (jours)</label><input type="number" value="30"></div><div class="field"><label>Inclure retard</label><select><option>Oui</option><option>Non</option></select></div></div></div><div class="actions"><button class="btn" onclick="closeModal('planModal')">Fermer</button><button class="btn primary" onclick="closeModal('planModal')">Générer</button></div></div></div>
   <div class="modal" id="reportModal" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Exporter les données"><div class="sheet"><header><div class="brand"><div class="logo" style="width:28px;height:28px"></div><h1>Export rapide</h1></div></header><div class="content"><p>Ce prototype exportera un CSV fictif. À connecter à votre backend plus tard.</p></div><div class="actions"><button class="btn" onclick="closeModal('reportModal')">Fermer</button><button class="btn primary" onclick="fakeExport()">Exporter CSV</button></div></div></div>
@@ -705,50 +651,6 @@
       }
     }
 
-    function filterStockAlerte(val){
-      const rows = document.getElementById('tblStock').rows;
-      for(const tr of rows){
-        const q = parseFloat(tr.getAttribute('data-qty'));
-        const s = parseFloat(tr.getAttribute('data-seuil'));
-        const sousSeuil = q < s;
-        if(!val) tr.style.display='';
-        else if(val==='seuil') tr.style.display = sousSeuil ? '' : 'none';
-        else if(val==='ok') tr.style.display = sousSeuil ? 'none' : '';
-      }
-    }
-
-    function renderLabels(filter){
-      const data = [
-        {code:'EQ-001', ref:'PI-0001', text:'DMU 70 – Broche'},
-        {code:'EQ-014', ref:'PI-0040', text:'Tornos – Hydraulique'},
-        {code:'EQ-022', ref:'PI-0099', text:'KAESER – Filtration'}
-      ];
-      const root = document.getElementById('labels');
-      root.innerHTML='';
-      data.filter(d=>!filter || JSON.stringify(d).toLowerCase().includes(filter.toLowerCase()))
-          .forEach(d=>{
-        const card = document.createElement('div');
-        card.className='card';
-        card.style.padding='12px';
-        card.innerHTML = `
-          <div style="display:flex;justify-content:space-between;align-items:center;gap:12px">
-            <div>
-              <div style="font-weight:800">${d.code}</div>
-              <div style="font-size:12px;color:var(--ink-dim)">${d.text}</div>
-            </div>
-            <div style="background:white;color:black;padding:8px;border-radius:8px">
-              <div style="font:12px/1 monospace">${d.ref}</div>
-              <svg width="120" height="40" viewBox="0 0 120 40">
-                <rect width="120" height="40" fill="#fff"/>
-                <!-- faux code-barres -->
-                ${Array.from({length:40}).map((_,i)=>`<rect x="${i*3}" y="5" width="1" height="30" fill="#000" opacity="${(i%3)/2}" />`).join('')}
-              </svg>
-            </div>
-          </div>`;
-        root.appendChild(card);
-      });
-    }
-
     function fakeExport(){
       const rows = [['OT','Machine','Priorité','Statut','Prévu'], ...Array.from(document.querySelectorAll('#tblOT tr')).map(tr=>[...tr.cells].slice(0,5).map(td=>td.innerText.trim()))];
       const csv = rows.map(r=>r.join(';')).join('\n');
@@ -790,7 +692,6 @@
         }
       });
 
-      renderLabels('');
     }
 
     if(document.readyState === 'loading'){

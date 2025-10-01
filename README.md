@@ -11,3 +11,5 @@ option :
   
 site Gillet : Liaison embareur a sa machine
 site STSI : liaison robot doga a sa machine
+
+BASE DE DONNEES : créer fichier excel avec les différentes infos pour commencer a éditer le code du fichier.db

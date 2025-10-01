@@ -9,3 +9,6 @@ Site preview = cadre avec site 1 et site 2.
 option : 
 - proposer prendre en photo
 - ajout documents pdf, photos, texte
+
+site Gillet : Liaison embareur a sa machine
+site STSI : liaison robot doga a sa machine

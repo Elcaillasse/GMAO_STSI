@@ -1,0 +1,45 @@
+Explication colonne par colonne
+
+1. Entité
+C’est le nom de ta table.
+Exemple : Utilisateur, Machine, Intervention, Pièce.
+Mets le même nom plusieurs fois si tu décris plusieurs attributs de la même entité.
+
+2. Attribut
+C’est le champ (colonne) de ta table.
+Exemple pour Utilisateur : id, nom, email.
+Exemple pour Machine : id, nom, localisation.
+
+3. Type SQL
+Choisis le type en fonction des données :
+INT → nombres entiers
+DECIMAL(10,2) → montants (prix, coût)
+VARCHAR → texte court
+TEXT → texte long
+DATE → date (ex: mise en service, intervention)
+BOOLEAN → vrai/faux
+
+4. Taille
+Indique une taille si nécessaire (ex : VARCHAR → 100).
+Si ce n’est pas applicable (INT, TEXT, DATE), laisse vide.
+
+5. Clé
+Les contraintes de ton champ :
+PK → clé primaire (identifiant unique)
+FK → clé étrangère (relation avec une autre table)
+UNIQUE → valeur unique (ex: email)
+Tu peux combiner si besoin (ex: PK, FK).
+
+6. Nullable
+Est-ce que le champ peut être vide ?
+NON → obligatoire
+OUI → optionnel
+
+7. Relation
+Si tu mets FK, précise vers quoi ça pointe : Table.Attribut.
+Exemple : dans Intervention, l’attribut machine_id → Machine.id.
+
+8. Commentaire
+Juste pour toi, pour documenter.
+Exemple : “Adresse email du technicien”.
+

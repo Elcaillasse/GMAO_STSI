@@ -1,0 +1,69 @@
+Entités principales pour une GMAO
+
+1. Utilisateur
+id (PK)
+nom
+prénom
+email (UNIQUE)
+téléphone
+rôle (admin, technicien, manager, demandeur)
+mot_de_passe (si tu gères l’authentification toi-même)
+
+2. Machine / Équipement
+id (PK)
+nom
+code_interne (ex: numéro d’inventaire)
+localisation (ex: atelier, bâtiment)
+date_mise_en_service
+état (en service, en panne, en maintenance)
+description
+
+3. Intervention
+id (PK)
+machine_id (FK → Machine.id)
+utilisateur_id (FK → Utilisateur.id, technicien affecté)
+date_intervention
+type (préventive, corrective)
+statut (planifiée, en cours, terminée)
+description
+durée_estimee
+durée_reelle
+coût
+
+4. Demande d’intervention (optionnel mais fréquent)
+id (PK)
+demandeur_id (FK → Utilisateur.id)
+machine_id (FK → Machine.id)
+date_demande
+description
+priorité (basse, moyenne, haute, critique)
+statut (nouvelle, validée, rejetée, en attente)
+
+5. Pièce détachée
+id (PK)
+référence (UNIQUE)
+désignation
+stock
+stock_min
+fournisseur_id (FK → Fournisseur.id)
+prix_unitaire
+
+6. Intervention_Pièce (table de liaison n,n)
+intervention_id (FK → Intervention.id)
+piece_id (FK → Piece.id)
+quantite
+
+7. Fournisseur
+id (PK)
+nom
+contact
+téléphone
+email
+adresse
+
+8. Plan de maintenance préventive (si tu veux planifier automatiquement)
+id (PK)
+machine_id (FK → Machine.id)
+type (hebdomadaire, mensuel, annuel, compteur horaire)
+fréquence (nombre de jours/heures)
+description

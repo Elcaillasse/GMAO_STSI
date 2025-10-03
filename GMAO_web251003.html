@@ -583,19 +583,19 @@
             <label>Travaux à effectuer</label>
             <textarea rows="3" placeholder="Décrire les travaux demandés…"></textarea>
           </div>
-          <div class="field attachments" style="grid-column:1/-1">
+          <div class="field attachments" style="grid-column:1/-1" data-attachment-context="di" data-camera-open-label="📷 Prendre une photo" data-camera-close-label="✖️ Fermer la caméra">
             <label>Pièces jointes</label>
             <div class="attachment-actions">
-              <input id="diAttachmentInput" type="file" accept="image/*,.pdf,.doc,.docx,.txt,.xlsx,.xls,.ppt,.pptx" multiple hidden>
-              <button type="button" class="btn" id="diUploadButton">📎 Ajouter un document</button>
-              <button type="button" class="btn" id="diCameraButton" aria-expanded="false">📷 Prendre une photo</button>
+              <input class="attachment-input" type="file" accept="image/*,.pdf,.doc,.docx,.txt,.xlsx,.xls,.ppt,.pptx" multiple hidden>
+              <button type="button" class="btn attachment-upload">📎 Ajouter un document</button>
+              <button type="button" class="btn attachment-camera" aria-expanded="false" aria-controls="diCameraPreview">📷 Prendre une photo</button>
             </div>
-            <ul id="diAttachmentList" class="attachment-list"></ul>
+            <ul class="attachment-list"></ul>
             <div class="camera-preview" id="diCameraPreview" hidden>
-              <video id="diCameraVideo" autoplay playsinline></video>
+              <video autoplay playsinline></video>
               <div class="camera-actions">
-                <button type="button" class="btn primary" id="diCaptureBtn">📸 Capturer</button>
-                <button type="button" class="btn" id="diCloseCameraBtn">✖️ Fermer la caméra</button>
+                <button type="button" class="btn primary attachment-capture">📸 Capturer</button>
+                <button type="button" class="btn attachment-close-camera">✖️ Fermer la caméra</button>
               </div>
             </div>
           </div>
@@ -656,19 +656,19 @@
             <label for="interventionDescription">Intervention réalisée</label>
             <textarea id="interventionDescription" rows="4" placeholder="Décrire les actions menées…"></textarea>
           </div>
-          <div class="field attachments" style="grid-column:1/-1">
+          <div class="field attachments" style="grid-column:1/-1" data-attachment-context="intervention" data-camera-open-label="📷 Prendre une photo" data-camera-close-label="✖️ Fermer la caméra">
             <label>Pièces jointes</label>
             <div class="attachment-actions">
-              <input id="interventionAttachmentInput" type="file" accept="image/*,.pdf,.doc,.docx,.txt,.xlsx,.xls,.ppt,.pptx" multiple hidden>
-              <button type="button" class="btn" id="interventionUploadButton">📎 Ajouter un document</button>
-              <button type="button" class="btn" id="interventionCameraButton" aria-expanded="false">📷 Prendre une photo</button>
+              <input class="attachment-input" type="file" accept="image/*,.pdf,.doc,.docx,.txt,.xlsx,.xls,.ppt,.pptx" multiple hidden>
+              <button type="button" class="btn attachment-upload">📎 Ajouter un document</button>
+              <button type="button" class="btn attachment-camera" aria-expanded="false" aria-controls="interventionCameraPreview">📷 Prendre une photo</button>
             </div>
-            <ul id="interventionAttachmentList" class="attachment-list"></ul>
+            <ul class="attachment-list"></ul>
             <div class="camera-preview" id="interventionCameraPreview" hidden>
-              <video id="interventionCameraVideo" autoplay playsinline></video>
+              <video autoplay playsinline></video>
               <div class="camera-actions">
-                <button type="button" class="btn primary" id="interventionCaptureBtn">📸 Capturer</button>
-                <button type="button" class="btn" id="interventionCloseCameraBtn">✖️ Fermer la caméra</button>
+                <button type="button" class="btn primary attachment-capture">📸 Capturer</button>
+                <button type="button" class="btn attachment-close-camera">✖️ Fermer la caméra</button>
               </div>
             </div>
           </div>
@@ -741,36 +741,42 @@
     let activeModal = null;
     let lastFocusedElement = null;
     let currentInterventionRow = null;
-    const ATTACHMENT_CONTEXTS = {
-      di:{
-        inputId:'diAttachmentInput',
-        uploadButtonId:'diUploadButton',
-        listId:'diAttachmentList',
-        cameraButtonId:'diCameraButton',
-        previewId:'diCameraPreview',
-        videoId:'diCameraVideo',
-        captureButtonId:'diCaptureBtn',
-        closeCameraId:'diCloseCameraBtn',
-        cameraOpenLabel:'📷 Prendre une photo',
-        cameraCloseLabel:'📷 Fermer la caméra'
-      },
-      intervention:{
-        inputId:'interventionAttachmentInput',
-        uploadButtonId:'interventionUploadButton',
-        listId:'interventionAttachmentList',
-        cameraButtonId:'interventionCameraButton',
-        previewId:'interventionCameraPreview',
-        videoId:'interventionCameraVideo',
-        captureButtonId:'interventionCaptureBtn',
-        closeCameraId:'interventionCloseCameraBtn',
-        cameraOpenLabel:'📷 Prendre une photo',
-        cameraCloseLabel:'📷 Fermer la caméra'
+    const attachmentContexts = {};
+    const attachmentState = {};
+
+    function registerAttachmentContext(container){
+      if(!container) return null;
+      const context = container.dataset.attachmentContext;
+      if(!context) return null;
+      const config = {
+        container,
+        input:container.querySelector('.attachment-input'),
+        uploadButton:container.querySelector('.attachment-upload'),
+        list:container.querySelector('.attachment-list'),
+        cameraButton:container.querySelector('.attachment-camera'),
+        preview:container.querySelector('.camera-preview'),
+        video:container.querySelector('.camera-preview video'),
+        captureButton:container.querySelector('.attachment-capture'),
+        closeCameraButton:container.querySelector('.attachment-close-camera'),
+        cameraOpenLabel:container.dataset.cameraOpenLabel || '📷 Prendre une photo',
+        cameraCloseLabel:container.dataset.cameraCloseLabel || '✖️ Fermer la caméra'
+      };
+      if(config.cameraButton){
+        config.cameraButton.textContent = config.cameraOpenLabel;
+        config.cameraButton.setAttribute('aria-expanded','false');
       }
-    };
-    const attachmentState = {
-      di:{files:[], stream:null},
-      intervention:{files:[], stream:null}
-    };
+      if(config.cameraButton && config.preview){
+        if(!config.preview.id){
+          config.preview.id = `${context}-camera-preview`;
+        }
+        config.cameraButton.setAttribute('aria-controls', config.preview.id);
+      }
+      attachmentContexts[context] = config;
+      if(!attachmentState[context]){
+        attachmentState[context] = {files:[], stream:null};
+      }
+      return config;
+    }
 
     function switchSection(e){
       e.preventDefault();
@@ -848,7 +854,7 @@
     }
 
     function getAttachmentConfig(context){
-      return ATTACHMENT_CONTEXTS[context];
+      return attachmentContexts[context] || null;
     }
 
     function addAttachments(context, files){
@@ -863,7 +869,7 @@
       const cfg = getAttachmentConfig(context);
       const state = attachmentState[context];
       if(!cfg || !state) return;
-      const list = document.getElementById(cfg.listId);
+      const list = cfg.list;
       if(!list) return;
       list.innerHTML = '';
       if(!state.files.length){
@@ -914,9 +920,9 @@
       const cfg = getAttachmentConfig(context);
       const state = attachmentState[context];
       if(!cfg || !state) return;
-      const preview = document.getElementById(cfg.previewId);
-      const video = document.getElementById(cfg.videoId);
-      const toggleBtn = document.getElementById(cfg.cameraButtonId);
+      const preview = cfg.preview;
+      const video = cfg.video;
+      const toggleBtn = cfg.cameraButton;
       if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
         alert('La capture depuis la caméra n’est pas supportée sur cet appareil.');
         return;
@@ -943,9 +949,9 @@
       const cfg = getAttachmentConfig(context);
       const state = attachmentState[context];
       if(!cfg || !state) return;
-      const preview = document.getElementById(cfg.previewId);
-      const video = document.getElementById(cfg.videoId);
-      const toggleBtn = document.getElementById(cfg.cameraButtonId);
+      const preview = cfg.preview;
+      const video = cfg.video;
+      const toggleBtn = cfg.cameraButton;
       if(state.stream){
         state.stream.getTracks().forEach(track=>track.stop());
         state.stream = null;
@@ -966,7 +972,7 @@
       const cfg = getAttachmentConfig(context);
       const state = attachmentState[context];
       if(!cfg || !state) return;
-      const video = document.getElementById(cfg.videoId);
+      const video = cfg.video;
       if(!video || !state.stream || video.readyState < 2){
         return;
       }
@@ -997,7 +1003,7 @@
       const state = attachmentState[context];
       if(!cfg || !state) return;
       state.files = [];
-      const input = document.getElementById(cfg.inputId);
+      const input = cfg.input;
       if(input){
         input.value = '';
       }
@@ -1012,12 +1018,12 @@
     function setupAttachmentZone(context){
       const cfg = getAttachmentConfig(context);
       if(!cfg) return;
-      const input = document.getElementById(cfg.inputId);
-      const uploadButton = document.getElementById(cfg.uploadButtonId);
-      const list = document.getElementById(cfg.listId);
-      const cameraButton = document.getElementById(cfg.cameraButtonId);
-      const captureButton = document.getElementById(cfg.captureButtonId);
-      const closeCameraBtn = document.getElementById(cfg.closeCameraId);
+      const input = cfg.input;
+      const uploadButton = cfg.uploadButton;
+      const list = cfg.list;
+      const cameraButton = cfg.cameraButton;
+      const captureButton = cfg.captureButton;
+      const closeCameraBtn = cfg.closeCameraButton;
 
       if(uploadButton && input){
         uploadButton.addEventListener('click', ()=>input.click());
@@ -1208,8 +1214,13 @@
 
       setupInterventionRows();
 
-      setupAttachmentZone('di');
-      setupAttachmentZone('intervention');
+      document.querySelectorAll('.attachments[data-attachment-context]').forEach(container=>{
+        const context = container.dataset.attachmentContext;
+        if(!context) return;
+        if(registerAttachmentContext(container)){
+          setupAttachmentZone(context);
+        }
+      });
 
       document.addEventListener('keydown', evt=>{
         if(evt.key === 'Escape' && activeModal){

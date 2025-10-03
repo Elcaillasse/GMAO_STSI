@@ -113,12 +113,12 @@
     :root[data-theme="light"] .toolbar select option{background:rgba(226,232,240,.95);color:var(--ink)}
 
     /* modal */
-    .modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.55);padding:24px}
+    .modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.55);padding:24px;overflow:auto}
     .modal.open{display:flex}
-    .modal .sheet{width:min(720px,100%);background:var(--panel);border:1px solid rgba(255,255,255,.1);border-radius:18px;box-shadow:var(--shadow)}
+    .modal .sheet{width:min(720px,100%);background:var(--panel);border:1px solid rgba(255,255,255,.1);border-radius:18px;box-shadow:var(--shadow);max-height:calc(100vh - 48px);overflow:auto;display:flex;flex-direction:column}
     :root[data-theme="light"] .modal .sheet{border:1px solid rgba(15,23,42,.12)}
     .modal header{grid-column:auto;background:transparent;border:0;box-shadow:none;padding:16px}
-    .modal .content{padding:16px}
+    .modal .content{padding:16px;overflow:auto;flex:1 1 auto}
     .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
     .field{display:flex;flex-direction:column;gap:6px}
     .field label{font-size:12px;color:var(--ink-dim)}
@@ -144,8 +144,10 @@
     .attachment-empty{font-size:12px;color:var(--ink-dim)}
     .camera-preview{margin-top:12px;display:flex;flex-direction:column;gap:12px;background:rgba(15,23,42,.6);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:12px}
     :root[data-theme="light"] .camera-preview{background:rgba(226,232,240,.6);border:1px solid rgba(148,163,184,.4)}
-    .camera-preview video{width:100%;max-height:240px;border-radius:12px;background:black}
+    .camera-preview video{width:100%;max-height:180px;border-radius:12px;background:black}
     .camera-actions{display:flex;flex-wrap:wrap;gap:8px}
+    .attachment-link{color:var(--accent);text-decoration:underline;text-decoration-thickness:1px;text-decoration-color:rgba(167,139,250,.6);word-break:break-word;}
+    .attachment-link:hover{color:var(--brand)}
 
     /* chips */
     .chip{border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);padding:6px 10px;border-radius:999px;font-size:12px}
@@ -753,7 +755,8 @@
         videoId:'diCameraVideo',
         captureButtonId:'diCaptureBtn',
         closeCameraButtonId:'diCloseCameraBtn',
-        emptyText:'Aucune pièce jointe pour le moment.'
+        emptyText:'Aucune pièce jointe pour le moment.',
+        objectUrls:[]
       },
       intervention:{
         attachments:[],
@@ -766,7 +769,8 @@
         videoId:'interventionCameraVideo',
         captureButtonId:'interventionCaptureBtn',
         closeCameraButtonId:'interventionCloseCameraBtn',
-        emptyText:'Aucune pièce jointe pour le moment.'
+        emptyText:'Aucune pièce jointe pour le moment.',
+        objectUrls:[]
       }
     };
 
@@ -862,6 +866,10 @@
       const list = document.getElementById(ctx.listId);
       if(!list) return;
       list.innerHTML = '';
+      if(Array.isArray(ctx.objectUrls) && ctx.objectUrls.length){
+        ctx.objectUrls.forEach(url=>URL.revokeObjectURL(url));
+        ctx.objectUrls = [];
+      }
       if(!ctx.attachments.length){
         const empty = document.createElement('li');
         empty.className = 'attachment-empty';
@@ -874,10 +882,29 @@
         li.className = 'attachment-item';
         const info = document.createElement('div');
         info.className = 'attachment-info';
-        const name = document.createElement('span');
-        name.className = 'attachment-name';
-        name.textContent = file.name || `Photo ${index+1}.jpg`;
-        info.appendChild(name);
+        const nameText = file.name || `Photo ${index+1}.jpg`;
+        const canPreview = typeof Blob !== 'undefined' && file instanceof Blob;
+        const href = canPreview && typeof URL !== 'undefined' ? URL.createObjectURL(file) : '';
+        if(href){
+          ctx.objectUrls.push(href);
+        }
+        let titleEl;
+        if(href){
+          const link = document.createElement('a');
+          link.className = 'attachment-name attachment-link';
+          link.textContent = nameText;
+          link.href = href;
+          link.target = '_blank';
+          link.rel = 'noopener';
+          link.setAttribute('title', `Ouvrir ${nameText} dans un nouvel onglet`);
+          titleEl = link;
+        }else{
+          const span = document.createElement('span');
+          span.className = 'attachment-name';
+          span.textContent = nameText;
+          titleEl = span;
+        }
+        info.appendChild(titleEl);
         if(file.size){
           const meta = document.createElement('span');
           meta.className = 'attachment-meta';
@@ -889,7 +916,7 @@
         remove.type = 'button';
         remove.className = 'attachment-remove';
         remove.setAttribute('data-remove-index', index);
-        remove.setAttribute('aria-label', `Retirer ${name.textContent}`);
+        remove.setAttribute('aria-label', `Retirer ${nameText}`);
         remove.textContent = '✖️';
         li.appendChild(info);
         li.appendChild(remove);
@@ -991,6 +1018,10 @@
       const input = document.getElementById(ctx.inputId);
       if(input){
         input.value = '';
+      }
+      if(Array.isArray(ctx.objectUrls) && ctx.objectUrls.length){
+        ctx.objectUrls.forEach(url=>URL.revokeObjectURL(url));
+        ctx.objectUrls = [];
       }
       renderAttachments(contextKey);
       closeCamera(contextKey);

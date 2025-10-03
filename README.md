@@ -4,8 +4,11 @@ projet remplacement de la GMAO actuel sur excel par une GMAO html
 Site preview = cadre avec site 1 et site 2.
 
 *RETIRER bouton nouvelle OT onglet intervention*
-*Ajouter fenetre pop-up quand on clic sur une intervention dans l'onglet intervention*
+
+*Ajouter fenetre pop-up quand on clic sur une intervention dans l'onglet intervention* = création OK, affiné la page : priorité P1,P2,P3 = priorité pop-up DI. Idem pour le type d'intervention. meme les memes textes.
+
 *ajouter option Amélioration dans le type d'inervention*
+
 *paliatif (=réparation provisoire) validé = création DI correctif*
 
 à ajouter : 

@@ -656,6 +656,22 @@
             <label for="interventionDescription">Intervention réalisée</label>
             <textarea id="interventionDescription" rows="4" placeholder="Décrire les actions menées…"></textarea>
           </div>
+          <div class="field attachments" style="grid-column:1/-1">
+            <label>Pièces jointes</label>
+            <div class="attachment-actions">
+              <input id="interventionAttachmentInput" type="file" accept="image/*,.pdf,.doc,.docx,.txt,.xlsx,.xls,.ppt,.pptx" multiple hidden>
+              <button type="button" class="btn" id="interventionUploadButton">📎 Ajouter un fichier</button>
+              <button type="button" class="btn" id="interventionCameraButton" aria-expanded="false">📷 Prendre une photo</button>
+            </div>
+            <ul id="interventionAttachmentList" class="attachment-list"></ul>
+            <div class="camera-preview" id="interventionCameraPreview" hidden>
+              <video id="interventionCameraVideo" autoplay playsinline></video>
+              <div class="camera-actions">
+                <button type="button" class="btn primary" id="interventionCaptureBtn">📸 Capturer</button>
+                <button type="button" class="btn" id="interventionCloseCameraBtn">✖️ Fermer la caméra</button>
+              </div>
+            </div>
+          </div>
           <div class="field">
             <label for="interventionDuree">Temps d’intervention (h)</label>
             <input id="interventionDuree" type="number" min="0" step="0.25" placeholder="0">
@@ -725,8 +741,34 @@
     let activeModal = null;
     let lastFocusedElement = null;
     let currentInterventionRow = null;
-    let diAttachments = [];
-    let diCameraStream = null;
+    const ATTACHMENT_CONTEXTS = {
+      di:{
+        attachments:[],
+        cameraStream:null,
+        inputId:'diAttachmentInput',
+        uploadButtonId:'diUploadButton',
+        listId:'diAttachmentList',
+        cameraButtonId:'diCameraButton',
+        previewId:'diCameraPreview',
+        videoId:'diCameraVideo',
+        captureButtonId:'diCaptureBtn',
+        closeCameraButtonId:'diCloseCameraBtn',
+        emptyText:'Aucune pièce jointe pour le moment.'
+      },
+      intervention:{
+        attachments:[],
+        cameraStream:null,
+        inputId:'interventionAttachmentInput',
+        uploadButtonId:'interventionUploadButton',
+        listId:'interventionAttachmentList',
+        cameraButtonId:'interventionCameraButton',
+        previewId:'interventionCameraPreview',
+        videoId:'interventionCameraVideo',
+        captureButtonId:'interventionCaptureBtn',
+        closeCameraButtonId:'interventionCloseCameraBtn',
+        emptyText:'Aucune pièce jointe pour le moment.'
+      }
+    };
 
     function switchSection(e){
       e.preventDefault();
@@ -783,6 +825,7 @@
       modal.setAttribute('aria-hidden','true');
       if(id === 'interventionModal'){
         currentInterventionRow = null;
+        resetAttachmentContext('intervention');
       }else if(id === 'diModal'){
         resetDemandModal();
       }
@@ -802,24 +845,31 @@
       }
     }
 
-    function addAttachments(files){
-      if(!files || !files.length) return;
-      diAttachments = diAttachments.concat(files);
-      renderAttachments();
+    function getAttachmentContext(key){
+      return ATTACHMENT_CONTEXTS[key];
     }
 
-    function renderAttachments(){
-      const list = document.getElementById('diAttachmentList');
+    function addAttachments(contextKey, files){
+      const ctx = getAttachmentContext(contextKey);
+      if(!ctx || !files || !files.length) return;
+      ctx.attachments = ctx.attachments.concat(files);
+      renderAttachments(contextKey);
+    }
+
+    function renderAttachments(contextKey){
+      const ctx = getAttachmentContext(contextKey);
+      if(!ctx) return;
+      const list = document.getElementById(ctx.listId);
       if(!list) return;
       list.innerHTML = '';
-      if(!diAttachments.length){
+      if(!ctx.attachments.length){
         const empty = document.createElement('li');
         empty.className = 'attachment-empty';
-        empty.textContent = 'Aucune pièce jointe pour le moment.';
+        empty.textContent = ctx.emptyText;
         list.appendChild(empty);
         return;
       }
-      diAttachments.forEach((file,index)=>{
+      ctx.attachments.forEach((file,index)=>{
         const li = document.createElement('li');
         li.className = 'attachment-item';
         const info = document.createElement('div');
@@ -847,24 +897,28 @@
       });
     }
 
-    function removeAttachment(index){
-      if(index<0 || index>=diAttachments.length) return;
-      diAttachments.splice(index,1);
-      renderAttachments();
+    function removeAttachment(contextKey, index){
+      const ctx = getAttachmentContext(contextKey);
+      if(!ctx) return;
+      if(index<0 || index>=ctx.attachments.length) return;
+      ctx.attachments.splice(index,1);
+      renderAttachments(contextKey);
     }
 
-    async function openCamera(){
-      const preview = document.getElementById('diCameraPreview');
-      const video = document.getElementById('diCameraVideo');
-      const toggleBtn = document.getElementById('diCameraButton');
+    async function openCamera(contextKey){
+      const ctx = getAttachmentContext(contextKey);
+      if(!ctx) return;
+      const preview = document.getElementById(ctx.previewId);
+      const video = document.getElementById(ctx.videoId);
+      const toggleBtn = document.getElementById(ctx.cameraButtonId);
       if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
         alert('La capture depuis la caméra n’est pas supportée sur cet appareil.');
         return;
       }
       try{
-        diCameraStream = await navigator.mediaDevices.getUserMedia({video:true});
+        ctx.cameraStream = await navigator.mediaDevices.getUserMedia({video:true});
         if(video){
-          video.srcObject = diCameraStream;
+          video.srcObject = ctx.cameraStream;
         }
         if(preview){
           preview.hidden = false;
@@ -879,13 +933,15 @@
       }
     }
 
-    function closeCamera(){
-      const preview = document.getElementById('diCameraPreview');
-      const video = document.getElementById('diCameraVideo');
-      const toggleBtn = document.getElementById('diCameraButton');
-      if(diCameraStream){
-        diCameraStream.getTracks().forEach(track=>track.stop());
-        diCameraStream = null;
+    function closeCamera(contextKey){
+      const ctx = getAttachmentContext(contextKey);
+      if(!ctx) return;
+      const preview = document.getElementById(ctx.previewId);
+      const video = document.getElementById(ctx.videoId);
+      const toggleBtn = document.getElementById(ctx.cameraButtonId);
+      if(ctx.cameraStream){
+        ctx.cameraStream.getTracks().forEach(track=>track.stop());
+        ctx.cameraStream = null;
       }
       if(video){
         video.srcObject = null;
@@ -899,19 +955,21 @@
       }
     }
 
-    function capturePhoto(){
-      const video = document.getElementById('diCameraVideo');
-      if(!video || !diCameraStream || video.readyState < 2){
+    function capturePhoto(contextKey){
+      const ctx = getAttachmentContext(contextKey);
+      if(!ctx) return;
+      const video = document.getElementById(ctx.videoId);
+      if(!video || !ctx.cameraStream || video.readyState < 2){
         return;
       }
       const canvas = document.createElement('canvas');
       canvas.width = video.videoWidth;
       canvas.height = video.videoHeight;
-      const ctx = canvas.getContext('2d');
-      if(!ctx){
+      const context2d = canvas.getContext('2d');
+      if(!context2d){
         return;
       }
-      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      context2d.drawImage(video, 0, 0, canvas.width, canvas.height);
       canvas.toBlob(blob=>{
         if(!blob) return;
         const timestamp = new Date().toISOString().replace(/[:.]/g,'-');
@@ -922,18 +980,86 @@
           file = blob;
           file.name = `photo-${timestamp}.jpg`;
         }
-        addAttachments([file]);
+        addAttachments(contextKey, [file]);
       }, 'image/jpeg', 0.92);
     }
 
-    function resetDemandModal(){
-      diAttachments = [];
-      const input = document.getElementById('diAttachmentInput');
+    function resetAttachmentContext(contextKey){
+      const ctx = getAttachmentContext(contextKey);
+      if(!ctx) return;
+      ctx.attachments = [];
+      const input = document.getElementById(ctx.inputId);
       if(input){
         input.value = '';
       }
-      renderAttachments();
-      closeCamera();
+      renderAttachments(contextKey);
+      closeCamera(contextKey);
+    }
+
+    function resetDemandModal(){
+      resetAttachmentContext('di');
+    }
+
+    function setupAttachmentHandlers(contextKey){
+      const ctx = getAttachmentContext(contextKey);
+      if(!ctx) return;
+      const input = document.getElementById(ctx.inputId);
+      const uploadButton = document.getElementById(ctx.uploadButtonId);
+      const list = document.getElementById(ctx.listId);
+      const cameraButton = document.getElementById(ctx.cameraButtonId);
+      const captureButton = document.getElementById(ctx.captureButtonId);
+      const closeCameraBtn = document.getElementById(ctx.closeCameraButtonId);
+
+      if(uploadButton && input){
+        uploadButton.addEventListener('click', ()=>input.click());
+      }
+
+      if(input){
+        input.addEventListener('change', evt=>{
+          const files = Array.from(evt.target.files || []);
+          addAttachments(contextKey, files);
+          input.value = '';
+        });
+      }
+
+      if(list){
+        list.addEventListener('click', evt=>{
+          const btn = evt.target.closest('button[data-remove-index]');
+          if(btn){
+            evt.preventDefault();
+            const index = Number(btn.getAttribute('data-remove-index'));
+            removeAttachment(contextKey, index);
+          }
+        });
+      }
+
+      if(cameraButton){
+        cameraButton.addEventListener('click', evt=>{
+          evt.preventDefault();
+          const ctxRef = getAttachmentContext(contextKey);
+          if(ctxRef && ctxRef.cameraStream){
+            closeCamera(contextKey);
+          }else{
+            openCamera(contextKey);
+          }
+        });
+      }
+
+      if(captureButton){
+        captureButton.addEventListener('click', evt=>{
+          evt.preventDefault();
+          capturePhoto(contextKey);
+        });
+      }
+
+      if(closeCameraBtn){
+        closeCameraBtn.addEventListener('click', evt=>{
+          evt.preventDefault();
+          closeCamera(contextKey);
+        });
+      }
+
+      renderAttachments(contextKey);
     }
 
     // Simple global filter across visible table bodies
@@ -984,6 +1110,7 @@
     function openInterventionDetail(row){
       currentInterventionRow = row;
       const ds = row.dataset;
+      resetAttachmentContext('intervention');
       const fields = {
         ot:document.getElementById('interventionOt'),
         machine:document.getElementById('interventionMachine'),
@@ -1071,62 +1198,7 @@
 
       setupInterventionRows();
 
-      const attachmentInput = document.getElementById('diAttachmentInput');
-      const uploadButton = document.getElementById('diUploadButton');
-      const attachmentList = document.getElementById('diAttachmentList');
-      const cameraButton = document.getElementById('diCameraButton');
-      const captureButton = document.getElementById('diCaptureBtn');
-      const closeCameraBtn = document.getElementById('diCloseCameraBtn');
-
-      if(uploadButton && attachmentInput){
-        uploadButton.addEventListener('click', ()=>attachmentInput.click());
-      }
-
-      if(attachmentInput){
-        attachmentInput.addEventListener('change', evt=>{
-          const files = Array.from(evt.target.files || []);
-          addAttachments(files);
-          attachmentInput.value = '';
-        });
-      }
-
-      if(attachmentList){
-        attachmentList.addEventListener('click', evt=>{
-          const btn = evt.target.closest('button[data-remove-index]');
-          if(btn){
-            evt.preventDefault();
-            const index = Number(btn.getAttribute('data-remove-index'));
-            removeAttachment(index);
-          }
-        });
-      }
-
-      if(cameraButton){
-        cameraButton.addEventListener('click', evt=>{
-          evt.preventDefault();
-          if(diCameraStream){
-            closeCamera();
-          }else{
-            openCamera();
-          }
-        });
-      }
-
-      if(captureButton){
-        captureButton.addEventListener('click', evt=>{
-          evt.preventDefault();
-          capturePhoto();
-        });
-      }
-
-      if(closeCameraBtn){
-        closeCameraBtn.addEventListener('click', evt=>{
-          evt.preventDefault();
-          closeCamera();
-        });
-      }
-
-      renderAttachments();
+      ['di','intervention'].forEach(setupAttachmentHandlers);
 
       document.addEventListener('keydown', evt=>{
         if(evt.key === 'Escape' && activeModal){

@@ -99,6 +99,13 @@
     .status.ok{color:var(--ok)}
     .status.warn{color:var(--warn)}
     .status.bad{color:var(--bad)}
+    .detail-grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));margin:0}
+    .detail-item{background:var(--muted);padding:12px 14px;border-radius:12px;display:flex;flex-direction:column;gap:6px}
+    .detail-label{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-dim)}
+    .detail-value{font-size:16px;font-weight:600;color:var(--ink)}
+    .detail-note{white-space:pre-wrap}
+    .detail-item.detail-wide{grid-column:1/-1}
+    .detail-item .tag,.detail-item .status{align-self:flex-start}
     tbody tr.clickable{cursor:pointer;transition:background .2s ease,transform .2s ease}
     tbody tr.clickable:hover{background:rgba(167,139,250,.12);transform:translateY(-1px)}
     :root[data-theme="light"] tbody tr.clickable:hover{background:rgba(99,102,241,.12)}
@@ -387,9 +394,36 @@
         <table aria-label="Parc">
           <thead><tr><th>Zone</th><th>Machine</th><th>Fabricant</th><th>Modèle</th><th>Numéro série</th><th>Année</th></tr></thead>
           <tbody id="tblParc">
-            <tr><td>Fraisage</td><td>Centre d'usinage 5 axes</td><td>DMG Mori</td><td>DMU 70</td><td>FR-DMU70-2021</td><td>2021</td></tr>
-            <tr><td>Tournage</td><td>Tour CN polyvalent</td><td>Tornos</td><td>Deco 2000</td><td>TN-DEC-2018</td><td>2018</td></tr>
-            <tr><td>Utilities</td><td>Compresseur d'air</td><td>Kaeser</td><td>SX 6</td><td>KS-SX6-2016</td><td>2016</td></tr>
+            <tr class="clickable" role="button" tabindex="0"
+                aria-label="Voir le détail de Centre d'usinage 5 axes"
+                data-zone="Fraisage"
+                data-machine="Centre d'usinage 5 axes"
+                data-fabricant="DMG Mori"
+                data-modele="DMU 70"
+                data-serie="FR-DMU70-2021"
+                data-annee="2021">
+              <td>Fraisage</td><td>Centre d'usinage 5 axes</td><td>DMG Mori</td><td>DMU 70</td><td>FR-DMU70-2021</td><td>2021</td>
+            </tr>
+            <tr class="clickable" role="button" tabindex="0"
+                aria-label="Voir le détail de Tour CN polyvalent"
+                data-zone="Tournage"
+                data-machine="Tour CN polyvalent"
+                data-fabricant="Tornos"
+                data-modele="Deco 2000"
+                data-serie="TN-DEC-2018"
+                data-annee="2018">
+              <td>Tournage</td><td>Tour CN polyvalent</td><td>Tornos</td><td>Deco 2000</td><td>TN-DEC-2018</td><td>2018</td>
+            </tr>
+            <tr class="clickable" role="button" tabindex="0"
+                aria-label="Voir le détail de Compresseur d'air"
+                data-zone="Utilities"
+                data-machine="Compresseur d'air"
+                data-fabricant="Kaeser"
+                data-modele="SX 6"
+                data-serie="KS-SX6-2016"
+                data-annee="2016">
+              <td>Utilities</td><td>Compresseur d'air</td><td>Kaeser</td><td>SX 6</td><td>KS-SX6-2016</td><td>2016</td>
+            </tr>
           </tbody>
         </table>
       </section>
@@ -519,9 +553,39 @@
         <table aria-label="Plan préventif">
           <thead><tr><th>Plan</th><th>Machine</th><th>Périodicité</th><th>Dernier</th><th>Prochain</th><th>État</th></tr></thead>
         <tbody id="tblPrev">
-          <tr><td>PV-001</td><td>DMU 70</td><td>Mensuel</td><td>28/08/2025</td><td>28/09/2025</td><td><span class="status ok">À l'heure</span></td></tr>
-          <tr><td>PV-017</td><td>Tornos Deco</td><td>Hebdo</td><td>18/09/2025</td><td>25/09/2025</td><td><span class="status warn">À lancer</span></td></tr>
-          <tr><td>PV-023</td><td>Compresseur KAESER</td><td>Trimestriel</td><td>10/07/2025</td><td>10/10/2025</td><td><span class="status ok">OK</span></td></tr>
+          <tr class="clickable" role="button" tabindex="0"
+              aria-label="Voir le plan préventif PV-001"
+              data-plan="PV-001"
+              data-machine="DMU 70"
+              data-periodicite="Mensuel"
+              data-dernier="28/08/2025"
+              data-prochain="28/09/2025"
+              data-etat="À l'heure"
+              data-etat-class="ok">
+            <td>PV-001</td><td>DMU 70</td><td>Mensuel</td><td>28/08/2025</td><td>28/09/2025</td><td><span class="status ok">À l'heure</span></td>
+          </tr>
+          <tr class="clickable" role="button" tabindex="0"
+              aria-label="Voir le plan préventif PV-017"
+              data-plan="PV-017"
+              data-machine="Tornos Deco"
+              data-periodicite="Hebdo"
+              data-dernier="18/09/2025"
+              data-prochain="25/09/2025"
+              data-etat="À lancer"
+              data-etat-class="warn">
+            <td>PV-017</td><td>Tornos Deco</td><td>Hebdo</td><td>18/09/2025</td><td>25/09/2025</td><td><span class="status warn">À lancer</span></td>
+          </tr>
+          <tr class="clickable" role="button" tabindex="0"
+              aria-label="Voir le plan préventif PV-023"
+              data-plan="PV-023"
+              data-machine="Compresseur KAESER"
+              data-periodicite="Trimestriel"
+              data-dernier="10/07/2025"
+              data-prochain="10/10/2025"
+              data-etat="OK"
+              data-etat-class="ok">
+            <td>PV-023</td><td>Compresseur KAESER</td><td>Trimestriel</td><td>10/07/2025</td><td>10/10/2025</td><td><span class="status ok">OK</span></td>
+          </tr>
         </tbody>
         </table>
       </section>
@@ -535,8 +599,24 @@
         <table aria-label="Contacts">
           <thead><tr><th>Entreprise</th><th>Activité</th><th>Contact</th><th>Email</th><th>Téléphone</th></tr></thead>
           <tbody id="tblContacts">
-            <tr><td>AirTech</td><td>Compresseurs</td><td>J. Martin</td><td>service@airtech.tld</td><td>+33 4 12 34 56 78</td></tr>
-            <tr><td>MecaPro</td><td>Fourniture Mécanique</td><td>S. Leroy</td><td>contact@mecapro.tld</td><td>+33 1 98 76 54 32</td></tr>
+            <tr class="clickable" role="button" tabindex="0"
+                aria-label="Voir le contact AirTech"
+                data-entreprise="AirTech"
+                data-activite="Compresseurs"
+                data-contact="J. Martin"
+                data-email="service@airtech.tld"
+                data-telephone="+33 4 12 34 56 78">
+              <td>AirTech</td><td>Compresseurs</td><td>J. Martin</td><td>service@airtech.tld</td><td>+33 4 12 34 56 78</td>
+            </tr>
+            <tr class="clickable" role="button" tabindex="0"
+                aria-label="Voir le contact MecaPro"
+                data-entreprise="MecaPro"
+                data-activite="Fourniture Mécanique"
+                data-contact="S. Leroy"
+                data-email="contact@mecapro.tld"
+                data-telephone="+33 1 98 76 54 32">
+              <td>MecaPro</td><td>Fourniture Mécanique</td><td>S. Leroy</td><td>contact@mecapro.tld</td><td>+33 1 98 76 54 32</td>
+            </tr>
           </tbody>
         </table>
       </section>
@@ -726,6 +806,91 @@
       <div class="actions">
         <button class="btn" type="button" onclick="closeModal('interventionModal')">Fermer</button>
         <button class="btn primary" type="button" onclick="saveInterventionDetails()">Enregistrer</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="parcDetailModal" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Détails de l'équipement">
+    <div class="sheet">
+      <header>
+        <div class="brand"><div class="logo" style="width:28px;height:28px"></div><h1>Détails équipement</h1></div>
+      </header>
+      <div class="content">
+        <div class="detail-grid">
+          <div class="detail-item"><span class="detail-label">Zone</span><span class="detail-value" id="parcDetailZone">—</span></div>
+          <div class="detail-item"><span class="detail-label">Machine</span><span class="detail-value" id="parcDetailMachine">—</span></div>
+          <div class="detail-item"><span class="detail-label">Fabricant</span><span class="detail-value" id="parcDetailFabricant">—</span></div>
+          <div class="detail-item"><span class="detail-label">Modèle</span><span class="detail-value" id="parcDetailModele">—</span></div>
+          <div class="detail-item"><span class="detail-label">Numéro de série</span><span class="detail-value" id="parcDetailSerie">—</span></div>
+          <div class="detail-item"><span class="detail-label">Année</span><span class="detail-value" id="parcDetailAnnee">—</span></div>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="btn" type="button" onclick="closeModal('parcDetailModal')">Fermer</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="pieceDetailModal" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Détails de la pièce détachée">
+    <div class="sheet">
+      <header>
+        <div class="brand"><div class="logo" style="width:28px;height:28px"></div><h1>Pièce détachée</h1></div>
+      </header>
+      <div class="content">
+        <div class="detail-grid">
+          <div class="detail-item"><span class="detail-label">Référence</span><span class="detail-value" id="pieceDetailReference">—</span></div>
+          <div class="detail-item"><span class="detail-label">Désignation</span><span class="detail-value" id="pieceDetailDesignation">—</span></div>
+          <div class="detail-item"><span class="detail-label">OT lié</span><span class="detail-value" id="pieceDetailOt">—</span></div>
+          <div class="detail-item"><span class="detail-label">Machine</span><span class="detail-value" id="pieceDetailMachine">—</span></div>
+          <div class="detail-item"><span class="detail-label">Statut</span><span class="detail-value"><span id="pieceDetailStatus" class="tag">—</span></span></div>
+          <div class="detail-item"><span class="detail-label">Quantité</span><span class="detail-value" id="pieceDetailQuantity">—</span></div>
+          <div class="detail-item"><span class="detail-label">Date</span><span class="detail-value" id="pieceDetailDate">—</span></div>
+          <div class="detail-item detail-wide"><span class="detail-label">Commentaire</span><span class="detail-value detail-note" id="pieceDetailNote">—</span></div>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="btn" type="button" onclick="closeModal('pieceDetailModal')">Fermer</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="preventifDetailModal" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Détails du plan préventif">
+    <div class="sheet">
+      <header>
+        <div class="brand"><div class="logo" style="width:28px;height:28px"></div><h1>Plan préventif</h1></div>
+      </header>
+      <div class="content">
+        <div class="detail-grid">
+          <div class="detail-item"><span class="detail-label">Plan</span><span class="detail-value" id="preventifDetailPlan">—</span></div>
+          <div class="detail-item"><span class="detail-label">Machine</span><span class="detail-value" id="preventifDetailMachine">—</span></div>
+          <div class="detail-item"><span class="detail-label">Périodicité</span><span class="detail-value" id="preventifDetailPeriodicite">—</span></div>
+          <div class="detail-item"><span class="detail-label">Dernière réalisation</span><span class="detail-value" id="preventifDetailDernier">—</span></div>
+          <div class="detail-item"><span class="detail-label">Prochaine échéance</span><span class="detail-value" id="preventifDetailProchain">—</span></div>
+          <div class="detail-item"><span class="detail-label">État</span><span class="detail-value"><span id="preventifDetailEtat" class="status">—</span></span></div>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="btn" type="button" onclick="closeModal('preventifDetailModal')">Fermer</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="contactDetailModal" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Détails du contact">
+    <div class="sheet">
+      <header>
+        <div class="brand"><div class="logo" style="width:28px;height:28px"></div><h1>Contact</h1></div>
+      </header>
+      <div class="content">
+        <div class="detail-grid">
+          <div class="detail-item"><span class="detail-label">Entreprise</span><span class="detail-value" id="contactDetailEntreprise">—</span></div>
+          <div class="detail-item"><span class="detail-label">Activité</span><span class="detail-value" id="contactDetailActivite">—</span></div>
+          <div class="detail-item"><span class="detail-label">Contact</span><span class="detail-value" id="contactDetailNom">—</span></div>
+          <div class="detail-item"><span class="detail-label">Email</span><span class="detail-value" id="contactDetailEmail">—</span></div>
+          <div class="detail-item"><span class="detail-label">Téléphone</span><span class="detail-value" id="contactDetailTelephone">—</span></div>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="btn" type="button" onclick="closeModal('contactDetailModal')">Fermer</button>
       </div>
     </div>
   </div>
@@ -1224,20 +1389,41 @@
       }
       filtered.forEach(part=>{
         const tr = document.createElement('tr');
+        tr.classList.add('clickable');
+        tr.setAttribute('role','button');
+        tr.tabIndex = 0;
+        const labelParts = [part.reference, part.designation].filter(Boolean).join(' – ');
+        if(labelParts){
+          tr.setAttribute('aria-label', `Voir la pièce ${labelParts}`);
+        }
+        const statusMeta = getSparePartStatusMeta(part.status);
+        const displayDate = formatDisplayDate(part.date);
+        tr.dataset.reference = part.reference || '';
+        tr.dataset.designation = part.designation || '';
+        tr.dataset.ot = part.ot || '';
+        tr.dataset.machine = part.machine || '';
+        tr.dataset.status = part.status || '';
+        tr.dataset.statusLabel = statusMeta.label || '';
+        tr.dataset.statusClass = statusMeta.tagClass || '';
+        tr.dataset.quantity = part.quantity != null ? String(part.quantity) : '';
+        tr.dataset.date = part.date || '';
+        tr.dataset.dateDisplay = displayDate;
+        tr.dataset.note = part.note || '';
+
         tr.appendChild(createCell(part.reference || '—'));
         tr.appendChild(createCell(part.designation || '—'));
         tr.appendChild(createCell(part.ot || '—'));
         tr.appendChild(createCell(part.machine || '—'));
         const statusCell = document.createElement('td');
-        const statusMeta = getSparePartStatusMeta(part.status);
         const statusTag = document.createElement('span');
         statusTag.className = ['tag', statusMeta.tagClass].filter(Boolean).join(' ');
         statusTag.textContent = statusMeta.label;
         statusCell.appendChild(statusTag);
         tr.appendChild(statusCell);
         tr.appendChild(createCell(part.quantity != null ? String(part.quantity) : '—'));
-        tr.appendChild(createCell(formatDisplayDate(part.date)));
+        tr.appendChild(createCell(displayDate));
         tr.appendChild(createCell(part.note || '—'));
+        attachInteractiveRow(tr, openSparePartDetail);
         tbody.appendChild(tr);
       });
     }
@@ -1410,16 +1596,105 @@
       }
     }
 
+    function setDetailText(id, value){
+      const el = document.getElementById(id);
+      if(!el) return;
+      const text = value!=null ? String(value).trim() : '';
+      el.textContent = text ? text : '—';
+    }
+
+    function setDetailBadge(id, baseClass, extraClass, label){
+      const el = document.getElementById(id);
+      if(!el) return;
+      const text = label!=null ? String(label).trim() : '';
+      el.textContent = text ? text : '—';
+      const classes = [baseClass];
+      if(extraClass){
+        classes.push(extraClass);
+      }
+      el.className = classes.join(' ');
+    }
+
+    function attachInteractiveRow(tr, handler){
+      if(!tr || typeof handler !== 'function') return;
+      tr.addEventListener('click', ()=>handler(tr));
+      tr.addEventListener('keydown', evt=>{
+        if(evt.key==='Enter' || evt.key===' '){
+          evt.preventDefault();
+          handler(tr);
+        }
+      });
+    }
+
     function setupInterventionRows(){
       document.querySelectorAll('#tblOT tr').forEach(tr=>{
-        tr.addEventListener('click', ()=>openInterventionDetail(tr));
-        tr.addEventListener('keydown', evt=>{
-          if(evt.key==='Enter' || evt.key===' '){
-            evt.preventDefault();
-            openInterventionDetail(tr);
-          }
-        });
+        attachInteractiveRow(tr, openInterventionDetail);
       });
+    }
+
+    function setupParcRows(){
+      document.querySelectorAll('#tblParc tr.clickable').forEach(tr=>{
+        attachInteractiveRow(tr, openParcDetail);
+      });
+    }
+
+    function openParcDetail(row){
+      const ds = row.dataset || {};
+      setDetailText('parcDetailZone', ds.zone);
+      setDetailText('parcDetailMachine', ds.machine);
+      setDetailText('parcDetailFabricant', ds.fabricant);
+      setDetailText('parcDetailModele', ds.modele);
+      setDetailText('parcDetailSerie', ds.serie);
+      setDetailText('parcDetailAnnee', ds.annee);
+      openModal('parcDetailModal');
+    }
+
+    function openSparePartDetail(row){
+      const ds = row.dataset || {};
+      const displayDate = ds.dateDisplay || formatDisplayDate(ds.date || '');
+      setDetailText('pieceDetailReference', ds.reference);
+      setDetailText('pieceDetailDesignation', ds.designation);
+      setDetailText('pieceDetailOt', ds.ot);
+      setDetailText('pieceDetailMachine', ds.machine);
+      const statusLabel = ds.statusLabel || ds.status;
+      setDetailBadge('pieceDetailStatus', 'tag', ds.statusClass || '', statusLabel);
+      setDetailText('pieceDetailQuantity', ds.quantity);
+      setDetailText('pieceDetailDate', displayDate);
+      setDetailText('pieceDetailNote', ds.note);
+      openModal('pieceDetailModal');
+    }
+
+    function setupPreventifRows(){
+      document.querySelectorAll('#tblPrev tr.clickable').forEach(tr=>{
+        attachInteractiveRow(tr, openPreventifDetail);
+      });
+    }
+
+    function openPreventifDetail(row){
+      const ds = row.dataset || {};
+      setDetailText('preventifDetailPlan', ds.plan);
+      setDetailText('preventifDetailMachine', ds.machine);
+      setDetailText('preventifDetailPeriodicite', ds.periodicite);
+      setDetailText('preventifDetailDernier', ds.dernier);
+      setDetailText('preventifDetailProchain', ds.prochain);
+      setDetailBadge('preventifDetailEtat', 'status', ds.etatClass || '', ds.etat);
+      openModal('preventifDetailModal');
+    }
+
+    function setupContactRows(){
+      document.querySelectorAll('#tblContacts tr.clickable').forEach(tr=>{
+        attachInteractiveRow(tr, openContactDetail);
+      });
+    }
+
+    function openContactDetail(row){
+      const ds = row.dataset || {};
+      setDetailText('contactDetailEntreprise', ds.entreprise);
+      setDetailText('contactDetailActivite', ds.activite);
+      setDetailText('contactDetailNom', ds.contact);
+      setDetailText('contactDetailEmail', ds.email);
+      setDetailText('contactDetailTelephone', ds.telephone);
+      openModal('contactDetailModal');
     }
 
     function openInterventionDetail(row){
@@ -1514,6 +1789,9 @@
       });
 
       setupInterventionRows();
+      setupParcRows();
+      setupPreventifRows();
+      setupContactRows();
 
       ['di','intervention'].forEach(setupAttachmentHandlers);
 

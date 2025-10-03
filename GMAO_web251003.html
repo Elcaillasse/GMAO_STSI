@@ -142,6 +142,13 @@
     .attachment-remove:hover{color:var(--bad);background:rgba(239,68,68,.12)}
     :root[data-theme="light"] .attachment-remove:hover{background:rgba(220,38,38,.12)}
     .attachment-empty{font-size:12px;color:var(--ink-dim)}
+    .spare-list{margin-top:8px}
+    .spare-item{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+    .spare-item-main{display:flex;flex-direction:column;gap:4px}
+    .spare-item-title{font-weight:600}
+    .spare-item-meta{font-size:12px;color:var(--ink-dim)}
+    .spare-item-note{font-size:12px;color:var(--ink)}
+    .spare-empty-row{padding:18px;text-align:center;color:var(--ink-dim)}
     .camera-preview{margin-top:12px;display:flex;flex-direction:column;gap:12px;background:rgba(15,23,42,.6);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:12px}
     :root[data-theme="light"] .camera-preview{background:rgba(226,232,240,.6);border:1px solid rgba(148,163,184,.4)}
     .camera-preview video{width:100%;max-height:180px;border-radius:12px;background:black}
@@ -215,6 +222,7 @@
         <a href="#" class="active" data-target="dashboard" onclick="switchSection(event)">📊 Tableau de bord</a>
         <a href="#" data-target="parc" onclick="switchSection(event)">🏭 Parc machines</a>
         <a href="#" data-target="interventions" onclick="switchSection(event)">🛠️ Interventions</a>
+        <a href="#" data-target="pieces" onclick="switchSection(event)">🔩 Pièces détachées</a>
         <a href="#" data-target="preventif" onclick="switchSection(event)">⏱️ Préventif</a>
         <a href="#" data-target="contacts" onclick="switchSection(event)">📇 Contacts</a>
       </div>
@@ -478,6 +486,25 @@
         </table>
       </section>
 
+      <!-- Pièces détachées -->
+      <section id="pieces" class="section" aria-label="Pièces détachées">
+        <div class="toolbar">
+          <input id="piecesSearch" class="input" placeholder="Rechercher une pièce…" oninput="renderSpareParts()">
+          <select id="piecesStatusFilter" class="input" onchange="renderSpareParts()">
+            <option value="">Statut : Tous</option>
+            <option value="ordered">Commandée</option>
+            <option value="used">Utilisée</option>
+          </select>
+          <button class="btn" type="button" onclick="openSparePartModal('pieces')">➕ Ajouter une pièce</button>
+        </div>
+        <table aria-label="Pièces détachées">
+          <thead>
+            <tr><th>Référence</th><th>Désignation</th><th>OT</th><th>Machine</th><th>Statut</th><th>Quantité</th><th>Date</th><th>Commentaire</th></tr>
+          </thead>
+          <tbody id="tblPieces"></tbody>
+        </table>
+      </section>
+
       <!-- Préventif -->
       <section id="preventif" class="section" aria-label="Préventif">
         <div class="toolbar">
@@ -674,6 +701,14 @@
               </div>
             </div>
           </div>
+          <div class="field attachments" style="grid-column:1/-1">
+            <label>Pièces détachées liées</label>
+            <div class="attachment-actions">
+              <button type="button" class="btn" id="interventionAddPieceBtn">➕ Ajouter une pièce</button>
+            </div>
+            <p id="interventionPiecesEmpty" class="attachment-empty">Aucune pièce liée pour le moment.</p>
+            <ul id="interventionPiecesList" class="attachment-list spare-list"></ul>
+          </div>
           <div class="field">
             <label for="interventionDuree">Temps d’intervention (h)</label>
             <input id="interventionDuree" type="number" min="0" step="0.25" placeholder="0">
@@ -691,6 +726,33 @@
       <div class="actions">
         <button class="btn" type="button" onclick="closeModal('interventionModal')">Fermer</button>
         <button class="btn primary" type="button" onclick="saveInterventionDetails()">Enregistrer</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="pieceModal" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Ajouter une pièce détachée">
+    <div class="sheet">
+      <header>
+        <div class="brand"><div class="logo" style="width:28px;height:28px"></div><h1>Nouvelle pièce détachée</h1></div>
+      </header>
+      <div class="content">
+        <form id="pieceForm">
+          <p id="pieceContextInfo" class="spare-item-meta">Associer une pièce détachée au stock ou à une intervention.</p>
+          <div class="grid">
+            <div class="field"><label for="pieceReference">Référence</label><input id="pieceReference" type="text" placeholder="Ex. RB-0001"></div>
+            <div class="field"><label for="pieceDesignation">Désignation</label><input id="pieceDesignation" type="text" required placeholder="Nom de la pièce"></div>
+            <div class="field"><label for="pieceOt">OT lié</label><input id="pieceOt" type="text" placeholder="Numéro d'OT"></div>
+            <div class="field"><label for="pieceMachine">Machine</label><input id="pieceMachine" type="text" placeholder="Machine concernée"></div>
+            <div class="field"><label for="pieceStatus">Statut</label><select id="pieceStatus"><option value="ordered">Commandée</option><option value="used">Utilisée</option></select></div>
+            <div class="field"><label for="pieceQuantity">Quantité</label><input id="pieceQuantity" type="number" min="1" step="1" value="1"></div>
+            <div class="field"><label for="pieceDate">Date</label><input id="pieceDate" type="date"></div>
+            <div class="field" style="grid-column:1/-1"><label for="pieceNote">Commentaire</label><textarea id="pieceNote" rows="3" placeholder="Précisions sur la commande ou l'utilisation…"></textarea></div>
+          </div>
+        </form>
+      </div>
+      <div class="actions">
+        <button class="btn" type="button" onclick="closeModal('pieceModal')">Annuler</button>
+        <button class="btn primary" type="submit" form="pieceForm">Enregistrer</button>
       </div>
     </div>
   </div>
@@ -773,6 +835,15 @@
         objectUrls:[]
       }
     };
+    const SPARE_PART_STATUS = {
+      ordered:{label:'Commandée', tagClass:'warn'},
+      used:{label:'Utilisée', tagClass:'ok'}
+    };
+    let spareParts = [
+      {reference:'RB-0001', designation:'Kit roulements broche', ot:'OT-1024', machine:'DMU 70', status:'ordered', quantity:1, date:'2025-09-18', note:'Commande urgente fournisseur AirTech'},
+      {reference:'FL-0450', designation:'Filtre air KAESER', ot:'OT-1026', machine:'Compresseur KAESER', status:'used', quantity:1, date:'2025-09-22', note:'Installé lors de l’intervention'}
+    ];
+    let sparePartModalContext = {source:'pieces', defaults:{}};
 
     function switchSection(e){
       e.preventDefault();
@@ -830,8 +901,11 @@
       if(id === 'interventionModal'){
         currentInterventionRow = null;
         resetAttachmentContext('intervention');
+        renderInterventionPieces('');
       }else if(id === 'diModal'){
         resetDemandModal();
+      }else if(id === 'pieceModal'){
+        resetSparePartModal();
       }
       if(activeModal === modal) activeModal = null;
       if(!document.querySelector('.modal.open')){
@@ -1093,6 +1167,216 @@
       renderAttachments(contextKey);
     }
 
+    function getSparePartStatusMeta(status){
+      return SPARE_PART_STATUS[status] || {label:status || '—', tagClass:''};
+    }
+
+    function formatDisplayDate(value){
+      if(!value) return '—';
+      const parts = value.split('-');
+      if(parts.length === 3){
+        return `${parts[2]}/${parts[1]}/${parts[0]}`;
+      }
+      return value;
+    }
+
+    function getSpareFilters(){
+      const searchInput = document.getElementById('piecesSearch');
+      const statusSelect = document.getElementById('piecesStatusFilter');
+      return {
+        search: searchInput ? searchInput.value.trim().toLowerCase() : '',
+        status: statusSelect ? statusSelect.value : ''
+      };
+    }
+
+    function getFilteredSpareParts(){
+      const {search, status} = getSpareFilters();
+      return spareParts.filter(part=>{
+        if(status && part.status !== status) return false;
+        if(!search) return true;
+        const haystack = [part.reference, part.designation, part.ot, part.machine, part.note]
+          .map(v=>(v||'').toLowerCase())
+          .join(' ');
+        return haystack.includes(search);
+      });
+    }
+
+    function createCell(value){
+      const td = document.createElement('td');
+      td.textContent = value ?? '—';
+      return td;
+    }
+
+    function renderSpareParts(){
+      const tbody = document.getElementById('tblPieces');
+      if(!tbody) return;
+      tbody.innerHTML = '';
+      const filtered = getFilteredSpareParts();
+      if(!filtered.length){
+        const tr = document.createElement('tr');
+        const td = document.createElement('td');
+        td.colSpan = 8;
+        td.className = 'spare-empty-row';
+        td.textContent = 'Aucune pièce ne correspond aux filtres actuels.';
+        tr.appendChild(td);
+        tbody.appendChild(tr);
+        return;
+      }
+      filtered.forEach(part=>{
+        const tr = document.createElement('tr');
+        tr.appendChild(createCell(part.reference || '—'));
+        tr.appendChild(createCell(part.designation || '—'));
+        tr.appendChild(createCell(part.ot || '—'));
+        tr.appendChild(createCell(part.machine || '—'));
+        const statusCell = document.createElement('td');
+        const statusMeta = getSparePartStatusMeta(part.status);
+        const statusTag = document.createElement('span');
+        statusTag.className = ['tag', statusMeta.tagClass].filter(Boolean).join(' ');
+        statusTag.textContent = statusMeta.label;
+        statusCell.appendChild(statusTag);
+        tr.appendChild(statusCell);
+        tr.appendChild(createCell(part.quantity != null ? String(part.quantity) : '—'));
+        tr.appendChild(createCell(formatDisplayDate(part.date)));
+        tr.appendChild(createCell(part.note || '—'));
+        tbody.appendChild(tr);
+      });
+    }
+
+    function renderInterventionPieces(ot){
+      const list = document.getElementById('interventionPiecesList');
+      const empty = document.getElementById('interventionPiecesEmpty');
+      if(!list) return;
+      list.innerHTML = '';
+      const items = ot ? spareParts.filter(part=>part.ot === ot) : [];
+      if(!items.length){
+        if(empty) empty.hidden = false;
+        return;
+      }
+      if(empty) empty.hidden = true;
+      items.forEach(part=>{
+        const li = document.createElement('li');
+        li.className = 'attachment-item spare-item';
+        const main = document.createElement('div');
+        main.className = 'spare-item-main';
+        const title = document.createElement('span');
+        title.className = 'spare-item-title';
+        title.textContent = part.designation || 'Pièce détachée';
+        main.appendChild(title);
+        const details = [];
+        if(part.quantity != null) details.push(`${part.quantity}×`);
+        if(part.reference) details.push(part.reference);
+        if(part.machine) details.push(part.machine);
+        const formattedDate = formatDisplayDate(part.date);
+        if(formattedDate !== '—') details.push(formattedDate);
+        if(details.length){
+          const meta = document.createElement('span');
+          meta.className = 'spare-item-meta';
+          meta.textContent = details.join(' • ');
+          main.appendChild(meta);
+        }
+        if(part.note){
+          const note = document.createElement('span');
+          note.className = 'spare-item-note';
+          note.textContent = part.note;
+          main.appendChild(note);
+        }
+        const statusMeta = getSparePartStatusMeta(part.status);
+        const status = document.createElement('span');
+        status.className = ['tag', statusMeta.tagClass].filter(Boolean).join(' ');
+        status.textContent = statusMeta.label;
+        li.appendChild(main);
+        li.appendChild(status);
+        list.appendChild(li);
+      });
+    }
+
+    function resetSparePartModal(){
+      sparePartModalContext = {source:'pieces', defaults:{}};
+      const form = document.getElementById('pieceForm');
+      if(form) form.reset();
+      const info = document.getElementById('pieceContextInfo');
+      if(info){
+        info.textContent = 'Associer une pièce détachée au stock ou à une intervention.';
+      }
+    }
+
+    function openSparePartModal(source='pieces', defaults={}){
+      sparePartModalContext = {source, defaults};
+      const form = document.getElementById('pieceForm');
+      if(form) form.reset();
+      const referenceInput = document.getElementById('pieceReference');
+      const designationInput = document.getElementById('pieceDesignation');
+      const otInput = document.getElementById('pieceOt');
+      const machineInput = document.getElementById('pieceMachine');
+      const statusSelect = document.getElementById('pieceStatus');
+      const quantityInput = document.getElementById('pieceQuantity');
+      const dateInput = document.getElementById('pieceDate');
+      const noteInput = document.getElementById('pieceNote');
+      const today = new Date().toISOString().slice(0,10);
+      if(referenceInput) referenceInput.value = defaults.reference || '';
+      if(designationInput) designationInput.value = defaults.designation || '';
+      if(otInput) otInput.value = defaults.ot || '';
+      if(machineInput) machineInput.value = defaults.machine || '';
+      if(statusSelect){
+        const fallbackStatus = source === 'intervention' ? 'used' : 'ordered';
+        const nextStatus = defaults.status && SPARE_PART_STATUS[defaults.status] ? defaults.status : fallbackStatus;
+        statusSelect.value = nextStatus;
+      }
+      if(quantityInput){
+        const qty = defaults.quantity != null ? defaults.quantity : 1;
+        quantityInput.value = qty;
+      }
+      if(dateInput) dateInput.value = defaults.date || today;
+      if(noteInput) noteInput.value = defaults.note || '';
+      const info = document.getElementById('pieceContextInfo');
+      if(info){
+        if(defaults.ot){
+          info.textContent = `Intervention liée : ${defaults.ot}${defaults.machine ? ` • ${defaults.machine}` : ''}`;
+        }else{
+          info.textContent = 'Associer une pièce détachée au stock ou à une intervention.';
+        }
+      }
+      openModal('pieceModal');
+      if(referenceInput){
+        requestAnimationFrame(()=>referenceInput.focus({preventScroll:true}));
+      }
+    }
+
+    function saveSparePart(){
+      const reference = (document.getElementById('pieceReference')?.value || '').trim();
+      const designation = (document.getElementById('pieceDesignation')?.value || '').trim();
+      const ot = (document.getElementById('pieceOt')?.value || '').trim();
+      const machine = (document.getElementById('pieceMachine')?.value || '').trim();
+      let status = document.getElementById('pieceStatus')?.value || 'ordered';
+      const quantityRaw = document.getElementById('pieceQuantity')?.value;
+      const date = document.getElementById('pieceDate')?.value || '';
+      const note = (document.getElementById('pieceNote')?.value || '').trim();
+
+      if(!designation){
+        alert('Merci de renseigner la désignation de la pièce.');
+        return;
+      }
+
+      let quantity = parseInt(quantityRaw, 10);
+      if(Number.isNaN(quantity) || quantity <= 0){
+        quantity = 1;
+      }
+
+      if(!SPARE_PART_STATUS[status]){
+        status = 'ordered';
+      }
+
+      spareParts.push({reference, designation, ot, machine, status, quantity, date, note});
+      renderSpareParts();
+      const targetOt = currentInterventionRow ? (currentInterventionRow.dataset.ot || '') : (ot || sparePartModalContext.defaults.ot || '');
+      if(targetOt){
+        renderInterventionPieces(targetOt);
+      }else{
+        renderInterventionPieces('');
+      }
+      closeModal('pieceModal');
+    }
+
     // Simple global filter across visible table bodies
     function globalFilter(q){
       q = (q||'').toLowerCase();
@@ -1168,6 +1452,8 @@
       fields.arret.value = ds.tempsArret || '';
       fields.resolution.value = ds.resolution || '';
 
+      renderInterventionPieces(ds.ot || '');
+
       openModal('interventionModal');
       if(fields.intervenant){
         requestAnimationFrame(()=>{
@@ -1230,6 +1516,29 @@
       setupInterventionRows();
 
       ['di','intervention'].forEach(setupAttachmentHandlers);
+
+      const pieceForm = document.getElementById('pieceForm');
+      if(pieceForm){
+        pieceForm.addEventListener('submit', evt=>{
+          evt.preventDefault();
+          saveSparePart();
+        });
+      }
+
+      const addPieceBtn = document.getElementById('interventionAddPieceBtn');
+      if(addPieceBtn){
+        addPieceBtn.addEventListener('click', ()=>{
+          const defaults = currentInterventionRow ? {
+            ot: currentInterventionRow.dataset.ot || '',
+            machine: currentInterventionRow.dataset.machine || '',
+            status:'used'
+          } : {status:'used'};
+          openSparePartModal('intervention', defaults);
+        });
+      }
+
+      renderSpareParts();
+      renderInterventionPieces('');
 
       document.addEventListener('keydown', evt=>{
         if(evt.key === 'Escape' && activeModal){

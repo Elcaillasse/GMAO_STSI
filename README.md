@@ -23,9 +23,9 @@ Option QR code identification machine qui amene a doc technique.
 
 BASE DE DONNEES : créer fichier excel avec les différentes infos pour commencer a éditer le code du fichier.db
 
-modif importante :
-- mettre la possibilité d'ouvrir une pop-up quand on clic sur les ligne de l'onglet "parc machine"
-- mettre la possibilité d'ouvrir une pop-up quand on clic sur les ligne de l'onglet "pièces détachées"
-- mettre la possibilité d'ouvrir une pop-up quand on clic sur les ligne de l'onglet "préventif"
-- mettre la possibilité d'ouvrir une pop-up quand on clic sur les ligne de l'onglet "contacts"
+modif importante : ajouter un bouton modifier pour mettre a jour les infos
+- mettre la possibilité d'ouvrir une pop-up quand on clic sur les ligne de l'onglet "parc machine" OK
+- mettre la possibilité d'ouvrir une pop-up quand on clic sur les ligne de l'onglet "pièces détachées" OK
+- mettre la possibilité d'ouvrir une pop-up quand on clic sur les ligne de l'onglet "préventif" OK -> mettre bouton pour ajouter document
+- mettre la possibilité d'ouvrir une pop-up quand on clic sur les ligne de l'onglet "contacts" OK
 

@@ -12,8 +12,8 @@ Site preview = cadre avec site 1 et site 2.
 *paliatif (=réparation provisoire) validé = création DI correctif*
 
 à ajouter : 
-- proposer prendre en photo
-- ajout documents pdf, photos, texte dans les DI
+- proposer prendre en photo OK
+- ajout documents pdf, photos, texte dans les DI OK
 - pour profil maintenance lorsque la DI est  à valider : statut "surveillance" avec un date de fin. si le soucis n'est pas réaparut durant le lapse de temps définis, soldé la DI.
 - si onglet "pièces détachées" sur le dashboard : lorsque la DI est en cours de traitement, si la ligne pièces détachées existe dans le traitement de la DI, ajouter un bouton ajout "pièce détachée" afin de renseigner la référence de la pièce, fournisseur le prix, etc... Créer la possibilité d'ajouter la pièce depuis la DI ou depuis l'onglet "pièces détachées".
 - site Gillet : Liaison embareur a sa machine

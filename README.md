@@ -3,7 +3,10 @@ projet remplacement de la GMAO actuel sur excel par une GMAO html
 
 Site preview = cadre avec site 1 et site 2.
 
-*RETIRER bouton nouvelle OT*
+*RETIRER bouton nouvelle OT onglet intervention*
+*Ajouter fenetre pop-up quand on clic sur une intervention dans l'onglet intervention*
+*ajouter option Amélioration dans le type d'inervention*
+*paliatif (=réparation provisoire) validé = création DI correctif*
 
 à ajouter : 
 - proposer prendre en photo
@@ -12,6 +15,8 @@ Site preview = cadre avec site 1 et site 2.
 - si onglet "pièces détachées" sur le dashboard : lorsque la DI est en cours de traitement, si la ligne pièces détachées existe dans le traitement de la DI, ajouter un bouton ajout "pièce détachée" afin de renseigner la référence de la pièce, fournisseur le prix, etc... Créer la possibilité d'ajouter la pièce depuis la DI ou depuis l'onglet "pièces détachées".
 - site Gillet : Liaison embareur a sa machine
 - site STSI : liaison robot doga a sa machine
+
+Option QR code identification machine qui amene a doc technique.
 
 BASE DE DONNEES : créer fichier excel avec les différentes infos pour commencer a éditer le code du fichier.db
 

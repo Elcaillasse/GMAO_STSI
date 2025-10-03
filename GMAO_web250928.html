@@ -98,6 +98,10 @@
     .status.ok{color:var(--ok)}
     .status.warn{color:var(--warn)}
     .status.bad{color:var(--bad)}
+    tbody tr.clickable{cursor:pointer;transition:background .2s ease,transform .2s ease}
+    tbody tr.clickable:hover{background:rgba(167,139,250,.12);transform:translateY(-1px)}
+    :root[data-theme="light"] tbody tr.clickable:hover{background:rgba(99,102,241,.12)}
+    tbody tr.clickable:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 
     .toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:12px 0}
     .toolbar .input, .toolbar select{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:8px 10px;color:var(--ink)}
@@ -385,9 +389,72 @@
         <table aria-label="Interventions">
           <thead><tr><th>OT</th><th>Machine</th><th>Type</th><th>Priorité</th><th>Statut</th><th>Travaux</th><th>Prévu</th></tr></thead>
           <tbody id="tblOT">
-            <tr><td>OT-1024</td><td>DMU 70</td><td>Correctif</td><td>P1</td><td><span class="status warn">En cours</span></td><td>Vibrations broche</td><td>24/09/2025</td></tr>
-            <tr><td>OT-1025</td><td>Tornos Deco</td><td>Qualité</td><td>P2</td><td><span class="status ok">Planifié</span></td><td>Contrôle géométrie</td><td>26/09/2025</td></tr>
-            <tr><td>OT-1026</td><td>Compresseur KAESER</td><td>Sécurité</td><td>P1</td><td><span class="status bad">En retard</span></td><td>Remplacer cartouche</td><td>22/09/2025</td></tr>
+            <tr class="clickable" role="button" tabindex="0" aria-label="Ouvrir l'intervention OT-1024"
+                data-ot="OT-1024"
+                data-machine="DMU 70"
+                data-type="Correctif"
+                data-priorite="P1"
+                data-statut="En cours"
+                data-status="En cours"
+                data-travaux="Vibrations broche"
+                data-intervenant="N. Dupont"
+                data-description="Remplacement des roulements de broche et réalignement."
+                data-temps-intervention="3.5"
+                data-temps-arret="2"
+                data-resolution="2025-09-24"
+                data-type-intervention="curatif">
+              <td>OT-1024</td>
+              <td>DMU 70</td>
+              <td>Correctif</td>
+              <td>P1</td>
+              <td><span class="status warn">En cours</span></td>
+              <td>Vibrations broche</td>
+              <td>24/09/2025</td>
+            </tr>
+            <tr class="clickable" role="button" tabindex="0" aria-label="Ouvrir l'intervention OT-1025"
+                data-ot="OT-1025"
+                data-machine="Tornos Deco"
+                data-type="Qualité"
+                data-priorite="P2"
+                data-statut="Planifié"
+                data-status="Planifié"
+                data-travaux="Contrôle géométrie"
+                data-intervenant=""
+                data-description=""
+                data-temps-intervention=""
+                data-temps-arret="0"
+                data-resolution=""
+                data-type-intervention="preventif">
+              <td>OT-1025</td>
+              <td>Tornos Deco</td>
+              <td>Qualité</td>
+              <td>P2</td>
+              <td><span class="status ok">Planifié</span></td>
+              <td>Contrôle géométrie</td>
+              <td>26/09/2025</td>
+            </tr>
+            <tr class="clickable" role="button" tabindex="0" aria-label="Ouvrir l'intervention OT-1026"
+                data-ot="OT-1026"
+                data-machine="Compresseur KAESER"
+                data-type="Sécurité"
+                data-priorite="P1"
+                data-statut="En retard"
+                data-status="En retard"
+                data-travaux="Remplacer cartouche"
+                data-intervenant="Equipe maintenance"
+                data-description="Attente de la pièce de rechange, intervention planifiée."
+                data-temps-intervention="1.5"
+                data-temps-arret="1.5"
+                data-resolution="2025-09-22"
+                data-type-intervention="correctif">
+              <td>OT-1026</td>
+              <td>Compresseur KAESER</td>
+              <td>Sécurité</td>
+              <td>P1</td>
+              <td><span class="status bad">En retard</span></td>
+              <td>Remplacer cartouche</td>
+              <td>22/09/2025</td>
+            </tr>
           </tbody>
         </table>
       </section>
@@ -508,6 +575,75 @@
     </div>
   </div>
 
+  <div class="modal" id="interventionModal" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Compte-rendu d'intervention">
+    <div class="sheet">
+      <header>
+        <div class="brand">
+          <div class="logo" style="width:28px;height:28px"></div>
+          <h1>Compte-rendu d'intervention</h1>
+        </div>
+      </header>
+      <div class="content">
+        <div class="grid">
+          <div class="field">
+            <label for="interventionOt">OT</label>
+            <input id="interventionOt" type="text" readonly>
+          </div>
+          <div class="field">
+            <label for="interventionMachine">Machine</label>
+            <input id="interventionMachine" type="text" readonly>
+          </div>
+          <div class="field">
+            <label for="interventionStatut">Statut</label>
+            <input id="interventionStatut" type="text" readonly>
+          </div>
+          <div class="field">
+            <label for="interventionPriorite">Priorité</label>
+            <select id="interventionPriorite">
+              <option value="P1">P1</option>
+              <option value="P2">P2</option>
+              <option value="P3">P3</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="interventionIntervenant">Intervenant</label>
+            <input id="interventionIntervenant" type="text" placeholder="Nom de l'intervenant">
+          </div>
+          <div class="field">
+            <label for="interventionType">Type d’intervention</label>
+            <select id="interventionType">
+              <option value="correctif">Correctif</option>
+              <option value="curatif">Curatif</option>
+              <option value="preventif">Préventif</option>
+              <option value="amelioration">Amélioration</option>
+              <option value="securite">Sécurité</option>
+            </select>
+          </div>
+          <div class="field" style="grid-column:1/-1">
+            <label for="interventionDescription">Intervention réalisée</label>
+            <textarea id="interventionDescription" rows="4" placeholder="Décrire les actions menées…"></textarea>
+          </div>
+          <div class="field">
+            <label for="interventionDuree">Temps d’intervention (h)</label>
+            <input id="interventionDuree" type="number" min="0" step="0.25" placeholder="0">
+          </div>
+          <div class="field">
+            <label for="interventionArret">Temps d’arrêt machine (h)</label>
+            <input id="interventionArret" type="number" min="0" step="0.25" placeholder="0">
+          </div>
+          <div class="field">
+            <label for="interventionResolution">Date de résolution</label>
+            <input id="interventionResolution" type="date">
+          </div>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="btn" type="button" onclick="closeModal('interventionModal')">Fermer</button>
+        <button class="btn primary" type="button" onclick="saveInterventionDetails()">Enregistrer</button>
+      </div>
+    </div>
+  </div>
+
   <div class="modal" id="equipModal" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Ajouter un équipement"><div class="sheet"><header><div class="brand"><div class="logo" style="width:28px;height:28px"></div><h1>Ajouter équipement</h1></div></header><div class="content"><div class="grid"><div class="field"><label for="equip-zone">Zone</label><input id="equip-zone" type="text" placeholder="Zone de l'équipement"></div><div class="field"><label for="equip-machine">Machine</label><input id="equip-machine" type="text" placeholder="Nom de la machine"></div><div class="field"><label for="equip-fabricant">Fabricant</label><input id="equip-fabricant" type="text" placeholder="Fabricant"></div><div class="field"><label for="equip-modele">Modèle</label><input id="equip-modele" type="text" placeholder="Référence ou modèle"></div><div class="field"><label for="equip-serial">Numéro de série</label><input id="equip-serial" type="text" placeholder="Numéro de série"></div><div class="field"><label for="equip-annee">Année</label><input id="equip-annee" type="number" inputmode="numeric" min="1900" max="2100" placeholder="Année de mise en service"></div></div></div><div class="actions"><button class="btn" onclick="closeModal('equipModal')">Fermer</button><button class="btn primary" onclick="closeModal('equipModal')">Enregistrer</button></div></div></div>
   <div class="modal" id="contactModal" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Créer un contact"><div class="sheet"><header><div class="brand"><div class="logo" style="width:28px;height:28px"></div><h1>Nouveau contact</h1></div></header><div class="content"><div class="grid"><div class="field"><label>Entreprise</label><input></div><div class="field"><label>Activité</label><input></div><div class="field"><label>Contact</label><input></div><div class="field"><label>Email</label><input type="email"></div><div class="field"><label>Téléphone</label><input></div></div></div><div class="actions"><button class="btn" onclick="closeModal('contactModal')">Fermer</button><button class="btn primary" onclick="closeModal('contactModal')">Enregistrer</button></div></div></div>
   <div class="modal" id="planModal" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Générer des OT préventifs"><div class="sheet"><header><div class="brand"><div class="logo" style="width:28px;height:28px"></div><h1>Générer OT préventifs</h1></div></header><div class="content"><p>Sélectionner l'horizon de planification et la périodicité.</p><div class="grid"><div class="field"><label>Horizon (jours)</label><input type="number" value="30"></div><div class="field"><label>Inclure retard</label><select><option>Oui</option><option>Non</option></select></div></div></div><div class="actions"><button class="btn" onclick="closeModal('planModal')">Fermer</button><button class="btn primary" onclick="closeModal('planModal')">Générer</button></div></div></div>
@@ -545,9 +681,17 @@
       }
     };
     const FOCUSABLE_SELECTOR = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
+    const INTERVENTION_TYPE_LABELS = {
+      correctif:'Correctif',
+      curatif:'Curatif',
+      preventif:'Préventif',
+      amelioration:'Amélioration',
+      securite:'Sécurité'
+    };
     let currentTheme = 'dark';
     let activeModal = null;
     let lastFocusedElement = null;
+    let currentInterventionRow = null;
 
     function switchSection(e){
       e.preventDefault();
@@ -602,6 +746,9 @@
       if(!modal) return;
       modal.classList.remove('open');
       modal.setAttribute('aria-hidden','true');
+      if(id === 'interventionModal'){
+        currentInterventionRow = null;
+      }
       if(activeModal === modal) activeModal = null;
       if(!document.querySelector('.modal.open')){
         document.body.style.overflow = '';
@@ -651,6 +798,85 @@
       }
     }
 
+    function setupInterventionRows(){
+      document.querySelectorAll('#tblOT tr').forEach(tr=>{
+        tr.addEventListener('click', ()=>openInterventionDetail(tr));
+        tr.addEventListener('keydown', evt=>{
+          if(evt.key==='Enter' || evt.key===' '){
+            evt.preventDefault();
+            openInterventionDetail(tr);
+          }
+        });
+      });
+    }
+
+    function openInterventionDetail(row){
+      currentInterventionRow = row;
+      const ds = row.dataset;
+      const fields = {
+        ot:document.getElementById('interventionOt'),
+        machine:document.getElementById('interventionMachine'),
+        statut:document.getElementById('interventionStatut'),
+        priorite:document.getElementById('interventionPriorite'),
+        intervenant:document.getElementById('interventionIntervenant'),
+        type:document.getElementById('interventionType'),
+        description:document.getElementById('interventionDescription'),
+        duree:document.getElementById('interventionDuree'),
+        arret:document.getElementById('interventionArret'),
+        resolution:document.getElementById('interventionResolution')
+      };
+
+      if(!fields.ot) return;
+
+      fields.ot.value = ds.ot || '';
+      fields.machine.value = ds.machine || '';
+      fields.statut.value = ds.statut || '';
+      fields.priorite.value = ds.priorite || 'P1';
+      fields.intervenant.value = ds.intervenant || '';
+      fields.type.value = ds.typeIntervention || 'correctif';
+      fields.description.value = ds.description || '';
+      fields.duree.value = ds.tempsIntervention || '';
+      fields.arret.value = ds.tempsArret || '';
+      fields.resolution.value = ds.resolution || '';
+
+      openModal('interventionModal');
+      if(fields.intervenant){
+        requestAnimationFrame(()=>{
+          fields.intervenant.focus({preventScroll:true});
+        });
+      }
+    }
+
+    function saveInterventionDetails(){
+      if(!currentInterventionRow){
+        closeModal('interventionModal');
+        return;
+      }
+      const ds = currentInterventionRow.dataset;
+      const priorite = document.getElementById('interventionPriorite').value;
+      const intervenant = document.getElementById('interventionIntervenant').value.trim();
+      const type = document.getElementById('interventionType').value;
+      const description = document.getElementById('interventionDescription').value.trim();
+      const duree = document.getElementById('interventionDuree').value;
+      const arret = document.getElementById('interventionArret').value;
+      const resolution = document.getElementById('interventionResolution').value;
+      const typeLabel = INTERVENTION_TYPE_LABELS[type] || type;
+
+      ds.priorite = priorite;
+      ds.type = typeLabel;
+      ds.intervenant = intervenant;
+      ds.typeIntervention = type;
+      ds.description = description;
+      ds.tempsIntervention = duree;
+      ds.tempsArret = arret;
+      ds.resolution = resolution;
+
+      currentInterventionRow.cells[2].innerText = typeLabel;
+      currentInterventionRow.cells[3].innerText = priorite;
+
+      closeModal('interventionModal');
+    }
+
     function fakeExport(){
       const rows = [['OT','Machine','Priorité','Statut','Prévu'], ...Array.from(document.querySelectorAll('#tblOT tr')).map(tr=>[...tr.cells].slice(0,5).map(td=>td.innerText.trim()))];
       const csv = rows.map(r=>r.join(';')).join('\n');
@@ -671,6 +897,8 @@
           if(evt.target === modal) closeModal(modal.id);
         });
       });
+
+      setupInterventionRows();
 
       document.addEventListener('keydown', evt=>{
         if(evt.key === 'Escape' && activeModal){

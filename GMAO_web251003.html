@@ -35,6 +35,7 @@
       --shadow:0 12px 28px rgba(15,23,42,.12), 0 1px 0 rgba(15,23,42,.04) inset;
     }
     *{box-sizing:border-box}
+    [hidden]{display:none!important}
     html,body{height:100%}
     body{margin:0;background:radial-gradient(1200px 600px at 80% -10%,rgba(167,139,250,.15),transparent),
                           radial-gradient(900px 500px at -20% 10%,rgba(34,211,238,.12),transparent),
@@ -129,6 +130,22 @@
     :root[data-theme="light"] .field textarea{background:rgba(226,232,240,.6);border:1px solid rgba(148,163,184,.4)}
     :root[data-theme="light"] .field select option{background:rgba(226,232,240,.95);color:var(--ink)}
     .actions{display:flex;gap:8px;justify-content:flex-end;padding:0 16px 16px}
+
+    .attachments .attachment-actions{display:flex;flex-wrap:wrap;gap:8px}
+    .attachment-list{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:6px}
+    .attachment-item{display:flex;align-items:center;justify-content:space-between;gap:12px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:8px 10px;font-size:13px}
+    :root[data-theme="light"] .attachment-item{background:rgba(148,163,184,.12);border:1px solid rgba(148,163,184,.28)}
+    .attachment-info{display:flex;flex-direction:column;gap:2px}
+    .attachment-name{font-weight:600}
+    .attachment-meta{font-size:12px;color:var(--ink-dim)}
+    .attachment-remove{background:transparent;border:0;color:var(--ink-dim);cursor:pointer;padding:4px;border-radius:8px;line-height:1;font-size:16px}
+    .attachment-remove:hover{color:var(--bad);background:rgba(239,68,68,.12)}
+    :root[data-theme="light"] .attachment-remove:hover{background:rgba(220,38,38,.12)}
+    .attachment-empty{font-size:12px;color:var(--ink-dim)}
+    .camera-preview{margin-top:12px;display:flex;flex-direction:column;gap:12px;background:rgba(15,23,42,.6);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:12px}
+    :root[data-theme="light"] .camera-preview{background:rgba(226,232,240,.6);border:1px solid rgba(148,163,184,.4)}
+    .camera-preview video{width:100%;max-height:240px;border-radius:12px;background:black}
+    .camera-actions{display:flex;flex-wrap:wrap;gap:8px}
 
     /* chips */
     .chip{border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);padding:6px 10px;border-radius:999px;font-size:12px}
@@ -566,6 +583,22 @@
             <label>Travaux à effectuer</label>
             <textarea rows="3" placeholder="Décrire les travaux demandés…"></textarea>
           </div>
+          <div class="field attachments" style="grid-column:1/-1">
+            <label>Pièces jointes</label>
+            <div class="attachment-actions">
+              <input id="diAttachmentInput" type="file" accept="image/*,.pdf,.doc,.docx,.txt,.xlsx,.xls,.ppt,.pptx" multiple hidden>
+              <button type="button" class="btn" id="diUploadButton">📎 Ajouter un document</button>
+              <button type="button" class="btn" id="diCameraButton" aria-expanded="false">📷 Prendre une photo</button>
+            </div>
+            <ul id="diAttachmentList" class="attachment-list"></ul>
+            <div class="camera-preview" id="diCameraPreview" hidden>
+              <video id="diCameraVideo" autoplay playsinline></video>
+              <div class="camera-actions">
+                <button type="button" class="btn primary" id="diCaptureBtn">📸 Capturer</button>
+                <button type="button" class="btn" id="diCloseCameraBtn">✖️ Fermer la caméra</button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
       <div class="actions">
@@ -622,6 +655,22 @@
           <div class="field" style="grid-column:1/-1">
             <label for="interventionDescription">Intervention réalisée</label>
             <textarea id="interventionDescription" rows="4" placeholder="Décrire les actions menées…"></textarea>
+          </div>
+          <div class="field attachments" style="grid-column:1/-1">
+            <label>Pièces jointes</label>
+            <div class="attachment-actions">
+              <input id="interventionAttachmentInput" type="file" accept="image/*,.pdf,.doc,.docx,.txt,.xlsx,.xls,.ppt,.pptx" multiple hidden>
+              <button type="button" class="btn" id="interventionUploadButton">📎 Ajouter un document</button>
+              <button type="button" class="btn" id="interventionCameraButton" aria-expanded="false">📷 Prendre une photo</button>
+            </div>
+            <ul id="interventionAttachmentList" class="attachment-list"></ul>
+            <div class="camera-preview" id="interventionCameraPreview" hidden>
+              <video id="interventionCameraVideo" autoplay playsinline></video>
+              <div class="camera-actions">
+                <button type="button" class="btn primary" id="interventionCaptureBtn">📸 Capturer</button>
+                <button type="button" class="btn" id="interventionCloseCameraBtn">✖️ Fermer la caméra</button>
+              </div>
+            </div>
           </div>
           <div class="field">
             <label for="interventionDuree">Temps d’intervention (h)</label>
@@ -692,6 +741,36 @@
     let activeModal = null;
     let lastFocusedElement = null;
     let currentInterventionRow = null;
+    const ATTACHMENT_CONTEXTS = {
+      di:{
+        inputId:'diAttachmentInput',
+        uploadButtonId:'diUploadButton',
+        listId:'diAttachmentList',
+        cameraButtonId:'diCameraButton',
+        previewId:'diCameraPreview',
+        videoId:'diCameraVideo',
+        captureButtonId:'diCaptureBtn',
+        closeCameraId:'diCloseCameraBtn',
+        cameraOpenLabel:'📷 Prendre une photo',
+        cameraCloseLabel:'📷 Fermer la caméra'
+      },
+      intervention:{
+        inputId:'interventionAttachmentInput',
+        uploadButtonId:'interventionUploadButton',
+        listId:'interventionAttachmentList',
+        cameraButtonId:'interventionCameraButton',
+        previewId:'interventionCameraPreview',
+        videoId:'interventionCameraVideo',
+        captureButtonId:'interventionCaptureBtn',
+        closeCameraId:'interventionCloseCameraBtn',
+        cameraOpenLabel:'📷 Prendre une photo',
+        cameraCloseLabel:'📷 Fermer la caméra'
+      }
+    };
+    const attachmentState = {
+      di:{files:[], stream:null},
+      intervention:{files:[], stream:null}
+    };
 
     function switchSection(e){
       e.preventDefault();
@@ -748,6 +827,9 @@
       modal.setAttribute('aria-hidden','true');
       if(id === 'interventionModal'){
         currentInterventionRow = null;
+        resetAttachments('intervention');
+      }else if(id === 'diModal'){
+        resetDemandModal();
       }
       if(activeModal === modal) activeModal = null;
       if(!document.querySelector('.modal.open')){
@@ -763,6 +845,231 @@
       if(activeModal){
         closeModal(activeModal.id);
       }
+    }
+
+    function getAttachmentConfig(context){
+      return ATTACHMENT_CONTEXTS[context];
+    }
+
+    function addAttachments(context, files){
+      if(!files || !files.length) return;
+      const state = attachmentState[context];
+      if(!state) return;
+      state.files = state.files.concat(files);
+      renderAttachments(context);
+    }
+
+    function renderAttachments(context){
+      const cfg = getAttachmentConfig(context);
+      const state = attachmentState[context];
+      if(!cfg || !state) return;
+      const list = document.getElementById(cfg.listId);
+      if(!list) return;
+      list.innerHTML = '';
+      if(!state.files.length){
+        const empty = document.createElement('li');
+        empty.className = 'attachment-empty';
+        empty.textContent = 'Aucune pièce jointe pour le moment.';
+        list.appendChild(empty);
+        return;
+      }
+      state.files.forEach((file,index)=>{
+        const li = document.createElement('li');
+        li.className = 'attachment-item';
+        const info = document.createElement('div');
+        info.className = 'attachment-info';
+        const name = document.createElement('span');
+        name.className = 'attachment-name';
+        name.textContent = file.name || `Photo ${index+1}.jpg`;
+        info.appendChild(name);
+        if(file.size){
+          const meta = document.createElement('span');
+          meta.className = 'attachment-meta';
+          const sizeKB = Math.max(1, Math.round(file.size/1024));
+          meta.textContent = `${sizeKB} Ko`;
+          info.appendChild(meta);
+        }
+        const remove = document.createElement('button');
+        remove.type = 'button';
+        remove.className = 'attachment-remove';
+        remove.setAttribute('data-remove-index', index);
+        remove.setAttribute('data-context', context);
+        remove.setAttribute('aria-label', `Retirer ${name.textContent}`);
+        remove.textContent = '✖️';
+        li.appendChild(info);
+        li.appendChild(remove);
+        list.appendChild(li);
+      });
+    }
+
+    function removeAttachment(context, index){
+      const state = attachmentState[context];
+      if(!state) return;
+      if(index<0 || index>=state.files.length) return;
+      state.files.splice(index,1);
+      renderAttachments(context);
+    }
+
+    async function openCamera(context){
+      const cfg = getAttachmentConfig(context);
+      const state = attachmentState[context];
+      if(!cfg || !state) return;
+      const preview = document.getElementById(cfg.previewId);
+      const video = document.getElementById(cfg.videoId);
+      const toggleBtn = document.getElementById(cfg.cameraButtonId);
+      if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
+        alert('La capture depuis la caméra n’est pas supportée sur cet appareil.');
+        return;
+      }
+      try{
+        state.stream = await navigator.mediaDevices.getUserMedia({video:true});
+        if(video){
+          video.srcObject = state.stream;
+        }
+        if(preview){
+          preview.hidden = false;
+        }
+        if(toggleBtn){
+          toggleBtn.setAttribute('aria-expanded','true');
+          toggleBtn.textContent = cfg.cameraCloseLabel;
+        }
+      }catch(err){
+        console.error('Impossible d’ouvrir la caméra', err);
+        alert('Impossible d’accéder à la caméra. Vérifiez les autorisations.');
+      }
+    }
+
+    function closeCamera(context){
+      const cfg = getAttachmentConfig(context);
+      const state = attachmentState[context];
+      if(!cfg || !state) return;
+      const preview = document.getElementById(cfg.previewId);
+      const video = document.getElementById(cfg.videoId);
+      const toggleBtn = document.getElementById(cfg.cameraButtonId);
+      if(state.stream){
+        state.stream.getTracks().forEach(track=>track.stop());
+        state.stream = null;
+      }
+      if(video){
+        video.srcObject = null;
+      }
+      if(preview){
+        preview.hidden = true;
+      }
+      if(toggleBtn){
+        toggleBtn.setAttribute('aria-expanded','false');
+        toggleBtn.textContent = cfg.cameraOpenLabel;
+      }
+    }
+
+    function capturePhoto(context){
+      const cfg = getAttachmentConfig(context);
+      const state = attachmentState[context];
+      if(!cfg || !state) return;
+      const video = document.getElementById(cfg.videoId);
+      if(!video || !state.stream || video.readyState < 2){
+        return;
+      }
+      const canvas = document.createElement('canvas');
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      const ctx = canvas.getContext('2d');
+      if(!ctx){
+        return;
+      }
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      canvas.toBlob(blob=>{
+        if(!blob) return;
+        const timestamp = new Date().toISOString().replace(/[:.]/g,'-');
+        let file;
+        try{
+          file = new File([blob], `photo-${timestamp}.jpg`, {type:'image/jpeg'});
+        }catch(_e){
+          file = blob;
+          file.name = `photo-${timestamp}.jpg`;
+        }
+        addAttachments(context, [file]);
+      }, 'image/jpeg', 0.92);
+    }
+
+    function resetAttachments(context){
+      const cfg = getAttachmentConfig(context);
+      const state = attachmentState[context];
+      if(!cfg || !state) return;
+      state.files = [];
+      const input = document.getElementById(cfg.inputId);
+      if(input){
+        input.value = '';
+      }
+      renderAttachments(context);
+      closeCamera(context);
+    }
+
+    function resetDemandModal(){
+      resetAttachments('di');
+    }
+
+    function setupAttachmentZone(context){
+      const cfg = getAttachmentConfig(context);
+      if(!cfg) return;
+      const input = document.getElementById(cfg.inputId);
+      const uploadButton = document.getElementById(cfg.uploadButtonId);
+      const list = document.getElementById(cfg.listId);
+      const cameraButton = document.getElementById(cfg.cameraButtonId);
+      const captureButton = document.getElementById(cfg.captureButtonId);
+      const closeCameraBtn = document.getElementById(cfg.closeCameraId);
+
+      if(uploadButton && input){
+        uploadButton.addEventListener('click', ()=>input.click());
+      }
+
+      if(input){
+        input.addEventListener('change', evt=>{
+          const files = Array.from(evt.target.files || []);
+          addAttachments(context, files);
+          input.value = '';
+        });
+      }
+
+      if(list){
+        list.addEventListener('click', evt=>{
+          const btn = evt.target.closest('button[data-remove-index]');
+          if(btn){
+            evt.preventDefault();
+            const idx = Number(btn.getAttribute('data-remove-index'));
+            const ctx = btn.getAttribute('data-context') || context;
+            removeAttachment(ctx, idx);
+          }
+        });
+      }
+
+      if(cameraButton){
+        cameraButton.addEventListener('click', async evt=>{
+          evt.preventDefault();
+          const state = attachmentState[context];
+          if(state && state.stream){
+            closeCamera(context);
+          }else{
+            await openCamera(context);
+          }
+        });
+      }
+
+      if(captureButton){
+        captureButton.addEventListener('click', evt=>{
+          evt.preventDefault();
+          capturePhoto(context);
+        });
+      }
+
+      if(closeCameraBtn){
+        closeCameraBtn.addEventListener('click', evt=>{
+          evt.preventDefault();
+          closeCamera(context);
+        });
+      }
+
+      renderAttachments(context);
     }
 
     // Simple global filter across visible table bodies
@@ -839,6 +1146,7 @@
       fields.arret.value = ds.tempsArret || '';
       fields.resolution.value = ds.resolution || '';
 
+      resetAttachments('intervention');
       openModal('interventionModal');
       if(fields.intervenant){
         requestAnimationFrame(()=>{
@@ -899,6 +1207,9 @@
       });
 
       setupInterventionRows();
+
+      setupAttachmentZone('di');
+      setupAttachmentZone('intervention');
 
       document.addEventListener('keydown', evt=>{
         if(evt.key === 'Escape' && activeModal){

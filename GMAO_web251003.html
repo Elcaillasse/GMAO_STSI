@@ -151,6 +151,7 @@
     .attachment-empty{font-size:12px;color:var(--ink-dim)}
     .spare-list{margin-top:8px}
     .spare-item{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+    .spare-item-actions{display:flex;align-items:center;gap:8px}
     .spare-item-main{display:flex;flex-direction:column;gap:4px}
     .spare-item-title{font-weight:600}
     .spare-item-meta{font-size:12px;color:var(--ink-dim)}
@@ -1542,6 +1543,32 @@
       items.forEach(part=>{
         const li = document.createElement('li');
         li.className = 'attachment-item spare-item';
+        li.setAttribute('role', 'button');
+        li.tabIndex = 0;
+        const index = spareParts.indexOf(part);
+        const statusMeta = getSparePartStatusMeta(part.status);
+        const formattedDate = formatDisplayDate(part.date);
+        const labelParts = [part.reference, part.designation].filter(Boolean).join(' – ');
+        if(labelParts){
+          li.setAttribute('aria-label', `Voir la pièce ${labelParts}`);
+        }
+        if(index >= 0){
+          li.dataset.index = String(index);
+        }else{
+          li.dataset.index = '';
+        }
+        li.dataset.reference = part.reference || '';
+        li.dataset.designation = part.designation || '';
+        li.dataset.ot = part.ot || '';
+        li.dataset.machine = part.machine || '';
+        li.dataset.status = part.status || '';
+        li.dataset.statusLabel = statusMeta.label || '';
+        li.dataset.statusClass = statusMeta.tagClass || '';
+        li.dataset.quantity = part.quantity != null ? String(part.quantity) : '';
+        li.dataset.date = part.date || '';
+        li.dataset.dateDisplay = formattedDate;
+        li.dataset.note = part.note || '';
+
         const main = document.createElement('div');
         main.className = 'spare-item-main';
         const title = document.createElement('span');
@@ -1552,7 +1579,6 @@
         if(part.quantity != null) details.push(`${part.quantity}×`);
         if(part.reference) details.push(part.reference);
         if(part.machine) details.push(part.machine);
-        const formattedDate = formatDisplayDate(part.date);
         if(formattedDate !== '—') details.push(formattedDate);
         if(details.length){
           const meta = document.createElement('span');
@@ -1566,12 +1592,30 @@
           note.textContent = part.note;
           main.appendChild(note);
         }
-        const statusMeta = getSparePartStatusMeta(part.status);
+
+        const actions = document.createElement('div');
+        actions.className = 'spare-item-actions';
         const status = document.createElement('span');
         status.className = ['tag', statusMeta.tagClass].filter(Boolean).join(' ');
         status.textContent = statusMeta.label;
+        actions.appendChild(status);
+        if(index >= 0){
+          const removeBtn = document.createElement('button');
+          removeBtn.type = 'button';
+          removeBtn.className = 'attachment-remove';
+          const removeLabel = part.designation || part.reference;
+          removeBtn.setAttribute('aria-label', removeLabel ? `Retirer ${removeLabel}` : 'Retirer cette pièce');
+          removeBtn.textContent = '✖️';
+          removeBtn.addEventListener('click', evt=>{
+            evt.stopPropagation();
+            deleteSparePart(index);
+          });
+          actions.appendChild(removeBtn);
+        }
+
         li.appendChild(main);
-        li.appendChild(status);
+        li.appendChild(actions);
+        attachInteractiveRow(li, openSparePartDetail);
         list.appendChild(li);
       });
     }
@@ -1934,6 +1978,31 @@
       if(!part) return;
       closeModal('pieceDetailModal');
       openSparePartModal('pieces', {...part, index: currentSparePartIndex});
+    }
+
+    function deleteSparePart(index){
+      const numericIndex = Number(index);
+      if(Number.isNaN(numericIndex) || numericIndex < 0 || numericIndex >= spareParts.length){
+        return;
+      }
+      const part = spareParts[numericIndex];
+      const label = part?.designation || part?.reference || '';
+      const message = label ? `Supprimer la pièce « ${label} » ?` : 'Supprimer cette pièce ?';
+      if(typeof window !== 'undefined' && !window.confirm(message)){
+        return;
+      }
+      spareParts.splice(numericIndex, 1);
+      if(currentSparePartIndex === numericIndex){
+        currentSparePartIndex = null;
+      }else if(currentSparePartIndex != null && currentSparePartIndex > numericIndex){
+        currentSparePartIndex -= 1;
+      }
+      renderSpareParts();
+      const targetOt = currentInterventionRow ? (currentInterventionRow.dataset.ot || '') : (part?.ot || '');
+      renderInterventionPieces(targetOt);
+      if(activeModal && activeModal.id === 'pieceDetailModal'){
+        closeModal('pieceDetailModal');
+      }
     }
 
     function setupPreventifRows(){

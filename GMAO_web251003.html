@@ -151,6 +151,7 @@
     .attachment-empty{font-size:12px;color:var(--ink-dim)}
     .spare-list{margin-top:8px}
     .spare-item{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+    .spare-item-actions{display:flex;align-items:center;gap:8px}
     .spare-item-main{display:flex;flex-direction:column;gap:4px}
     .spare-item-title{font-weight:600}
     .spare-item-meta{font-size:12px;color:var(--ink-dim)}
@@ -784,6 +785,7 @@
             <label>Pièces détachées liées</label>
             <div class="attachment-actions">
               <button type="button" class="btn" id="interventionAddPieceBtn">➕ Ajouter une pièce</button>
+              <button type="button" class="btn" id="interventionSearchPieceBtn" onclick="ouvrirRecherchePiece()">🔍 Rechercher une pièce</button>
             </div>
             <p id="interventionPiecesEmpty" class="attachment-empty">Aucune pièce liée pour le moment.</p>
             <ul id="interventionPiecesList" class="attachment-list spare-list"></ul>
@@ -953,6 +955,25 @@
       <div class="actions">
         <button class="btn" type="button" onclick="closeModal('pieceModal')">Annuler</button>
         <button class="btn primary" type="submit" form="pieceForm" id="pieceModalSubmit">Enregistrer</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="spareSearchModal" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Rechercher une pièce détachée">
+    <div class="sheet">
+      <header>
+        <div class="brand"><div class="logo" style="width:28px;height:28px"></div><h1>Rechercher une pièce détachée</h1></div>
+      </header>
+      <div class="content">
+        <div class="field" style="margin-bottom:12px;">
+          <label for="spareSearchInput">Recherche</label>
+          <input type="search" id="spareSearchInput" placeholder="Nom, référence ou mot-clé…">
+        </div>
+        <p id="spareSearchEmpty" class="attachment-empty" hidden>Aucune pièce ne correspond à votre recherche.</p>
+        <ul id="spareSearchList" class="attachment-list spare-list"></ul>
+      </div>
+      <div class="actions">
+        <button class="btn" type="button" onclick="fermerRecherchePiece()">Fermer</button>
       </div>
     </div>
   </div>
@@ -1156,6 +1177,8 @@
         resetDemandModal();
       }else if(id === 'pieceModal'){
         resetSparePartModal();
+      }else if(id === 'spareSearchModal'){
+        resetSpareSearchModal();
       }
       if(activeModal === modal) activeModal = null;
       if(!document.querySelector('.modal.open')){
@@ -1528,6 +1551,68 @@
       });
     }
 
+    function buildSpareListItem(part){
+      const li = document.createElement('li');
+      li.className = 'attachment-item spare-item';
+      const index = spareParts.indexOf(part);
+      const statusMeta = getSparePartStatusMeta(part.status);
+      const formattedDate = formatDisplayDate(part.date);
+      if(index >= 0){
+        li.dataset.index = String(index);
+      }else{
+        li.dataset.index = '';
+      }
+      li.dataset.reference = part.reference || '';
+      li.dataset.designation = part.designation || '';
+      li.dataset.ot = part.ot || '';
+      li.dataset.machine = part.machine || '';
+      li.dataset.status = part.status || '';
+      li.dataset.statusLabel = statusMeta.label || '';
+      li.dataset.statusClass = statusMeta.tagClass || '';
+      li.dataset.quantity = part.quantity != null ? String(part.quantity) : '';
+      li.dataset.date = part.date || '';
+      li.dataset.dateDisplay = formattedDate;
+      li.dataset.note = part.note || '';
+
+      const main = document.createElement('div');
+      main.className = 'spare-item-main';
+      const title = document.createElement('span');
+      title.className = 'spare-item-title';
+      title.textContent = part.designation || 'Pièce détachée';
+      main.appendChild(title);
+
+      const details = [];
+      if(part.quantity != null) details.push(`${part.quantity}×`);
+      if(part.reference) details.push(part.reference);
+      if(part.machine) details.push(part.machine);
+      if(formattedDate !== '—') details.push(formattedDate);
+      if(details.length){
+        const meta = document.createElement('span');
+        meta.className = 'spare-item-meta';
+        meta.textContent = details.join(' • ');
+        main.appendChild(meta);
+      }
+
+      if(part.note){
+        const note = document.createElement('span');
+        note.className = 'spare-item-note';
+        note.textContent = part.note;
+        main.appendChild(note);
+      }
+
+      const actions = document.createElement('div');
+      actions.className = 'spare-item-actions';
+      const status = document.createElement('span');
+      status.className = ['tag', statusMeta.tagClass].filter(Boolean).join(' ');
+      status.textContent = statusMeta.label;
+      actions.appendChild(status);
+
+      li.appendChild(main);
+      li.appendChild(actions);
+
+      return {li, index, actions};
+    }
+
     function renderInterventionPieces(ot){
       const list = document.getElementById('interventionPiecesList');
       const empty = document.getElementById('interventionPiecesEmpty');
@@ -1540,40 +1625,130 @@
       }
       if(empty) empty.hidden = true;
       items.forEach(part=>{
-        const li = document.createElement('li');
-        li.className = 'attachment-item spare-item';
-        const main = document.createElement('div');
-        main.className = 'spare-item-main';
-        const title = document.createElement('span');
-        title.className = 'spare-item-title';
-        title.textContent = part.designation || 'Pièce détachée';
-        main.appendChild(title);
-        const details = [];
-        if(part.quantity != null) details.push(`${part.quantity}×`);
-        if(part.reference) details.push(part.reference);
-        if(part.machine) details.push(part.machine);
-        const formattedDate = formatDisplayDate(part.date);
-        if(formattedDate !== '—') details.push(formattedDate);
-        if(details.length){
-          const meta = document.createElement('span');
-          meta.className = 'spare-item-meta';
-          meta.textContent = details.join(' • ');
-          main.appendChild(meta);
+        const {li, index, actions} = buildSpareListItem(part);
+        li.setAttribute('role', 'button');
+        li.tabIndex = 0;
+        const labelParts = [part.reference, part.designation].filter(Boolean).join(' – ');
+        if(labelParts){
+          li.setAttribute('aria-label', `Voir la pièce ${labelParts}`);
         }
-        if(part.note){
-          const note = document.createElement('span');
-          note.className = 'spare-item-note';
-          note.textContent = part.note;
-          main.appendChild(note);
+        if(index >= 0 && actions){
+          const removeBtn = document.createElement('button');
+          removeBtn.type = 'button';
+          removeBtn.className = 'attachment-remove';
+          const removeLabel = part.designation || part.reference;
+          removeBtn.setAttribute('aria-label', removeLabel ? `Retirer ${removeLabel}` : 'Retirer cette pièce');
+          removeBtn.textContent = '✖️';
+          removeBtn.addEventListener('click', evt=>{
+            evt.stopPropagation();
+            deleteSparePart(index);
+          });
+          actions.appendChild(removeBtn);
         }
-        const statusMeta = getSparePartStatusMeta(part.status);
-        const status = document.createElement('span');
-        status.className = ['tag', statusMeta.tagClass].filter(Boolean).join(' ');
-        status.textContent = statusMeta.label;
-        li.appendChild(main);
-        li.appendChild(status);
+        attachInteractiveRow(li, openSparePartDetail);
         list.appendChild(li);
       });
+    }
+
+    function renderSpareSearchResults(query){
+      const list = document.getElementById('spareSearchList');
+      const empty = document.getElementById('spareSearchEmpty');
+      if(!list) return;
+      const normalized = (query || '').trim().toLowerCase();
+      list.innerHTML = '';
+      const results = spareParts.filter(part=>{
+        if(!normalized) return true;
+        const haystack = [part.reference, part.designation, part.machine, part.note, part.ot]
+          .map(value=>(value || '').toLowerCase())
+          .join(' ');
+        return haystack.includes(normalized);
+      });
+      if(!results.length){
+        if(empty) empty.hidden = false;
+        return;
+      }
+      if(empty) empty.hidden = true;
+      results.forEach(part=>{
+        const {li, index} = buildSpareListItem(part);
+        li.setAttribute('role', 'button');
+        li.tabIndex = 0;
+        const labelParts = [part.reference, part.designation].filter(Boolean).join(' – ');
+        if(labelParts){
+          li.setAttribute('aria-label', `Sélectionner la pièce ${labelParts}`);
+        }
+        const handleSelect = ()=>assignSparePartToCurrentIntervention(index);
+        li.addEventListener('click', evt=>{
+          evt.preventDefault();
+          handleSelect();
+        });
+        li.addEventListener('keydown', evt=>{
+          if(evt.key === 'Enter' || evt.key === ' '){
+            evt.preventDefault();
+            handleSelect();
+          }
+        });
+        list.appendChild(li);
+      });
+    }
+
+    function resetSpareSearchModal(){
+      const input = document.getElementById('spareSearchInput');
+      if(input) input.value = '';
+      const list = document.getElementById('spareSearchList');
+      if(list) list.innerHTML = '';
+      const empty = document.getElementById('spareSearchEmpty');
+      if(empty) empty.hidden = true;
+    }
+
+    function assignSparePartToCurrentIntervention(index){
+      const numericIndex = Number(index);
+      if(Number.isNaN(numericIndex) || numericIndex < 0 || numericIndex >= spareParts.length){
+        return;
+      }
+      const part = spareParts[numericIndex];
+      if(!part) return;
+      const otInput = document.getElementById('interventionOt');
+      const machineInput = document.getElementById('interventionMachine');
+      const otValue = (otInput?.value || '').trim();
+      if(!otValue){
+        alert('Aucun OT n’est associé à cette intervention.');
+        return;
+      }
+      const machineValue = (machineInput?.value || '').trim();
+      part.ot = otValue;
+      if(machineValue){
+        part.machine = machineValue;
+      }
+      if(part.status !== 'used'){
+        part.status = 'used';
+      }
+      renderSpareParts();
+      renderInterventionPieces(otValue);
+      fermerRecherchePiece();
+    }
+
+    function openSpareSearchModal(){
+      const otInput = document.getElementById('interventionOt');
+      const otValue = (otInput?.value || '').trim();
+      if(!otValue){
+        alert('Aucune intervention sélectionnée.');
+        return;
+      }
+      resetSpareSearchModal();
+      renderSpareSearchResults('');
+      openModal('spareSearchModal');
+      const searchInput = document.getElementById('spareSearchInput');
+      if(searchInput){
+        requestAnimationFrame(()=>searchInput.focus({preventScroll:true}));
+      }
+    }
+
+    function ouvrirRecherchePiece(){
+      openSpareSearchModal();
+    }
+
+    function fermerRecherchePiece(){
+      closeModal('spareSearchModal');
     }
 
     function resetSparePartModal(){
@@ -1934,6 +2109,31 @@
       if(!part) return;
       closeModal('pieceDetailModal');
       openSparePartModal('pieces', {...part, index: currentSparePartIndex});
+    }
+
+    function deleteSparePart(index){
+      const numericIndex = Number(index);
+      if(Number.isNaN(numericIndex) || numericIndex < 0 || numericIndex >= spareParts.length){
+        return;
+      }
+      const part = spareParts[numericIndex];
+      const label = part?.designation || part?.reference || '';
+      const message = label ? `Supprimer la pièce « ${label} » ?` : 'Supprimer cette pièce ?';
+      if(typeof window !== 'undefined' && !window.confirm(message)){
+        return;
+      }
+      spareParts.splice(numericIndex, 1);
+      if(currentSparePartIndex === numericIndex){
+        currentSparePartIndex = null;
+      }else if(currentSparePartIndex != null && currentSparePartIndex > numericIndex){
+        currentSparePartIndex -= 1;
+      }
+      renderSpareParts();
+      const targetOt = currentInterventionRow ? (currentInterventionRow.dataset.ot || '') : (part?.ot || '');
+      renderInterventionPieces(targetOt);
+      if(activeModal && activeModal.id === 'pieceDetailModal'){
+        closeModal('pieceDetailModal');
+      }
     }
 
     function setupPreventifRows(){
@@ -2353,6 +2553,13 @@
             status:'used'
           } : {status:'used'};
           openSparePartModal('intervention', defaults);
+        });
+      }
+
+      const spareSearchInput = document.getElementById('spareSearchInput');
+      if(spareSearchInput){
+        spareSearchInput.addEventListener('input', evt=>{
+          renderSpareSearchResults(evt.target.value);
         });
       }
 

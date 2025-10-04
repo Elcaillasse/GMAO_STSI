@@ -1,0 +1,2461 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Prototype GMAO – Modèle HTML</title>
+  <style>
+    :root{
+      --bg:#0f172a;          /* slate-900 */
+      --panel:#111827;       /* gray-900 */
+      --muted:#1f2937;       /* gray-800 */
+      --card:#0b1220;        /* dark card */
+      --ink:#e5e7eb;         /* gray-200 */
+      --ink-dim:#9ca3af;     /* gray-400 */
+      --brand:#22d3ee;       /* cyan-400 */
+      --accent:#a78bfa;      /* violet-400 */
+      --ok:#10b981;          /* emerald */
+      --warn:#f59e0b;        /* amber */
+      --bad:#ef4444;         /* red */
+      --shadow:0 10px 25px rgba(0,0,0,.25), 0 1px 0 rgba(255,255,255,.03) inset;
+      --radius:16px;
+    }
+    :root[data-theme="light"]{
+      --bg:#f1f5f9;
+      --panel:#ffffff;
+      --muted:#e2e8f0;
+      --card:#f8fafc;
+      --ink:#0f172a;
+      --ink-dim:#475569;
+      --brand:#0ea5e9;
+      --accent:#6366f1;
+      --ok:#059669;
+      --warn:#d97706;
+      --bad:#dc2626;
+      --shadow:0 12px 28px rgba(15,23,42,.12), 0 1px 0 rgba(15,23,42,.04) inset;
+    }
+    *{box-sizing:border-box}
+    [hidden]{display:none!important}
+    html,body{height:100%}
+    body{margin:0;background:radial-gradient(1200px 600px at 80% -10%,rgba(167,139,250,.15),transparent),
+                          radial-gradient(900px 500px at -20% 10%,rgba(34,211,238,.12),transparent),
+                          var(--bg);color:var(--ink);font:14px/1.45 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,"Helvetica Neue",Arial,"Apple Color Emoji","Segoe UI Emoji";}
+    :root[data-theme="light"] body{background:radial-gradient(1200px 600px at 80% -10%,rgba(99,102,241,.14),transparent),
+                                   radial-gradient(900px 500px at -20% 10%,rgba(14,165,233,.12),transparent),
+                                   var(--bg);}
+    a{color:inherit;text-decoration:none}
+    a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{
+      outline:2px solid var(--accent);
+      outline-offset:2px;
+    }
+    .app{display:grid;grid-template-columns:260px 1fr;grid-template-rows:64px 1fr;height:100vh;gap:16px;padding:16px}
+    header{grid-column:1/3;height:64px;background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.02));border:1px solid rgba(255,255,255,.06);backdrop-filter:blur(6px);border-radius:var(--radius);display:flex;align-items:center;justify-content:space-between;padding:0 16px;box-shadow:var(--shadow)}
+    :root[data-theme="light"] header,
+    :root[data-theme="light"] nav,
+    :root[data-theme="light"] main{background:linear-gradient(180deg,rgba(15,23,42,.05),rgba(15,23,42,.02));border:1px solid rgba(15,23,42,.08);}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:36px;height:36px;border-radius:12px;background:linear-gradient(135deg,var(--brand),var(--accent));display:grid;place-items:center;box-shadow:0 6px 20px rgba(34,211,238,.3)}
+    .logo svg{filter:drop-shadow(0 2px 6px rgba(0,0,0,.3))}
+    .brand h1{font-size:16px;letter-spacing:.3px;margin:0;font-weight:700}
+    .header-actions{display:flex;gap:8px;align-items:center}
+    .btn{background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.02));border:1px solid rgba(255,255,255,.08);padding:8px 12px;border-radius:12px;color:var(--ink);display:inline-flex;gap:8px;align-items:center;cursor:pointer;box-shadow:var(--shadow)}
+    .btn.primary{background:linear-gradient(180deg,rgba(34,211,238,.25),rgba(34,211,238,.08));border-color:rgba(34,211,238,.3)}
+    :root[data-theme="light"] .btn{background:linear-gradient(180deg,rgba(148,163,184,.12),rgba(148,163,184,.05));border:1px solid rgba(148,163,184,.26)}
+    :root[data-theme="light"] .btn.primary{background:linear-gradient(180deg,rgba(14,165,233,.22),rgba(14,165,233,.08));border-color:rgba(14,165,233,.3)}
+    .btn:active{transform:translateY(1px)}
+
+    nav{background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.02));border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);padding:12px;box-shadow:var(--shadow)}
+    .search{display:flex;gap:8px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:8px}
+    :root[data-theme="light"] .search{background:rgba(148,163,184,.12);border:1px solid rgba(148,163,184,.28)}
+    .search input{flex:1;background:transparent;border:0;outline:0;color:var(--ink)}
+    .menu{margin-top:12px;display:flex;flex-direction:column;gap:6px;}
+    .menu a{padding:10px 12px;border-radius:10px;border:1px solid transparent;display:flex;gap:10px;align-items:center}
+    .menu a.active, .menu a:hover{background:rgba(167,139,250,.1);border-color:rgba(167,139,250,.25)}
+
+    main{background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.02));border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow);overflow:auto}
+    .section{display:none;}
+    .section.active{display:block}
+
+    .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}
+    .card{background:var(--card);border:1px solid rgba(255,255,255,.06);border-radius:16px;padding:14px;box-shadow:var(--shadow)}
+    :root[data-theme="light"] .card{border:1px solid rgba(15,23,42,.08)}
+    .card h3{margin:0 0 6px 0;font-size:12px;color:var(--ink-dim);font-weight:600;letter-spacing:.3px;text-transform:uppercase}
+    .card .value{font-size:24px;font-weight:800}
+    .card.backlog-card{display:flex;flex-direction:column;gap:12px}
+    .card.backlog-card .table-wrapper{flex:1;min-height:440px;overflow:auto}
+    .tag{display:inline-flex;align-items:center;gap:6px;padding:4px 8px;border-radius:999px;font-size:12px;border:1px solid rgba(255,255,255,.12)}
+    .tag.ok{background:rgba(16,185,129,.15);border-color:rgba(16,185,129,.35)}
+    .tag.warn{background:rgba(245,158,11,.15);border-color:rgba(245,158,11,.35)}
+    .tag.bad{background:rgba(239,68,68,.15);border-color:rgba(239,68,68,.35)}
+
+    table{width:100%;border-collapse:separate;border-spacing:0 8px}
+    th,td{padding:10px}
+    thead th{text-align:left;font-size:12px;color:var(--ink-dim);text-transform:uppercase;letter-spacing:.4px}
+    tbody tr{background:var(--panel);border:1px solid rgba(255,255,255,.06)}
+    :root[data-theme="light"] tbody tr{border:1px solid rgba(15,23,42,.08)}
+    tbody tr td:first-child{border-radius:12px 0 0 12px}
+    tbody tr td:last-child{border-radius:0 12px 12px 0}
+    .status{font-weight:700}
+    .status.ok{color:var(--ok)}
+    .status.warn{color:var(--warn)}
+    .status.bad{color:var(--bad)}
+    .detail-grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));margin:0}
+    .detail-item{background:var(--muted);padding:12px 14px;border-radius:12px;display:flex;flex-direction:column;gap:6px}
+    .detail-label{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-dim)}
+    .detail-value{font-size:16px;font-weight:600;color:var(--ink)}
+    .detail-note{white-space:pre-wrap}
+    .detail-item.detail-wide{grid-column:1/-1}
+    .detail-item .tag,.detail-item .status{align-self:flex-start}
+    tbody tr.clickable{cursor:pointer;transition:background .2s ease,transform .2s ease}
+    tbody tr.clickable:hover{background:rgba(167,139,250,.12);transform:translateY(-1px)}
+    :root[data-theme="light"] tbody tr.clickable:hover{background:rgba(99,102,241,.12)}
+    tbody tr.clickable:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+    .toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:12px 0}
+    .toolbar .input, .toolbar select{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:8px 10px;color:var(--ink)}
+    :root:not([data-theme="light"]) .toolbar select{background:var(--panel);border:1px solid rgba(255,255,255,.14)}
+    :root[data-theme="light"] .toolbar .input,
+    :root[data-theme="light"] .toolbar select{background:rgba(148,163,184,.12);border:1px solid rgba(148,163,184,.28)}
+    .toolbar select option{background:var(--panel);color:var(--ink)}
+    :root[data-theme="light"] .toolbar select option{background:rgba(226,232,240,.95);color:var(--ink)}
+
+    /* modal */
+    .modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.55);padding:24px;overflow:auto}
+    .modal.open{display:flex}
+    .modal .sheet{width:min(720px,100%);background:var(--panel);border:1px solid rgba(255,255,255,.1);border-radius:18px;box-shadow:var(--shadow);max-height:calc(100vh - 48px);overflow:auto;display:flex;flex-direction:column}
+    :root[data-theme="light"] .modal .sheet{border:1px solid rgba(15,23,42,.12)}
+    .modal header{grid-column:auto;background:transparent;border:0;box-shadow:none;padding:16px}
+    .modal .content{padding:16px;overflow:auto;flex:1 1 auto}
+    .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+    .field{display:flex;flex-direction:column;gap:6px}
+    .field label{font-size:12px;color:var(--ink-dim)}
+    .field input,.field select,.field textarea{background:rgba(15,23,42,.6);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:8px 10px;color:var(--ink)}
+    .field textarea{min-height:140px;resize:vertical}
+    .field select option{background:var(--panel);color:var(--ink)}
+    :root[data-theme="light"] .field input,
+    :root[data-theme="light"] .field select,
+    :root[data-theme="light"] .field textarea{background:rgba(226,232,240,.6);border:1px solid rgba(148,163,184,.4)}
+    :root[data-theme="light"] .field select option{background:rgba(226,232,240,.95);color:var(--ink)}
+    .actions{display:flex;gap:8px;justify-content:flex-end;padding:0 16px 16px}
+
+    .attachments .attachment-actions{display:flex;flex-wrap:wrap;gap:8px}
+    .attachment-list{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:6px}
+    .attachment-item{display:flex;align-items:center;justify-content:space-between;gap:12px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:8px 10px;font-size:13px}
+    :root[data-theme="light"] .attachment-item{background:rgba(148,163,184,.12);border:1px solid rgba(148,163,184,.28)}
+    .attachment-info{display:flex;flex-direction:column;gap:2px}
+    .attachment-name{font-weight:600}
+    .attachment-meta{font-size:12px;color:var(--ink-dim)}
+    .attachment-remove{background:transparent;border:0;color:var(--ink-dim);cursor:pointer;padding:4px;border-radius:8px;line-height:1;font-size:16px}
+    .attachment-remove:hover{color:var(--bad);background:rgba(239,68,68,.12)}
+    :root[data-theme="light"] .attachment-remove:hover{background:rgba(220,38,38,.12)}
+    .attachment-empty{font-size:12px;color:var(--ink-dim)}
+    .spare-list{margin-top:8px}
+    .spare-item{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+    .spare-item-actions{display:flex;align-items:center;gap:8px}
+    .spare-item-main{display:flex;flex-direction:column;gap:4px}
+    .spare-item-title{font-weight:600}
+    .spare-item-meta{font-size:12px;color:var(--ink-dim)}
+    .spare-item-note{font-size:12px;color:var(--ink)}
+    .spare-empty-row{padding:18px;text-align:center;color:var(--ink-dim)}
+    .camera-preview{margin-top:12px;display:flex;flex-direction:column;gap:12px;background:rgba(15,23,42,.6);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:12px}
+    :root[data-theme="light"] .camera-preview{background:rgba(226,232,240,.6);border:1px solid rgba(148,163,184,.4)}
+    .camera-preview video{width:100%;max-height:180px;border-radius:12px;background:black}
+    .camera-actions{display:flex;flex-wrap:wrap;gap:8px}
+    .attachment-link{color:var(--accent);text-decoration:underline;text-decoration-thickness:1px;text-decoration-color:rgba(167,139,250,.6);word-break:break-word;}
+    .attachment-link:hover{color:var(--brand)}
+
+    /* chips */
+    .chip{border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);padding:6px 10px;border-radius:999px;font-size:12px}
+    :root[data-theme="light"] .chip{border:1px solid rgba(148,163,184,.4);background:rgba(226,232,240,.6)}
+
+    /* Bloc sites du tableau de bord */
+    .sites-card{margin-bottom:16px}
+    .site-panels{display:flex;gap:16px;flex-wrap:wrap;align-items:stretch}
+    .site-panel{flex:1 1 320px;background:var(--card);border:1px solid rgba(255,255,255,.08);border-radius:18px;padding:18px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:18px;min-width:280px}
+    :root[data-theme="light"] .site-panel{border:1px solid rgba(15,23,42,.08)}
+    .site-header{display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .site-title{font-size:16px;font-weight:700;letter-spacing:.4px;text-transform:uppercase}
+    .site-badge{padding:4px 10px;border-radius:999px;background:rgba(167,139,250,.12);border:1px solid rgba(167,139,250,.28);font-size:12px}
+    .site-section{display:flex;flex-direction:column;gap:12px}
+    .site-section h4{margin:0;font-size:12px;color:var(--ink-dim);letter-spacing:.3px;text-transform:uppercase}
+    .availability-summary{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+    .availability-value{font-size:42px;font-weight:800;line-height:1}
+    .availability-meta{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--ink-dim)}
+    .trend-up{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:rgba(16,185,129,.15);color:var(--ok);font-size:14px;font-weight:700}
+    .legend-list{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+    .legend-list li{display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:8px 12px;gap:12px}
+    :root[data-theme="light"] .legend-list li{border:1px solid rgba(148,163,184,.18);background:rgba(148,163,184,.08)}
+    .legend-item{display:flex;align-items:center;gap:10px;font-weight:600}
+    .legend-count{font-variant-numeric:tabular-nums;font-weight:600}
+    .dot{width:12px;height:12px;border-radius:50%;display:inline-block}
+    .dot.ok{background:var(--ok)}
+    .dot.warn{background:var(--warn)}
+    .dot.bad{background:var(--bad)}
+    .dot.info{background:var(--brand)}
+    .dot.attn{background:#facc15}
+
+    @media (max-width:1100px){
+      .app{grid-template-columns:1fr;grid-template-rows:auto 1fr}
+      nav{order:2}
+      main{order:3}
+      header{order:1}
+      .kpis{grid-template-columns:repeat(2,1fr)}
+      .grid{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <div class="brand">
+        <div class="logo" aria-hidden="true">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2l3 6 6 .75-4.5 4 1.2 6.25L12 16.5 6.3 19l1.2-6.25L3 8.75 9 8l3-6z" stroke="#0b1020" stroke-width="1.2" fill="white" opacity=".9"/>
+          </svg>
+        </div>
+        <h1>GMAO STSI / GILLET</h1>
+      </div>
+      <div class="header-actions">
+        <button class="btn" id="themeToggle" type="button" onclick="toggleTheme()" title="Basculer le thème" aria-pressed="false">🌙 Mode sombre</button>
+        <button class="btn primary" onclick="openModal('diModal')">➕ Demande d’intervention</button>
+      </div>
+    </header>
+
+    <nav>
+      <div class="search" role="search">
+        <span>🔎</span>
+        <input id="globalSearch" placeholder="Rechercher… (machines, OT, pièces, fournisseurs)" oninput="globalFilter(this.value)">
+      </div>
+      <div class="menu" role="navigation">
+        <a href="#" class="active" data-target="dashboard" onclick="switchSection(event)">📊 Tableau de bord</a>
+        <a href="#" data-target="parc" onclick="switchSection(event)">🏭 Parc machines</a>
+        <a href="#" data-target="interventions" onclick="switchSection(event)">🛠️ Interventions</a>
+        <a href="#" data-target="pieces" onclick="switchSection(event)">🔩 Pièces détachées</a>
+        <a href="#" data-target="preventif" onclick="switchSection(event)">⏱️ Préventif</a>
+        <a href="#" data-target="contacts" onclick="switchSection(event)">📇 Contacts</a>
+      </div>
+    </nav>
+
+    <main>
+      <!-- Dashboard -->
+      <section id="dashboard" class="section active" aria-label="Tableau de bord">
+        <!-- Encart sites -->
+        <div class="card sites-card">
+          <h3>Sites suivis</h3>
+          <div class="site-panels">
+            <article class="site-panel">
+              <div class="site-header">
+                <span class="site-title">Site A</span>
+                <span class="site-badge">Zone Nord</span>
+              </div>
+              <div class="site-section">
+                <h4>Taux de Disponibilité</h4>
+                <div class="availability-summary">
+                  <span class="availability-value">50%</span>
+                  <div class="availability-meta">
+                    <span class="trend-up" aria-hidden="true">▲</span>
+                    <span>2 machine(s) à l’arrêt</span>
+                  </div>
+                </div>
+              </div>
+              <div class="site-section">
+                <h4>Répartition des Demandes d’intervention</h4>
+                <ul class="legend-list" aria-label="Répartition des demandes">
+                  <li>
+                    <div class="legend-item"><span class="dot bad"></span><span>Attente</span></div>
+                    <span class="legend-count">6</span>
+                  </li>
+                  <li>
+                    <div class="legend-item"><span class="dot info"></span><span>En cours</span></div>
+                    <span class="legend-count">9</span>
+                  </li>
+                  <li>
+                    <div class="legend-item"><span class="dot ok"></span><span>Terminé</span></div>
+                    <span class="legend-count">21</span>
+                  </li>
+                </ul>
+              </div>
+              <div class="site-section">
+                <h4>État des Équipements</h4>
+                <ul class="legend-list" aria-label="État des équipements">
+                  <li>
+                    <div class="legend-item"><span class="dot ok"></span><span>Opérationnelles</span></div>
+                    <span class="legend-count">32</span>
+                  </li>
+                  <li>
+                    <div class="legend-item"><span class="dot warn"></span><span>En maintenance</span></div>
+                    <span class="legend-count">5</span>
+                  </li>
+                  <li>
+                    <div class="legend-item"><span class="dot bad"></span><span>À l’arrêt</span></div>
+                    <span class="legend-count">2</span>
+                  </li>
+                  <li>
+                    <div class="legend-item"><span class="dot attn"></span><span>Préventifs à réaliser</span></div>
+                    <span class="legend-count">7</span>
+                  </li>
+                </ul>
+              </div>
+            </article>
+            <article class="site-panel">
+              <div class="site-header">
+                <span class="site-title">Site B</span>
+                <span class="site-badge">Zone Sud</span>
+              </div>
+              <div class="site-section">
+                <h4>Taux de Disponibilité</h4>
+                <div class="availability-summary">
+                  <span class="availability-value">78%</span>
+                  <div class="availability-meta">
+                    <span class="trend-up" aria-hidden="true">▲</span>
+                    <span>1 machine(s) à l’arrêt</span>
+                  </div>
+                </div>
+              </div>
+              <div class="site-section">
+                <h4>Répartition des Demandes d’intervention</h4>
+                <ul class="legend-list" aria-label="Répartition des demandes">
+                  <li>
+                    <div class="legend-item"><span class="dot bad"></span><span>Attente</span></div>
+                    <span class="legend-count">3</span>
+                  </li>
+                  <li>
+                    <div class="legend-item"><span class="dot info"></span><span>En cours</span></div>
+                    <span class="legend-count">4</span>
+                  </li>
+                  <li>
+                    <div class="legend-item"><span class="dot ok"></span><span>Terminé</span></div>
+                    <span class="legend-count">15</span>
+                  </li>
+                </ul>
+              </div>
+              <div class="site-section">
+                <h4>État des Équipements</h4>
+                <ul class="legend-list" aria-label="État des équipements">
+                  <li>
+                    <div class="legend-item"><span class="dot ok"></span><span>Opérationnelles</span></div>
+                    <span class="legend-count">18</span>
+                  </li>
+                  <li>
+                    <div class="legend-item"><span class="dot warn"></span><span>En maintenance</span></div>
+                    <span class="legend-count">3</span>
+                  </li>
+                  <li>
+                    <div class="legend-item"><span class="dot bad"></span><span>À l’arrêt</span></div>
+                    <span class="legend-count">1</span>
+                  </li>
+                  <li>
+                    <div class="legend-item"><span class="dot attn"></span><span>Préventifs à réaliser</span></div>
+                    <span class="legend-count">2</span>
+                  </li>
+                </ul>
+              </div>
+            </article>
+          </div>
+        </div>
+
+        <div class="kpis">
+          <div class="card"><h3>OT Ouverts</h3><div class="value">18</div><span class="tag warn">+3 cette semaine</span></div>
+          <div class="card"><h3>Taux préventif réalisé</h3><div class="value">86%</div><span class="tag ok">Objectif ≥ 80%</span></div>
+        </div>
+
+        <div class="card backlog-card">
+          <h3>Backlog par priorité</h3>
+          <div class="toolbar">
+            <span class="chip">P1: 4</span>
+            <span class="chip">P2: 9</span>
+            <span class="chip">P3: 5</span>
+            <button class="btn" onclick="openModal('reportModal')">📈 Export rapide</button>
+          </div>
+          <div class="table-wrapper">
+            <table aria-label="Backlog OT">
+              <thead><tr><th>OT</th><th>Machine</th><th>Type</th><th>Priorité</th><th>Statut</th><th>Prévu</th></tr></thead>
+              <tbody id="tblBacklog">
+                <tr><td>OT-1024</td><td>DMU 70</td><td>Correctif</td><td>P1</td><td><span class="status warn">En cours</span></td><td>24/09/2025</td></tr>
+                <tr><td>OT-1025</td><td>Tornos Deco</td><td>Qualité</td><td>P2</td><td><span class="status ok">Planifié</span></td><td>26/09/2025</td></tr>
+                <tr><td>OT-1026</td><td>Compresseur KAESER</td><td>Sécurité</td><td>P1</td><td><span class="status bad">En retard</span></td><td>22/09/2025</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- Parc -->
+      <section id="parc" class="section" aria-label="Parc machines">
+        <div class="toolbar">
+          <input class="input" placeholder="Filtrer par zone…" oninput="filterTable('tblParc', this.value, [0])">
+          <select onchange="filterTable('tblParc', this.value, [2])">
+            <option value="">Tous fabricants</option>
+            <option>DMG Mori</option>
+            <option>Tornos</option>
+            <option>Kaeser</option>
+          </select>
+          <button class="btn" onclick="openEquipmentForm('create')">➕ Ajouter équipement</button>
+        </div>
+        <table aria-label="Parc">
+          <thead><tr><th>Zone</th><th>Machine</th><th>Fabricant</th><th>Modèle</th><th>Numéro série</th><th>Année</th></tr></thead>
+          <tbody id="tblParc">
+            <tr class="clickable" role="button" tabindex="0"
+                aria-label="Voir le détail de Centre d'usinage 5 axes"
+                data-zone="Fraisage"
+                data-machine="Centre d'usinage 5 axes"
+                data-fabricant="DMG Mori"
+                data-modele="DMU 70"
+                data-serie="FR-DMU70-2021"
+                data-annee="2021">
+              <td>Fraisage</td><td>Centre d'usinage 5 axes</td><td>DMG Mori</td><td>DMU 70</td><td>FR-DMU70-2021</td><td>2021</td>
+            </tr>
+            <tr class="clickable" role="button" tabindex="0"
+                aria-label="Voir le détail de Tour CN polyvalent"
+                data-zone="Tournage"
+                data-machine="Tour CN polyvalent"
+                data-fabricant="Tornos"
+                data-modele="Deco 2000"
+                data-serie="TN-DEC-2018"
+                data-annee="2018">
+              <td>Tournage</td><td>Tour CN polyvalent</td><td>Tornos</td><td>Deco 2000</td><td>TN-DEC-2018</td><td>2018</td>
+            </tr>
+            <tr class="clickable" role="button" tabindex="0"
+                aria-label="Voir le détail de Compresseur d'air"
+                data-zone="Utilities"
+                data-machine="Compresseur d'air"
+                data-fabricant="Kaeser"
+                data-modele="SX 6"
+                data-serie="KS-SX6-2016"
+                data-annee="2016">
+              <td>Utilities</td><td>Compresseur d'air</td><td>Kaeser</td><td>SX 6</td><td>KS-SX6-2016</td><td>2016</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- Interventions -->
+      <section id="interventions" class="section" aria-label="Interventions">
+        <div class="toolbar">
+          <select id="selType" class="input" onchange="filterTable('tblOT', this.value, [2])">
+            <option value="">Type: Tous</option>
+            <option>Correctif</option>
+            <option>Palliatif</option>
+            <option>Qualité</option>
+            <option>Sécurité</option>
+          </select>
+          <select id="selPrio" class="input" onchange="filterTable('tblOT', this.value, [3])">
+            <option value="">Priorité: Toutes</option>
+            <option>P1</option>
+            <option>P2</option>
+            <option>P3</option>
+          </select>
+          <input class="input" placeholder="Rechercher travaux…" oninput="filterTable('tblOT', this.value, [5])">
+        </div>
+        <table aria-label="Interventions">
+          <thead><tr><th>OT</th><th>Machine</th><th>Type</th><th>Priorité</th><th>Statut</th><th>Travaux</th><th>Prévu</th></tr></thead>
+          <tbody id="tblOT">
+            <tr class="clickable" role="button" tabindex="0" aria-label="Ouvrir l'intervention OT-1024"
+                data-ot="OT-1024"
+                data-machine="DMU 70"
+                data-type="Correctif"
+                data-priorite="P1"
+                data-statut="En cours"
+                data-status="En cours"
+                data-travaux="Vibrations broche"
+                data-intervenant="N. Dupont"
+                data-description="Remplacement des roulements de broche et réalignement."
+                data-temps-intervention="3.5"
+                data-temps-arret="2"
+                data-resolution="2025-09-24"
+                data-type-intervention="curatif">
+              <td>OT-1024</td>
+              <td>DMU 70</td>
+              <td>Correctif</td>
+              <td>P1</td>
+              <td><span class="status warn">En cours</span></td>
+              <td>Vibrations broche</td>
+              <td>24/09/2025</td>
+            </tr>
+            <tr class="clickable" role="button" tabindex="0" aria-label="Ouvrir l'intervention OT-1025"
+                data-ot="OT-1025"
+                data-machine="Tornos Deco"
+                data-type="Qualité"
+                data-priorite="P2"
+                data-statut="Planifié"
+                data-status="Planifié"
+                data-travaux="Contrôle géométrie"
+                data-intervenant=""
+                data-description=""
+                data-temps-intervention=""
+                data-temps-arret="0"
+                data-resolution=""
+                data-type-intervention="preventif">
+              <td>OT-1025</td>
+              <td>Tornos Deco</td>
+              <td>Qualité</td>
+              <td>P2</td>
+              <td><span class="status ok">Planifié</span></td>
+              <td>Contrôle géométrie</td>
+              <td>26/09/2025</td>
+            </tr>
+            <tr class="clickable" role="button" tabindex="0" aria-label="Ouvrir l'intervention OT-1026"
+                data-ot="OT-1026"
+                data-machine="Compresseur KAESER"
+                data-type="Sécurité"
+                data-priorite="P1"
+                data-statut="En retard"
+                data-status="En retard"
+                data-travaux="Remplacer cartouche"
+                data-intervenant="Equipe maintenance"
+                data-description="Attente de la pièce de rechange, intervention planifiée."
+                data-temps-intervention="1.5"
+                data-temps-arret="1.5"
+                data-resolution="2025-09-22"
+                data-type-intervention="correctif">
+              <td>OT-1026</td>
+              <td>Compresseur KAESER</td>
+              <td>Sécurité</td>
+              <td>P1</td>
+              <td><span class="status bad">En retard</span></td>
+              <td>Remplacer cartouche</td>
+              <td>22/09/2025</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- Pièces détachées -->
+      <section id="pieces" class="section" aria-label="Pièces détachées">
+        <div class="toolbar">
+          <input id="piecesSearch" class="input" placeholder="Rechercher une pièce…" oninput="renderSpareParts()">
+          <select id="piecesStatusFilter" class="input" onchange="renderSpareParts()">
+            <option value="">Statut : Tous</option>
+            <option value="ordered">Commandée</option>
+            <option value="used">Utilisée</option>
+          </select>
+          <button class="btn" type="button" onclick="openSparePartModal('pieces')">➕ Ajouter une pièce</button>
+        </div>
+        <table aria-label="Pièces détachées">
+          <thead>
+            <tr><th>Référence</th><th>Désignation</th><th>OT</th><th>Machine</th><th>Statut</th><th>Quantité</th><th>Date</th><th>Commentaire</th></tr>
+          </thead>
+          <tbody id="tblPieces"></tbody>
+        </table>
+      </section>
+
+      <!-- Préventif -->
+      <section id="preventif" class="section" aria-label="Préventif">
+        <div class="toolbar">
+          <select class="input" onchange="filterTable('tblPrev', this.value, [2])">
+            <option value="">Périodicité</option>
+            <option>Hebdo</option>
+            <option>Mensuel</option>
+            <option>Trimestriel</option>
+          </select>
+          <button class="btn" onclick="openModal('planModal')">⚙️ Générer OT préventifs</button>
+        </div>
+        <table aria-label="Plan préventif">
+          <thead><tr><th>Plan</th><th>Machine</th><th>Périodicité</th><th>Dernier</th><th>Prochain</th><th>État</th></tr></thead>
+        <tbody id="tblPrev">
+          <tr class="clickable" role="button" tabindex="0"
+              aria-label="Voir le plan préventif PV-001"
+              data-plan="PV-001"
+              data-machine="DMU 70"
+              data-periodicite="Mensuel"
+              data-dernier="28/08/2025"
+              data-prochain="28/09/2025"
+              data-etat="À l'heure"
+              data-etat-class="ok">
+            <td>PV-001</td><td>DMU 70</td><td>Mensuel</td><td>28/08/2025</td><td>28/09/2025</td><td><span class="status ok">À l'heure</span></td>
+          </tr>
+          <tr class="clickable" role="button" tabindex="0"
+              aria-label="Voir le plan préventif PV-017"
+              data-plan="PV-017"
+              data-machine="Tornos Deco"
+              data-periodicite="Hebdo"
+              data-dernier="18/09/2025"
+              data-prochain="25/09/2025"
+              data-etat="À lancer"
+              data-etat-class="warn">
+            <td>PV-017</td><td>Tornos Deco</td><td>Hebdo</td><td>18/09/2025</td><td>25/09/2025</td><td><span class="status warn">À lancer</span></td>
+          </tr>
+          <tr class="clickable" role="button" tabindex="0"
+              aria-label="Voir le plan préventif PV-023"
+              data-plan="PV-023"
+              data-machine="Compresseur KAESER"
+              data-periodicite="Trimestriel"
+              data-dernier="10/07/2025"
+              data-prochain="10/10/2025"
+              data-etat="OK"
+              data-etat-class="ok">
+            <td>PV-023</td><td>Compresseur KAESER</td><td>Trimestriel</td><td>10/07/2025</td><td>10/10/2025</td><td><span class="status ok">OK</span></td>
+          </tr>
+        </tbody>
+        </table>
+      </section>
+
+      <!-- Contacts -->
+      <section id="contacts" class="section" aria-label="Contacts">
+        <div class="toolbar">
+          <input class="input" placeholder="Rechercher fournisseur/intervenant…" oninput="filterTable('tblContacts', this.value, [0,1,2,3])">
+          <button class="btn" onclick="openContactForm('create')">➕ Nouveau contact</button>
+        </div>
+        <table aria-label="Contacts">
+          <thead><tr><th>Entreprise</th><th>Activité</th><th>Contact</th><th>Email</th><th>Téléphone</th></tr></thead>
+          <tbody id="tblContacts">
+            <tr class="clickable" role="button" tabindex="0"
+                aria-label="Voir le contact AirTech"
+                data-entreprise="AirTech"
+                data-activite="Compresseurs"
+                data-contact="J. Martin"
+                data-email="service@airtech.tld"
+                data-telephone="+33 4 12 34 56 78">
+              <td>AirTech</td><td>Compresseurs</td><td>J. Martin</td><td>service@airtech.tld</td><td>+33 4 12 34 56 78</td>
+            </tr>
+            <tr class="clickable" role="button" tabindex="0"
+                aria-label="Voir le contact MecaPro"
+                data-entreprise="MecaPro"
+                data-activite="Fourniture Mécanique"
+                data-contact="S. Leroy"
+                data-email="contact@mecapro.tld"
+                data-telephone="+33 1 98 76 54 32">
+              <td>MecaPro</td><td>Fourniture Mécanique</td><td>S. Leroy</td><td>contact@mecapro.tld</td><td>+33 1 98 76 54 32</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Modals -->
+  <div class="modal" id="otModal" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Créer un OT">
+    <div class="sheet">
+      <header>
+        <div class="brand"><div class="logo" style="width:28px;height:28px"></div><h1>Nouvel ordre de travail</h1></div>
+      </header>
+      <div class="content">
+        <div class="grid">
+          <div class="field"><label>Machine</label><input placeholder="ex. DMU 70"/></div>
+          <div class="field"><label>Type</label><select><option>Correctif</option><option>Palliatif</option><option>Qualité</option><option>Sécurité</option></select></div>
+          <div class="field"><label>Priorité</label><select><option>P1</option><option>P2</option><option>P3</option></select></div>
+          <div class="field"><label>Prévu le</label><input type="date"/></div>
+          <div class="field" style="grid-column:1/-1"><label>Travaux à effectuer</label><textarea rows="3" placeholder="Décrire la demande…"></textarea></div>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="btn" onclick="closeModal('otModal')">Annuler</button>
+        <button class="btn primary" onclick="closeModal('otModal')">Créer</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="diModal" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Créer une demande d’intervention">
+    <div class="sheet">
+      <header>
+        <div class="brand">
+          <div class="logo" style="width:28px;height:28px"></div>
+          <h1>Nouvelle demande d’intervention</h1>
+        </div>
+      </header>
+      <div class="content">
+        <div class="grid">
+          <div class="field">
+            <label>Date de la demande</label>
+            <input type="date"/>
+          </div>
+          <div class="field">
+            <label>Machine</label>
+            <input type="text" placeholder="Nom de la machine…"/>
+          </div>
+          <div class="field">
+            <label>Type</label>
+            <select>
+              <option value="correctif">Correctif</option>
+              <option value="palliatif">Palliatif</option>
+              <option value="qualite">Qualité</option>
+              <option value="securite">Sécurité</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Priorité</label>
+            <select>
+              <option value="P1">P1 — Urgent (machine à l’arrêt)</option>
+              <option value="P2">P2 — Moyen (défaut sans interruption)</option>
+              <option value="P3">P3 — Faible</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Machine à l’arrêt</label>
+            <select>
+              <option value="oui">Oui</option>
+              <option value="non">Non</option>
+            </select>
+          </div>
+          <div class="field" style="grid-column:1/-1">
+            <label>Travaux à effectuer</label>
+            <textarea rows="3" placeholder="Décrire les travaux demandés…"></textarea>
+          </div>
+          <div class="field attachments" style="grid-column:1/-1">
+            <label>Pièces jointes</label>
+            <div class="attachment-actions">
+              <input id="diAttachmentInput" type="file" accept="image/*,.pdf,.doc,.docx,.txt,.xlsx,.xls,.ppt,.pptx" multiple hidden>
+              <button type="button" class="btn" id="diUploadButton">📎 Ajouter un fichier</button>
+              <button type="button" class="btn" id="diCameraButton" aria-expanded="false">📷 Prendre une photo</button>
+            </div>
+            <ul id="diAttachmentList" class="attachment-list"></ul>
+            <div class="camera-preview" id="diCameraPreview" hidden>
+              <video id="diCameraVideo" autoplay playsinline></video>
+              <div class="camera-actions">
+                <button type="button" class="btn primary" id="diCaptureBtn">📸 Capturer</button>
+                <button type="button" class="btn" id="diCloseCameraBtn">✖️ Fermer la caméra</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="btn" onclick="closeModal('diModal')">Annuler</button>
+        <button class="btn primary" onclick="closeModal('diModal')">Envoyer</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="interventionModal" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Compte-rendu d'intervention">
+    <div class="sheet">
+      <header>
+        <div class="brand">
+          <div class="logo" style="width:28px;height:28px"></div>
+          <h1>Compte-rendu d'intervention</h1>
+        </div>
+      </header>
+      <div class="content">
+        <div class="grid">
+          <div class="field">
+            <label for="interventionOt">OT</label>
+            <input id="interventionOt" type="text" readonly>
+          </div>
+          <div class="field">
+            <label for="interventionMachine">Machine</label>
+            <input id="interventionMachine" type="text" readonly>
+          </div>
+          <div class="field">
+            <label for="interventionStatut">Statut</label>
+            <input id="interventionStatut" type="text" readonly>
+          </div>
+          <div class="field">
+            <label for="interventionPriorite">Priorité</label>
+            <select id="interventionPriorite">
+              <option value="P1">P1</option>
+              <option value="P2">P2</option>
+              <option value="P3">P3</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="interventionIntervenant">Intervenant</label>
+            <input id="interventionIntervenant" type="text" placeholder="Nom de l'intervenant">
+          </div>
+          <div class="field">
+            <label for="interventionType">Type d’intervention</label>
+            <select id="interventionType">
+              <option value="correctif">Correctif</option>
+              <option value="curatif">Curatif</option>
+              <option value="preventif">Préventif</option>
+              <option value="amelioration">Amélioration</option>
+              <option value="securite">Sécurité</option>
+            </select>
+          </div>
+          <div class="field" style="grid-column:1/-1">
+            <label for="interventionDescription">Intervention réalisée</label>
+            <textarea id="interventionDescription" rows="4" placeholder="Décrire les actions menées…"></textarea>
+          </div>
+          <div class="field attachments" style="grid-column:1/-1">
+            <label>Pièces jointes</label>
+            <div class="attachment-actions">
+              <input id="interventionAttachmentInput" type="file" accept="image/*,.pdf,.doc,.docx,.txt,.xlsx,.xls,.ppt,.pptx" multiple hidden>
+              <button type="button" class="btn" id="interventionUploadButton">📎 Ajouter un fichier</button>
+              <button type="button" class="btn" id="interventionCameraButton" aria-expanded="false">📷 Prendre une photo</button>
+            </div>
+            <ul id="interventionAttachmentList" class="attachment-list"></ul>
+            <div class="camera-preview" id="interventionCameraPreview" hidden>
+              <video id="interventionCameraVideo" autoplay playsinline></video>
+              <div class="camera-actions">
+                <button type="button" class="btn primary" id="interventionCaptureBtn">📸 Capturer</button>
+                <button type="button" class="btn" id="interventionCloseCameraBtn">✖️ Fermer la caméra</button>
+              </div>
+            </div>
+          </div>
+          <div class="field attachments" style="grid-column:1/-1">
+            <label>Pièces détachées liées</label>
+            <div class="attachment-actions">
+              <button type="button" class="btn" id="interventionAddPieceBtn">➕ Ajouter une pièce</button>
+            </div>
+            <p id="interventionPiecesEmpty" class="attachment-empty">Aucune pièce liée pour le moment.</p>
+            <ul id="interventionPiecesList" class="attachment-list spare-list"></ul>
+          </div>
+          <div class="field">
+            <label for="interventionDuree">Temps d’intervention (h)</label>
+            <input id="interventionDuree" type="number" min="0" step="0.25" placeholder="0">
+          </div>
+          <div class="field">
+            <label for="interventionArret">Temps d’arrêt machine (h)</label>
+            <input id="interventionArret" type="number" min="0" step="0.25" placeholder="0">
+          </div>
+          <div class="field">
+            <label for="interventionResolution">Date de résolution</label>
+            <input id="interventionResolution" type="date">
+          </div>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="btn" type="button" onclick="closeModal('interventionModal')">Fermer</button>
+        <button class="btn primary" type="button" onclick="saveInterventionDetails()">Enregistrer</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="parcDetailModal" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Détails de l'équipement">
+    <div class="sheet">
+      <header>
+        <div class="brand"><div class="logo" style="width:28px;height:28px"></div><h1>Détails équipement</h1></div>
+      </header>
+      <div class="content">
+        <div class="detail-grid">
+          <div class="detail-item"><span class="detail-label">Zone</span><span class="detail-value" id="parcDetailZone">—</span></div>
+          <div class="detail-item"><span class="detail-label">Machine</span><span class="detail-value" id="parcDetailMachine">—</span></div>
+          <div class="detail-item"><span class="detail-label">Fabricant</span><span class="detail-value" id="parcDetailFabricant">—</span></div>
+          <div class="detail-item"><span class="detail-label">Modèle</span><span class="detail-value" id="parcDetailModele">—</span></div>
+          <div class="detail-item"><span class="detail-label">Numéro de série</span><span class="detail-value" id="parcDetailSerie">—</span></div>
+          <div class="detail-item"><span class="detail-label">Année</span><span class="detail-value" id="parcDetailAnnee">—</span></div>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="btn" type="button" onclick="closeModal('parcDetailModal')">Fermer</button>
+        <button class="btn primary" type="button" onclick="beginEditEquipment()">Modifier</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="pieceDetailModal" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Détails de la pièce détachée">
+    <div class="sheet">
+      <header>
+        <div class="brand"><div class="logo" style="width:28px;height:28px"></div><h1>Pièce détachée</h1></div>
+      </header>
+      <div class="content">
+        <div class="detail-grid">
+          <div class="detail-item"><span class="detail-label">Référence</span><span class="detail-value" id="pieceDetailReference">—</span></div>
+          <div class="detail-item"><span class="detail-label">Désignation</span><span class="detail-value" id="pieceDetailDesignation">—</span></div>
+          <div class="detail-item"><span class="detail-label">OT lié</span><span class="detail-value" id="pieceDetailOt">—</span></div>
+          <div class="detail-item"><span class="detail-label">Machine</span><span class="detail-value" id="pieceDetailMachine">—</span></div>
+          <div class="detail-item"><span class="detail-label">Statut</span><span class="detail-value"><span id="pieceDetailStatus" class="tag">—</span></span></div>
+          <div class="detail-item"><span class="detail-label">Quantité</span><span class="detail-value" id="pieceDetailQuantity">—</span></div>
+          <div class="detail-item"><span class="detail-label">Date</span><span class="detail-value" id="pieceDetailDate">—</span></div>
+          <div class="detail-item detail-wide"><span class="detail-label">Commentaire</span><span class="detail-value detail-note" id="pieceDetailNote">—</span></div>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="btn" type="button" onclick="closeModal('pieceDetailModal')">Fermer</button>
+        <button class="btn primary" type="button" onclick="beginEditSparePart()">Modifier</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="preventifDetailModal" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Détails du plan préventif">
+    <div class="sheet">
+      <header>
+        <div class="brand"><div class="logo" style="width:28px;height:28px"></div><h1>Plan préventif</h1></div>
+      </header>
+      <div class="content">
+        <div class="detail-grid">
+          <div class="detail-item"><span class="detail-label">Plan</span><span class="detail-value" id="preventifDetailPlan">—</span></div>
+          <div class="detail-item"><span class="detail-label">Machine</span><span class="detail-value" id="preventifDetailMachine">—</span></div>
+          <div class="detail-item"><span class="detail-label">Périodicité</span><span class="detail-value" id="preventifDetailPeriodicite">—</span></div>
+          <div class="detail-item"><span class="detail-label">Dernière réalisation</span><span class="detail-value" id="preventifDetailDernier">—</span></div>
+          <div class="detail-item"><span class="detail-label">Prochaine échéance</span><span class="detail-value" id="preventifDetailProchain">—</span></div>
+          <div class="detail-item"><span class="detail-label">État</span><span class="detail-value"><span id="preventifDetailEtat" class="status">—</span></span></div>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="btn" type="button" onclick="closeModal('preventifDetailModal')">Fermer</button>
+        <button class="btn primary" type="button" onclick="beginEditPreventif()">Modifier</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="preventifEditModal" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Modifier un plan préventif">
+    <div class="sheet">
+      <header>
+        <div class="brand"><div class="logo" style="width:28px;height:28px"></div><h1 id="preventifModalTitle">Modifier plan préventif</h1></div>
+      </header>
+      <div class="content">
+        <form id="preventifForm">
+          <div class="grid">
+            <div class="field"><label for="preventif-plan">Plan</label><input id="preventif-plan" type="text" required></div>
+            <div class="field"><label for="preventif-machine">Machine</label><input id="preventif-machine" type="text" required></div>
+            <div class="field"><label for="preventif-periodicite">Périodicité</label><input id="preventif-periodicite" type="text"></div>
+            <div class="field"><label for="preventif-dernier">Dernier passage</label><input id="preventif-dernier" type="date"></div>
+            <div class="field"><label for="preventif-prochain">Prochain passage</label><input id="preventif-prochain" type="date"></div>
+            <div class="field"><label for="preventif-etat">État</label><input id="preventif-etat" type="text"></div>
+            <div class="field"><label for="preventif-etat-class">Code couleur</label>
+              <select id="preventif-etat-class">
+                <option value="">Automatique</option>
+                <option value="ok">Vert (OK)</option>
+                <option value="warn">Orange (Attention)</option>
+                <option value="bad">Rouge (En retard)</option>
+              </select>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="actions">
+        <button class="btn" type="button" onclick="closeModal('preventifEditModal')">Annuler</button>
+        <button class="btn primary" type="submit" form="preventifForm" id="preventifModalSubmit">Mettre à jour</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="contactDetailModal" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Détails du contact">
+    <div class="sheet">
+      <header>
+        <div class="brand"><div class="logo" style="width:28px;height:28px"></div><h1>Contact</h1></div>
+      </header>
+      <div class="content">
+        <div class="detail-grid">
+          <div class="detail-item"><span class="detail-label">Entreprise</span><span class="detail-value" id="contactDetailEntreprise">—</span></div>
+          <div class="detail-item"><span class="detail-label">Activité</span><span class="detail-value" id="contactDetailActivite">—</span></div>
+          <div class="detail-item"><span class="detail-label">Contact</span><span class="detail-value" id="contactDetailNom">—</span></div>
+          <div class="detail-item"><span class="detail-label">Email</span><span class="detail-value" id="contactDetailEmail">—</span></div>
+          <div class="detail-item"><span class="detail-label">Téléphone</span><span class="detail-value" id="contactDetailTelephone">—</span></div>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="btn" type="button" onclick="closeModal('contactDetailModal')">Fermer</button>
+        <button class="btn primary" type="button" onclick="beginEditContact()">Modifier</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="pieceModal" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Ajouter une pièce détachée">
+    <div class="sheet">
+      <header>
+        <div class="brand"><div class="logo" style="width:28px;height:28px"></div><h1 id="pieceModalTitle">Nouvelle pièce détachée</h1></div>
+      </header>
+      <div class="content">
+        <form id="pieceForm">
+          <p id="pieceContextInfo" class="spare-item-meta">Associer une pièce détachée au stock ou à une intervention.</p>
+          <div class="grid">
+            <div class="field"><label for="pieceReference">Référence</label><input id="pieceReference" type="text" placeholder="Ex. RB-0001"></div>
+            <div class="field"><label for="pieceDesignation">Désignation</label><input id="pieceDesignation" type="text" required placeholder="Nom de la pièce"></div>
+            <div class="field"><label for="pieceOt">OT lié</label><input id="pieceOt" type="text" placeholder="Numéro d'OT"></div>
+            <div class="field"><label for="pieceMachine">Machine</label><input id="pieceMachine" type="text" placeholder="Machine concernée"></div>
+            <div class="field"><label for="pieceStatus">Statut</label><select id="pieceStatus"><option value="ordered">Commandée</option><option value="used">Utilisée</option></select></div>
+            <div class="field"><label for="pieceQuantity">Quantité</label><input id="pieceQuantity" type="number" min="1" step="1" value="1"></div>
+            <div class="field"><label for="pieceDate">Date</label><input id="pieceDate" type="date"></div>
+            <div class="field" style="grid-column:1/-1"><label for="pieceNote">Commentaire</label><textarea id="pieceNote" rows="3" placeholder="Précisions sur la commande ou l'utilisation…"></textarea></div>
+          </div>
+        </form>
+      </div>
+      <div class="actions">
+        <button class="btn" type="button" onclick="closeModal('pieceModal')">Annuler</button>
+        <button class="btn primary" type="submit" form="pieceForm" id="pieceModalSubmit">Enregistrer</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="equipModal" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Ajouter un équipement">
+    <div class="sheet">
+      <header>
+        <div class="brand"><div class="logo" style="width:28px;height:28px"></div><h1 id="equipModalTitle">Ajouter équipement</h1></div>
+      </header>
+      <div class="content">
+        <form id="equipForm">
+          <div class="grid">
+            <div class="field"><label for="equip-zone">Zone</label><input id="equip-zone" type="text" placeholder="Zone de l'équipement"></div>
+            <div class="field"><label for="equip-machine">Machine</label><input id="equip-machine" type="text" placeholder="Nom de la machine"></div>
+            <div class="field"><label for="equip-fabricant">Fabricant</label><input id="equip-fabricant" type="text" placeholder="Fabricant"></div>
+            <div class="field"><label for="equip-modele">Modèle</label><input id="equip-modele" type="text" placeholder="Référence ou modèle"></div>
+            <div class="field"><label for="equip-serial">Numéro de série</label><input id="equip-serial" type="text" placeholder="Numéro de série"></div>
+            <div class="field"><label for="equip-annee">Année</label><input id="equip-annee" type="number" inputmode="numeric" min="1900" max="2100" placeholder="Année de mise en service"></div>
+          </div>
+        </form>
+      </div>
+      <div class="actions">
+        <button class="btn" type="button" onclick="closeModal('equipModal')">Fermer</button>
+        <button class="btn primary" type="submit" form="equipForm" id="equipModalSubmit">Enregistrer</button>
+      </div>
+    </div>
+  </div>
+  <div class="modal" id="contactModal" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Créer un contact">
+    <div class="sheet">
+      <header>
+        <div class="brand"><div class="logo" style="width:28px;height:28px"></div><h1 id="contactModalTitle">Nouveau contact</h1></div>
+      </header>
+      <div class="content">
+        <form id="contactForm">
+          <div class="grid">
+            <div class="field"><label for="contact-company">Entreprise</label><input id="contact-company" type="text"></div>
+            <div class="field"><label for="contact-activity">Activité</label><input id="contact-activity" type="text"></div>
+            <div class="field"><label for="contact-name">Contact</label><input id="contact-name" type="text"></div>
+            <div class="field"><label for="contact-email">Email</label><input id="contact-email" type="email"></div>
+            <div class="field"><label for="contact-phone">Téléphone</label><input id="contact-phone" type="text"></div>
+          </div>
+        </form>
+      </div>
+      <div class="actions">
+        <button class="btn" type="button" onclick="closeModal('contactModal')">Fermer</button>
+        <button class="btn primary" type="submit" form="contactForm" id="contactModalSubmit">Enregistrer</button>
+      </div>
+    </div>
+  </div>
+  <div class="modal" id="planModal" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Générer des OT préventifs"><div class="sheet"><header><div class="brand"><div class="logo" style="width:28px;height:28px"></div><h1>Générer OT préventifs</h1></div></header><div class="content"><p>Sélectionner l'horizon de planification et la périodicité.</p><div class="grid"><div class="field"><label>Horizon (jours)</label><input type="number" value="30"></div><div class="field"><label>Inclure retard</label><select><option>Oui</option><option>Non</option></select></div></div></div><div class="actions"><button class="btn" onclick="closeModal('planModal')">Fermer</button><button class="btn primary" onclick="closeModal('planModal')">Générer</button></div></div></div>
+  <div class="modal" id="reportModal" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Exporter les données"><div class="sheet"><header><div class="brand"><div class="logo" style="width:28px;height:28px"></div><h1>Export rapide</h1></div></header><div class="content"><p>Ce prototype exportera un CSV fictif. À connecter à votre backend plus tard.</p></div><div class="actions"><button class="btn" onclick="closeModal('reportModal')">Fermer</button><button class="btn primary" onclick="fakeExport()">Exporter CSV</button></div></div></div>
+
+  <script>
+    const THEMES = {
+      dark:{
+        '--bg':'#0f172a',
+        '--panel':'#111827',
+        '--muted':'#1f2937',
+        '--card':'#0b1220',
+        '--ink':'#e5e7eb',
+        '--ink-dim':'#9ca3af',
+        '--brand':'#22d3ee',
+        '--accent':'#a78bfa',
+        '--ok':'#10b981',
+        '--warn':'#f59e0b',
+        '--bad':'#ef4444',
+        '--shadow':'0 10px 25px rgba(0,0,0,.25), 0 1px 0 rgba(255,255,255,.03) inset'
+      },
+      light:{
+        '--bg':'#f1f5f9',
+        '--panel':'#ffffff',
+        '--muted':'#e2e8f0',
+        '--card':'#f8fafc',
+        '--ink':'#0f172a',
+        '--ink-dim':'#475569',
+        '--brand':'#0ea5e9',
+        '--accent':'#6366f1',
+        '--ok':'#059669',
+        '--warn':'#d97706',
+        '--bad':'#dc2626',
+        '--shadow':'0 12px 28px rgba(15,23,42,.12), 0 1px 0 rgba(15,23,42,.04) inset'
+      }
+    };
+    const FOCUSABLE_SELECTOR = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
+    const INTERVENTION_TYPE_LABELS = {
+      correctif:'Correctif',
+      curatif:'Curatif',
+      preventif:'Préventif',
+      amelioration:'Amélioration',
+      securite:'Sécurité'
+    };
+    let currentTheme = 'dark';
+    let activeModal = null;
+    let lastFocusedElement = null;
+    let currentInterventionRow = null;
+    let currentParcRow = null;
+    let equipmentModalMode = 'create';
+    let currentSparePartIndex = null;
+    let currentPreventifRow = null;
+    let preventifModalMode = 'edit';
+    let currentContactRow = null;
+    let contactModalMode = 'create';
+    const ATTACHMENT_CONTEXTS = {
+      di:{
+        attachments:[],
+        cameraStream:null,
+        inputId:'diAttachmentInput',
+        uploadButtonId:'diUploadButton',
+        listId:'diAttachmentList',
+        cameraButtonId:'diCameraButton',
+        previewId:'diCameraPreview',
+        videoId:'diCameraVideo',
+        captureButtonId:'diCaptureBtn',
+        closeCameraButtonId:'diCloseCameraBtn',
+        emptyText:'Aucune pièce jointe pour le moment.',
+        objectUrls:[]
+      },
+      intervention:{
+        attachments:[],
+        cameraStream:null,
+        inputId:'interventionAttachmentInput',
+        uploadButtonId:'interventionUploadButton',
+        listId:'interventionAttachmentList',
+        cameraButtonId:'interventionCameraButton',
+        previewId:'interventionCameraPreview',
+        videoId:'interventionCameraVideo',
+        captureButtonId:'interventionCaptureBtn',
+        closeCameraButtonId:'interventionCloseCameraBtn',
+        emptyText:'Aucune pièce jointe pour le moment.',
+        objectUrls:[]
+      }
+    };
+    const SPARE_PART_STATUS = {
+      ordered:{label:'Commandée', tagClass:'warn'},
+      used:{label:'Utilisée', tagClass:'ok'}
+    };
+    let spareParts = [
+      {reference:'RB-0001', designation:'Kit roulements broche', ot:'OT-1024', machine:'DMU 70', status:'ordered', quantity:1, date:'2025-09-18', note:'Commande urgente fournisseur AirTech'},
+      {reference:'FL-0450', designation:'Filtre air KAESER', ot:'OT-1026', machine:'Compresseur KAESER', status:'used', quantity:1, date:'2025-09-22', note:'Installé lors de l’intervention'}
+    ];
+    let sparePartModalContext = {source:'pieces', defaults:{}, index:null};
+
+    function switchSection(e){
+      e.preventDefault();
+      const target = e.currentTarget.getAttribute('data-target');
+      document.querySelectorAll('.menu a').forEach(a=>a.classList.toggle('active', a.getAttribute('data-target')===target));
+      document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+      document.getElementById(target).classList.add('active');
+    }
+
+    function applyTheme(theme,{persist=true}={}){
+      if(!THEMES[theme]) theme='dark';
+      currentTheme = theme;
+      const root = document.documentElement;
+      root.dataset.theme = theme;
+      const vars = THEMES[theme];
+      Object.entries(vars).forEach(([key,val])=>root.style.setProperty(key,val));
+      if(persist){
+        try{ localStorage.setItem('gmao-theme', theme); }catch(_e){/* storage non critique */}
+      }
+      updateThemeToggle();
+    }
+
+    function updateThemeToggle(){
+      const btn = document.getElementById('themeToggle');
+      if(!btn) return;
+      const isLight = currentTheme === 'light';
+      btn.setAttribute('aria-pressed', isLight ? 'true' : 'false');
+      btn.textContent = isLight ? '🌞 Mode clair' : '🌙 Mode sombre';
+    }
+
+    function toggleTheme(){
+      const next = currentTheme === 'dark' ? 'light' : 'dark';
+      applyTheme(next);
+    }
+
+    function openModal(id){
+      const modal = document.getElementById(id);
+      if(!modal) return;
+      lastFocusedElement = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+      modal.classList.add('open');
+      modal.setAttribute('aria-hidden','false');
+      activeModal = modal;
+      document.body.style.overflow = 'hidden';
+      const focusable = modal.querySelectorAll(FOCUSABLE_SELECTOR);
+      if(focusable.length){
+        focusable[0].focus({preventScroll:true});
+      }
+    }
+
+    function closeModal(id){
+      const modal = document.getElementById(id);
+      if(!modal) return;
+      modal.classList.remove('open');
+      modal.setAttribute('aria-hidden','true');
+      if(id === 'interventionModal'){
+        currentInterventionRow = null;
+        resetAttachmentContext('intervention');
+        renderInterventionPieces('');
+      }else if(id === 'diModal'){
+        resetDemandModal();
+      }else if(id === 'pieceModal'){
+        resetSparePartModal();
+      }
+      if(activeModal === modal) activeModal = null;
+      if(!document.querySelector('.modal.open')){
+        document.body.style.overflow = '';
+        if(lastFocusedElement && document.body.contains(lastFocusedElement)){
+          lastFocusedElement.focus({preventScroll:true});
+        }
+        lastFocusedElement = null;
+      }
+    }
+
+    function closeActiveModal(){
+      if(activeModal){
+        closeModal(activeModal.id);
+      }
+    }
+
+    function getAttachmentContext(key){
+      return ATTACHMENT_CONTEXTS[key];
+    }
+
+    function addAttachments(contextKey, files){
+      const ctx = getAttachmentContext(contextKey);
+      if(!ctx || !files || !files.length) return;
+      ctx.attachments = ctx.attachments.concat(files);
+      renderAttachments(contextKey);
+    }
+
+    function renderAttachments(contextKey){
+      const ctx = getAttachmentContext(contextKey);
+      if(!ctx) return;
+      const list = document.getElementById(ctx.listId);
+      if(!list) return;
+      list.innerHTML = '';
+      if(Array.isArray(ctx.objectUrls) && ctx.objectUrls.length){
+        ctx.objectUrls.forEach(url=>URL.revokeObjectURL(url));
+        ctx.objectUrls = [];
+      }
+      if(!ctx.attachments.length){
+        const empty = document.createElement('li');
+        empty.className = 'attachment-empty';
+        empty.textContent = ctx.emptyText;
+        list.appendChild(empty);
+        return;
+      }
+      ctx.attachments.forEach((file,index)=>{
+        const li = document.createElement('li');
+        li.className = 'attachment-item';
+        const info = document.createElement('div');
+        info.className = 'attachment-info';
+        const nameText = file.name || `Photo ${index+1}.jpg`;
+        const canPreview = typeof Blob !== 'undefined' && file instanceof Blob;
+        const href = canPreview && typeof URL !== 'undefined' ? URL.createObjectURL(file) : '';
+        if(href){
+          ctx.objectUrls.push(href);
+        }
+        let titleEl;
+        if(href){
+          const link = document.createElement('a');
+          link.className = 'attachment-name attachment-link';
+          link.textContent = nameText;
+          link.href = href;
+          link.target = '_blank';
+          link.rel = 'noopener';
+          link.setAttribute('title', `Ouvrir ${nameText} dans un nouvel onglet`);
+          titleEl = link;
+        }else{
+          const span = document.createElement('span');
+          span.className = 'attachment-name';
+          span.textContent = nameText;
+          titleEl = span;
+        }
+        info.appendChild(titleEl);
+        if(file.size){
+          const meta = document.createElement('span');
+          meta.className = 'attachment-meta';
+          const sizeKB = Math.max(1, Math.round(file.size/1024));
+          meta.textContent = `${sizeKB} Ko`;
+          info.appendChild(meta);
+        }
+        const remove = document.createElement('button');
+        remove.type = 'button';
+        remove.className = 'attachment-remove';
+        remove.setAttribute('data-remove-index', index);
+        remove.setAttribute('aria-label', `Retirer ${nameText}`);
+        remove.textContent = '✖️';
+        li.appendChild(info);
+        li.appendChild(remove);
+        list.appendChild(li);
+      });
+    }
+
+    function removeAttachment(contextKey, index){
+      const ctx = getAttachmentContext(contextKey);
+      if(!ctx) return;
+      if(index<0 || index>=ctx.attachments.length) return;
+      ctx.attachments.splice(index,1);
+      renderAttachments(contextKey);
+    }
+
+    async function openCamera(contextKey){
+      const ctx = getAttachmentContext(contextKey);
+      if(!ctx) return;
+      const preview = document.getElementById(ctx.previewId);
+      const video = document.getElementById(ctx.videoId);
+      const toggleBtn = document.getElementById(ctx.cameraButtonId);
+      if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
+        alert('La capture depuis la caméra n’est pas supportée sur cet appareil.');
+        return;
+      }
+      try{
+        ctx.cameraStream = await navigator.mediaDevices.getUserMedia({video:true});
+        if(video){
+          video.srcObject = ctx.cameraStream;
+        }
+        if(preview){
+          preview.hidden = false;
+        }
+        if(toggleBtn){
+          toggleBtn.setAttribute('aria-expanded','true');
+          toggleBtn.textContent = '📷 Fermer la caméra';
+        }
+      }catch(err){
+        console.error('Impossible d’ouvrir la caméra', err);
+        alert('Impossible d’accéder à la caméra. Vérifiez les autorisations.');
+      }
+    }
+
+    function closeCamera(contextKey){
+      const ctx = getAttachmentContext(contextKey);
+      if(!ctx) return;
+      const preview = document.getElementById(ctx.previewId);
+      const video = document.getElementById(ctx.videoId);
+      const toggleBtn = document.getElementById(ctx.cameraButtonId);
+      if(ctx.cameraStream){
+        ctx.cameraStream.getTracks().forEach(track=>track.stop());
+        ctx.cameraStream = null;
+      }
+      if(video){
+        video.srcObject = null;
+      }
+      if(preview){
+        preview.hidden = true;
+      }
+      if(toggleBtn){
+        toggleBtn.setAttribute('aria-expanded','false');
+        toggleBtn.textContent = '📷 Prendre une photo';
+      }
+    }
+
+    function capturePhoto(contextKey){
+      const ctx = getAttachmentContext(contextKey);
+      if(!ctx) return;
+      const video = document.getElementById(ctx.videoId);
+      if(!video || !ctx.cameraStream || video.readyState < 2){
+        return;
+      }
+      const canvas = document.createElement('canvas');
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      const context2d = canvas.getContext('2d');
+      if(!context2d){
+        return;
+      }
+      context2d.drawImage(video, 0, 0, canvas.width, canvas.height);
+      canvas.toBlob(blob=>{
+        if(!blob) return;
+        const timestamp = new Date().toISOString().replace(/[:.]/g,'-');
+        let file;
+        try{
+          file = new File([blob], `photo-${timestamp}.jpg`, {type:'image/jpeg'});
+        }catch(_e){
+          file = blob;
+          file.name = `photo-${timestamp}.jpg`;
+        }
+        addAttachments(contextKey, [file]);
+      }, 'image/jpeg', 0.92);
+    }
+
+    function resetAttachmentContext(contextKey){
+      const ctx = getAttachmentContext(contextKey);
+      if(!ctx) return;
+      ctx.attachments = [];
+      const input = document.getElementById(ctx.inputId);
+      if(input){
+        input.value = '';
+      }
+      if(Array.isArray(ctx.objectUrls) && ctx.objectUrls.length){
+        ctx.objectUrls.forEach(url=>URL.revokeObjectURL(url));
+        ctx.objectUrls = [];
+      }
+      renderAttachments(contextKey);
+      closeCamera(contextKey);
+    }
+
+    function resetDemandModal(){
+      resetAttachmentContext('di');
+    }
+
+    function setupAttachmentHandlers(contextKey){
+      const ctx = getAttachmentContext(contextKey);
+      if(!ctx) return;
+      const input = document.getElementById(ctx.inputId);
+      const uploadButton = document.getElementById(ctx.uploadButtonId);
+      const list = document.getElementById(ctx.listId);
+      const cameraButton = document.getElementById(ctx.cameraButtonId);
+      const captureButton = document.getElementById(ctx.captureButtonId);
+      const closeCameraBtn = document.getElementById(ctx.closeCameraButtonId);
+
+      if(uploadButton && input){
+        uploadButton.addEventListener('click', ()=>input.click());
+      }
+
+      if(input){
+        input.addEventListener('change', evt=>{
+          const files = Array.from(evt.target.files || []);
+          addAttachments(contextKey, files);
+          input.value = '';
+        });
+      }
+
+      if(list){
+        list.addEventListener('click', evt=>{
+          const btn = evt.target.closest('button[data-remove-index]');
+          if(btn){
+            evt.preventDefault();
+            const index = Number(btn.getAttribute('data-remove-index'));
+            removeAttachment(contextKey, index);
+          }
+        });
+      }
+
+      if(cameraButton){
+        cameraButton.addEventListener('click', evt=>{
+          evt.preventDefault();
+          const ctxRef = getAttachmentContext(contextKey);
+          if(ctxRef && ctxRef.cameraStream){
+            closeCamera(contextKey);
+          }else{
+            openCamera(contextKey);
+          }
+        });
+      }
+
+      if(captureButton){
+        captureButton.addEventListener('click', evt=>{
+          evt.preventDefault();
+          capturePhoto(contextKey);
+        });
+      }
+
+      if(closeCameraBtn){
+        closeCameraBtn.addEventListener('click', evt=>{
+          evt.preventDefault();
+          closeCamera(contextKey);
+        });
+      }
+
+      renderAttachments(contextKey);
+    }
+
+    function getSparePartStatusMeta(status){
+      return SPARE_PART_STATUS[status] || {label:status || '—', tagClass:''};
+    }
+
+    function formatDisplayDate(value){
+      if(!value) return '—';
+      const parts = value.split('-');
+      if(parts.length === 3){
+        return `${parts[2]}/${parts[1]}/${parts[0]}`;
+      }
+      return value;
+    }
+
+    function toIsoDate(value){
+      if(!value) return '';
+      if(/^\d{4}-\d{2}-\d{2}$/.test(value)) return value;
+      const parts = value.split('/');
+      if(parts.length === 3){
+        const [day, month, year] = parts;
+        if(day.length === 2 && month.length === 2 && year.length === 4){
+          return `${year}-${month}-${day}`;
+        }
+      }
+      return '';
+    }
+
+    function getSpareFilters(){
+      const searchInput = document.getElementById('piecesSearch');
+      const statusSelect = document.getElementById('piecesStatusFilter');
+      return {
+        search: searchInput ? searchInput.value.trim().toLowerCase() : '',
+        status: statusSelect ? statusSelect.value : ''
+      };
+    }
+
+    function getFilteredSpareParts(){
+      const {search, status} = getSpareFilters();
+      return spareParts.filter(part=>{
+        if(status && part.status !== status) return false;
+        if(!search) return true;
+        const haystack = [part.reference, part.designation, part.ot, part.machine, part.note]
+          .map(v=>(v||'').toLowerCase())
+          .join(' ');
+        return haystack.includes(search);
+      });
+    }
+
+    function createCell(value){
+      const td = document.createElement('td');
+      td.textContent = value ?? '—';
+      return td;
+    }
+
+    function renderSpareParts(){
+      const tbody = document.getElementById('tblPieces');
+      if(!tbody) return;
+      tbody.innerHTML = '';
+      const filtered = getFilteredSpareParts();
+      if(!filtered.length){
+        const tr = document.createElement('tr');
+        const td = document.createElement('td');
+        td.colSpan = 8;
+        td.className = 'spare-empty-row';
+        td.textContent = 'Aucune pièce ne correspond aux filtres actuels.';
+        tr.appendChild(td);
+        tbody.appendChild(tr);
+        return;
+      }
+      filtered.forEach(part=>{
+        const tr = document.createElement('tr');
+        tr.classList.add('clickable');
+        tr.setAttribute('role','button');
+        tr.tabIndex = 0;
+        const labelParts = [part.reference, part.designation].filter(Boolean).join(' – ');
+        if(labelParts){
+          tr.setAttribute('aria-label', `Voir la pièce ${labelParts}`);
+        }
+        const index = spareParts.indexOf(part);
+        tr.dataset.index = index >= 0 ? String(index) : '';
+        const statusMeta = getSparePartStatusMeta(part.status);
+        const displayDate = formatDisplayDate(part.date);
+        tr.dataset.reference = part.reference || '';
+        tr.dataset.designation = part.designation || '';
+        tr.dataset.ot = part.ot || '';
+        tr.dataset.machine = part.machine || '';
+        tr.dataset.status = part.status || '';
+        tr.dataset.statusLabel = statusMeta.label || '';
+        tr.dataset.statusClass = statusMeta.tagClass || '';
+        tr.dataset.quantity = part.quantity != null ? String(part.quantity) : '';
+        tr.dataset.date = part.date || '';
+        tr.dataset.dateDisplay = displayDate;
+        tr.dataset.note = part.note || '';
+
+        tr.appendChild(createCell(part.reference || '—'));
+        tr.appendChild(createCell(part.designation || '—'));
+        tr.appendChild(createCell(part.ot || '—'));
+        tr.appendChild(createCell(part.machine || '—'));
+        const statusCell = document.createElement('td');
+        const statusTag = document.createElement('span');
+        statusTag.className = ['tag', statusMeta.tagClass].filter(Boolean).join(' ');
+        statusTag.textContent = statusMeta.label;
+        statusCell.appendChild(statusTag);
+        tr.appendChild(statusCell);
+        tr.appendChild(createCell(part.quantity != null ? String(part.quantity) : '—'));
+        tr.appendChild(createCell(displayDate));
+        tr.appendChild(createCell(part.note || '—'));
+        attachInteractiveRow(tr, openSparePartDetail);
+        tbody.appendChild(tr);
+      });
+    }
+
+    function renderInterventionPieces(ot){
+      const list = document.getElementById('interventionPiecesList');
+      const empty = document.getElementById('interventionPiecesEmpty');
+      if(!list) return;
+      list.innerHTML = '';
+      const items = ot ? spareParts.filter(part=>part.ot === ot) : [];
+      if(!items.length){
+        if(empty) empty.hidden = false;
+        return;
+      }
+      if(empty) empty.hidden = true;
+      items.forEach(part=>{
+        const li = document.createElement('li');
+        li.className = 'attachment-item spare-item';
+        li.setAttribute('role', 'button');
+        li.tabIndex = 0;
+        const index = spareParts.indexOf(part);
+        const statusMeta = getSparePartStatusMeta(part.status);
+        const formattedDate = formatDisplayDate(part.date);
+        const labelParts = [part.reference, part.designation].filter(Boolean).join(' – ');
+        if(labelParts){
+          li.setAttribute('aria-label', `Voir la pièce ${labelParts}`);
+        }
+        if(index >= 0){
+          li.dataset.index = String(index);
+        }else{
+          li.dataset.index = '';
+        }
+        li.dataset.reference = part.reference || '';
+        li.dataset.designation = part.designation || '';
+        li.dataset.ot = part.ot || '';
+        li.dataset.machine = part.machine || '';
+        li.dataset.status = part.status || '';
+        li.dataset.statusLabel = statusMeta.label || '';
+        li.dataset.statusClass = statusMeta.tagClass || '';
+        li.dataset.quantity = part.quantity != null ? String(part.quantity) : '';
+        li.dataset.date = part.date || '';
+        li.dataset.dateDisplay = formattedDate;
+        li.dataset.note = part.note || '';
+
+        const main = document.createElement('div');
+        main.className = 'spare-item-main';
+        const title = document.createElement('span');
+        title.className = 'spare-item-title';
+        title.textContent = part.designation || 'Pièce détachée';
+        main.appendChild(title);
+        const details = [];
+        if(part.quantity != null) details.push(`${part.quantity}×`);
+        if(part.reference) details.push(part.reference);
+        if(part.machine) details.push(part.machine);
+        if(formattedDate !== '—') details.push(formattedDate);
+        if(details.length){
+          const meta = document.createElement('span');
+          meta.className = 'spare-item-meta';
+          meta.textContent = details.join(' • ');
+          main.appendChild(meta);
+        }
+        if(part.note){
+          const note = document.createElement('span');
+          note.className = 'spare-item-note';
+          note.textContent = part.note;
+          main.appendChild(note);
+        }
+
+        const actions = document.createElement('div');
+        actions.className = 'spare-item-actions';
+        const status = document.createElement('span');
+        status.className = ['tag', statusMeta.tagClass].filter(Boolean).join(' ');
+        status.textContent = statusMeta.label;
+        actions.appendChild(status);
+        if(index >= 0){
+          const removeBtn = document.createElement('button');
+          removeBtn.type = 'button';
+          removeBtn.className = 'attachment-remove';
+          const removeLabel = part.designation || part.reference;
+          removeBtn.setAttribute('aria-label', removeLabel ? `Retirer ${removeLabel}` : 'Retirer cette pièce');
+          removeBtn.textContent = '✖️';
+          removeBtn.addEventListener('click', evt=>{
+            evt.stopPropagation();
+            deleteSparePart(index);
+          });
+          actions.appendChild(removeBtn);
+        }
+
+        li.appendChild(main);
+        li.appendChild(actions);
+        attachInteractiveRow(li, openSparePartDetail);
+        list.appendChild(li);
+      });
+    }
+
+    function resetSparePartModal(){
+      sparePartModalContext = {source:'pieces', defaults:{}, index:null};
+      currentSparePartIndex = null;
+      const form = document.getElementById('pieceForm');
+      if(form) form.reset();
+      const modal = document.getElementById('pieceModal');
+      if(modal){
+        modal.setAttribute('aria-label', 'Ajouter une pièce détachée');
+      }
+      const title = document.getElementById('pieceModalTitle');
+      if(title){
+        title.textContent = 'Nouvelle pièce détachée';
+      }
+      const submit = document.getElementById('pieceModalSubmit');
+      if(submit){
+        submit.textContent = 'Enregistrer';
+      }
+      const info = document.getElementById('pieceContextInfo');
+      if(info){
+        info.textContent = 'Associer une pièce détachée au stock ou à une intervention.';
+      }
+    }
+
+    function openSparePartModal(source='pieces', defaults={}){
+      const index = typeof defaults.index === 'number' && defaults.index >= 0 ? defaults.index : null;
+      sparePartModalContext = {source, defaults, index};
+      currentSparePartIndex = index;
+      const form = document.getElementById('pieceForm');
+      if(form) form.reset();
+      const modal = document.getElementById('pieceModal');
+      if(modal){
+        modal.setAttribute('aria-label', index != null ? 'Modifier une pièce détachée' : 'Ajouter une pièce détachée');
+      }
+      const title = document.getElementById('pieceModalTitle');
+      if(title){
+        title.textContent = index != null ? 'Modifier une pièce détachée' : 'Nouvelle pièce détachée';
+      }
+      const submit = document.getElementById('pieceModalSubmit');
+      if(submit){
+        submit.textContent = index != null ? 'Mettre à jour' : 'Enregistrer';
+      }
+      const referenceInput = document.getElementById('pieceReference');
+      const designationInput = document.getElementById('pieceDesignation');
+      const otInput = document.getElementById('pieceOt');
+      const machineInput = document.getElementById('pieceMachine');
+      const statusSelect = document.getElementById('pieceStatus');
+      const quantityInput = document.getElementById('pieceQuantity');
+      const dateInput = document.getElementById('pieceDate');
+      const noteInput = document.getElementById('pieceNote');
+      const today = new Date().toISOString().slice(0,10);
+      if(referenceInput) referenceInput.value = defaults.reference || '';
+      if(designationInput) designationInput.value = defaults.designation || '';
+      if(otInput) otInput.value = defaults.ot || '';
+      if(machineInput) machineInput.value = defaults.machine || '';
+      if(statusSelect){
+        const fallbackStatus = source === 'intervention' ? 'used' : 'ordered';
+        const nextStatus = defaults.status && SPARE_PART_STATUS[defaults.status] ? defaults.status : fallbackStatus;
+        statusSelect.value = nextStatus;
+      }
+      if(quantityInput){
+        const qty = defaults.quantity != null ? defaults.quantity : 1;
+        quantityInput.value = qty;
+      }
+      if(dateInput) dateInput.value = defaults.date || today;
+      if(noteInput) noteInput.value = defaults.note || '';
+      const info = document.getElementById('pieceContextInfo');
+      if(info){
+        if(defaults.ot){
+          info.textContent = `Intervention liée : ${defaults.ot}${defaults.machine ? ` • ${defaults.machine}` : ''}`;
+        }else{
+          info.textContent = 'Associer une pièce détachée au stock ou à une intervention.';
+        }
+      }
+      openModal('pieceModal');
+      if(referenceInput){
+        requestAnimationFrame(()=>referenceInput.focus({preventScroll:true}));
+      }
+    }
+
+    function saveSparePart(){
+      const reference = (document.getElementById('pieceReference')?.value || '').trim();
+      const designation = (document.getElementById('pieceDesignation')?.value || '').trim();
+      const ot = (document.getElementById('pieceOt')?.value || '').trim();
+      const machine = (document.getElementById('pieceMachine')?.value || '').trim();
+      let status = document.getElementById('pieceStatus')?.value || 'ordered';
+      const quantityRaw = document.getElementById('pieceQuantity')?.value;
+      const date = document.getElementById('pieceDate')?.value || '';
+      const note = (document.getElementById('pieceNote')?.value || '').trim();
+
+      if(!designation){
+        alert('Merci de renseigner la désignation de la pièce.');
+        return;
+      }
+
+      let quantity = parseInt(quantityRaw, 10);
+      if(Number.isNaN(quantity) || quantity <= 0){
+        quantity = 1;
+      }
+
+      if(!SPARE_PART_STATUS[status]){
+        status = 'ordered';
+      }
+
+      const partData = {reference, designation, ot, machine, status, quantity, date, note};
+      const index = typeof sparePartModalContext.index === 'number' ? sparePartModalContext.index : null;
+      if(index != null && spareParts[index]){
+        spareParts[index] = partData;
+      }else{
+        spareParts.push(partData);
+      }
+      renderSpareParts();
+      let targetOt = '';
+      if(currentInterventionRow){
+        targetOt = currentInterventionRow.dataset.ot || '';
+      }else if(partData.ot){
+        targetOt = partData.ot;
+      }else if(sparePartModalContext.defaults.ot){
+        targetOt = sparePartModalContext.defaults.ot;
+      }
+      renderInterventionPieces(targetOt);
+      closeModal('pieceModal');
+      resetSparePartModal();
+    }
+
+    // Simple global filter across visible table bodies
+    function globalFilter(q){
+      q = (q||'').toLowerCase();
+      document.querySelectorAll('tbody').forEach(tb=>{
+        tb.querySelectorAll('tr').forEach(tr=>{
+          const hit = tr.innerText.toLowerCase().includes(q);
+          tr.style.display = hit ? '' : 'none';
+        });
+      });
+    }
+
+    function filterTable(tbodyId, q, cols){
+      q = (q||'').toLowerCase();
+      const rows = document.getElementById(tbodyId).rows;
+      for(const tr of rows){
+        if(!q){ tr.style.display=''; continue; }
+        let hit=false;
+        (cols||[...tr.cells].map((_,i)=>i)).forEach(i=>{
+          const cell = tr.cells[i];
+          if(cell && cell.innerText.toLowerCase().includes(q)) hit=true;
+        });
+        tr.style.display = hit?'':'none';
+      }
+    }
+
+    function filterStatus(tbodyId, status){
+      const rows = document.getElementById(tbodyId).rows;
+      for(const tr of rows){
+        const st = (tr.getAttribute('data-status')||'').toLowerCase();
+        tr.style.display = !status || st===status ? '' : 'none';
+      }
+    }
+
+    function setDetailText(id, value){
+      const el = document.getElementById(id);
+      if(!el) return;
+      const text = value!=null ? String(value).trim() : '';
+      el.textContent = text ? text : '—';
+    }
+
+    function setDetailBadge(id, baseClass, extraClass, label){
+      const el = document.getElementById(id);
+      if(!el) return;
+      const text = label!=null ? String(label).trim() : '';
+      el.textContent = text ? text : '—';
+      const classes = [baseClass];
+      if(extraClass){
+        classes.push(extraClass);
+      }
+      el.className = classes.join(' ');
+    }
+
+    function attachInteractiveRow(tr, handler){
+      if(!tr || typeof handler !== 'function') return;
+      tr.addEventListener('click', ()=>handler(tr));
+      tr.addEventListener('keydown', evt=>{
+        if(evt.key==='Enter' || evt.key===' '){
+          evt.preventDefault();
+          handler(tr);
+        }
+      });
+    }
+
+    function setupInterventionRows(){
+      document.querySelectorAll('#tblOT tr').forEach(tr=>{
+        attachInteractiveRow(tr, openInterventionDetail);
+      });
+    }
+
+    function setupParcRows(){
+      document.querySelectorAll('#tblParc tr.clickable').forEach(tr=>{
+        attachInteractiveRow(tr, openParcDetail);
+      });
+    }
+
+    function openParcDetail(row){
+      currentParcRow = row;
+      const ds = row.dataset || {};
+      setDetailText('parcDetailZone', ds.zone);
+      setDetailText('parcDetailMachine', ds.machine);
+      setDetailText('parcDetailFabricant', ds.fabricant);
+      setDetailText('parcDetailModele', ds.modele);
+      setDetailText('parcDetailSerie', ds.serie);
+      setDetailText('parcDetailAnnee', ds.annee);
+      openModal('parcDetailModal');
+    }
+
+    function getEquipmentFields(){
+      return {
+        zone:document.getElementById('equip-zone'),
+        machine:document.getElementById('equip-machine'),
+        fabricant:document.getElementById('equip-fabricant'),
+        modele:document.getElementById('equip-modele'),
+        serie:document.getElementById('equip-serial'),
+        annee:document.getElementById('equip-annee')
+      };
+    }
+
+    function resetEquipmentForm(){
+      const form = document.getElementById('equipForm');
+      if(form) form.reset();
+    }
+
+    function openEquipmentForm(mode='create', defaults={}, row=null){
+      equipmentModalMode = mode;
+      currentParcRow = mode === 'edit' ? row : null;
+      const modal = document.getElementById('equipModal');
+      if(modal){
+        modal.setAttribute('aria-label', mode === 'edit' ? 'Modifier un équipement' : 'Ajouter un équipement');
+      }
+      const title = document.getElementById('equipModalTitle');
+      if(title){
+        title.textContent = mode === 'edit' ? 'Modifier équipement' : 'Ajouter équipement';
+      }
+      const submit = document.getElementById('equipModalSubmit');
+      if(submit){
+        submit.textContent = mode === 'edit' ? 'Mettre à jour' : 'Enregistrer';
+      }
+      resetEquipmentForm();
+      const fields = getEquipmentFields();
+      if(fields.zone) fields.zone.value = defaults.zone || '';
+      if(fields.machine) fields.machine.value = defaults.machine || '';
+      if(fields.fabricant) fields.fabricant.value = defaults.fabricant || '';
+      if(fields.modele) fields.modele.value = defaults.modele || '';
+      if(fields.serie) fields.serie.value = defaults.serie || '';
+      if(fields.annee) fields.annee.value = defaults.annee || '';
+      openModal('equipModal');
+      const focusTarget = fields.machine || fields.zone;
+      if(focusTarget){
+        requestAnimationFrame(()=>focusTarget.focus({preventScroll:true}));
+      }
+    }
+
+    function gatherEquipmentValues(){
+      const fields = getEquipmentFields();
+      return {
+        zone:(fields.zone?.value || '').trim(),
+        machine:(fields.machine?.value || '').trim(),
+        fabricant:(fields.fabricant?.value || '').trim(),
+        modele:(fields.modele?.value || '').trim(),
+        serie:(fields.serie?.value || '').trim(),
+        annee:(fields.annee?.value || '').trim()
+      };
+    }
+
+    function updateEquipmentRow(row, values){
+      const ds = row.dataset;
+      ds.zone = values.zone;
+      ds.machine = values.machine;
+      ds.fabricant = values.fabricant;
+      ds.modele = values.modele;
+      ds.serie = values.serie;
+      ds.annee = values.annee;
+      const cells = row.cells;
+      if(cells[0]) cells[0].textContent = values.zone || '—';
+      if(cells[1]) cells[1].textContent = values.machine || '—';
+      if(cells[2]) cells[2].textContent = values.fabricant || '—';
+      if(cells[3]) cells[3].textContent = values.modele || '—';
+      if(cells[4]) cells[4].textContent = values.serie || '—';
+      if(cells[5]) cells[5].textContent = values.annee || '—';
+      const labelMachine = values.machine || 'l’équipement';
+      row.setAttribute('aria-label', `Voir le détail de ${labelMachine}`);
+    }
+
+    function submitEquipmentForm(){
+      const values = gatherEquipmentValues();
+      if(!values.machine){
+        alert('Merci de renseigner le nom de la machine.');
+        return;
+      }
+      if(equipmentModalMode === 'edit' && currentParcRow){
+        updateEquipmentRow(currentParcRow, values);
+      }else{
+        const tbody = document.getElementById('tblParc');
+        if(!tbody){
+          closeModal('equipModal');
+          return;
+        }
+        const tr = document.createElement('tr');
+        tr.classList.add('clickable');
+        tr.setAttribute('role', 'button');
+        tr.tabIndex = 0;
+        updateEquipmentRow(tr, values);
+        ['zone','machine','fabricant','modele','serie','annee'].forEach((key,index)=>{
+          const td = tr.cells[index] || tr.appendChild(document.createElement('td'));
+          td.textContent = values[key] || '—';
+        });
+        attachInteractiveRow(tr, openParcDetail);
+        tbody.appendChild(tr);
+      }
+      closeModal('equipModal');
+      resetEquipmentForm();
+      equipmentModalMode = 'create';
+      currentParcRow = null;
+    }
+
+    function beginEditEquipment(){
+      if(!currentParcRow) return;
+      const ds = currentParcRow.dataset || {};
+      closeModal('parcDetailModal');
+      openEquipmentForm('edit', {
+        zone: ds.zone || '',
+        machine: ds.machine || '',
+        fabricant: ds.fabricant || '',
+        modele: ds.modele || '',
+        serie: ds.serie || '',
+        annee: ds.annee || ''
+      }, currentParcRow);
+    }
+
+    function openSparePartDetail(row){
+      const indexRaw = row.dataset ? row.dataset.index : undefined;
+      const parsedIndex = indexRaw !== undefined && indexRaw !== '' ? Number(indexRaw) : NaN;
+      currentSparePartIndex = Number.isNaN(parsedIndex) ? null : parsedIndex;
+      const ds = row.dataset || {};
+      const displayDate = ds.dateDisplay || formatDisplayDate(ds.date || '');
+      setDetailText('pieceDetailReference', ds.reference);
+      setDetailText('pieceDetailDesignation', ds.designation);
+      setDetailText('pieceDetailOt', ds.ot);
+      setDetailText('pieceDetailMachine', ds.machine);
+      const statusLabel = ds.statusLabel || ds.status;
+      setDetailBadge('pieceDetailStatus', 'tag', ds.statusClass || '', statusLabel);
+      setDetailText('pieceDetailQuantity', ds.quantity);
+      setDetailText('pieceDetailDate', displayDate);
+      setDetailText('pieceDetailNote', ds.note);
+      openModal('pieceDetailModal');
+    }
+
+    function beginEditSparePart(){
+      if(currentSparePartIndex == null) return;
+      const part = spareParts[currentSparePartIndex];
+      if(!part) return;
+      closeModal('pieceDetailModal');
+      openSparePartModal('pieces', {...part, index: currentSparePartIndex});
+    }
+
+    function deleteSparePart(index){
+      const numericIndex = Number(index);
+      if(Number.isNaN(numericIndex) || numericIndex < 0 || numericIndex >= spareParts.length){
+        return;
+      }
+      const part = spareParts[numericIndex];
+      const label = part?.designation || part?.reference || '';
+      const message = label ? `Supprimer la pièce « ${label} » ?` : 'Supprimer cette pièce ?';
+      if(typeof window !== 'undefined' && !window.confirm(message)){
+        return;
+      }
+      spareParts.splice(numericIndex, 1);
+      if(currentSparePartIndex === numericIndex){
+        currentSparePartIndex = null;
+      }else if(currentSparePartIndex != null && currentSparePartIndex > numericIndex){
+        currentSparePartIndex -= 1;
+      }
+      renderSpareParts();
+      const targetOt = currentInterventionRow ? (currentInterventionRow.dataset.ot || '') : (part?.ot || '');
+      renderInterventionPieces(targetOt);
+      if(activeModal && activeModal.id === 'pieceDetailModal'){
+        closeModal('pieceDetailModal');
+      }
+    }
+
+    function setupPreventifRows(){
+      document.querySelectorAll('#tblPrev tr.clickable').forEach(tr=>{
+        attachInteractiveRow(tr, openPreventifDetail);
+      });
+    }
+
+    function openPreventifDetail(row){
+      currentPreventifRow = row;
+      const ds = row.dataset || {};
+      setDetailText('preventifDetailPlan', ds.plan);
+      setDetailText('preventifDetailMachine', ds.machine);
+      setDetailText('preventifDetailPeriodicite', ds.periodicite);
+      setDetailText('preventifDetailDernier', ds.dernier);
+      setDetailText('preventifDetailProchain', ds.prochain);
+      setDetailBadge('preventifDetailEtat', 'status', ds.etatClass || '', ds.etat);
+      openModal('preventifDetailModal');
+    }
+
+    function openPreventifForm(mode='edit', defaults={}, row=null){
+      preventifModalMode = mode;
+      currentPreventifRow = mode === 'edit' ? row : null;
+      const modal = document.getElementById('preventifEditModal');
+      if(modal){
+        modal.setAttribute('aria-label', mode === 'edit' ? 'Modifier un plan préventif' : 'Créer un plan préventif');
+      }
+      const title = document.getElementById('preventifModalTitle');
+      if(title){
+        title.textContent = mode === 'edit' ? 'Modifier plan préventif' : 'Nouveau plan préventif';
+      }
+      const submit = document.getElementById('preventifModalSubmit');
+      if(submit){
+        submit.textContent = mode === 'edit' ? 'Mettre à jour' : 'Enregistrer';
+      }
+      const form = document.getElementById('preventifForm');
+      if(form) form.reset();
+      const planInput = document.getElementById('preventif-plan');
+      const machineInput = document.getElementById('preventif-machine');
+      const periodiciteInput = document.getElementById('preventif-periodicite');
+      const dernierInput = document.getElementById('preventif-dernier');
+      const prochainInput = document.getElementById('preventif-prochain');
+      const etatInput = document.getElementById('preventif-etat');
+      const etatClassSelect = document.getElementById('preventif-etat-class');
+      const dernierIso = defaults.dernierIso || toIsoDate(defaults.dernier || '');
+      const prochainIso = defaults.prochainIso || toIsoDate(defaults.prochain || '');
+      if(planInput) planInput.value = defaults.plan || '';
+      if(machineInput) machineInput.value = defaults.machine || '';
+      if(periodiciteInput) periodiciteInput.value = defaults.periodicite || '';
+      if(dernierInput) dernierInput.value = dernierIso;
+      if(prochainInput) prochainInput.value = prochainIso;
+      if(etatInput) etatInput.value = defaults.etat || '';
+      if(etatClassSelect) etatClassSelect.value = defaults.etatClass || '';
+      openModal('preventifEditModal');
+      if(planInput){
+        requestAnimationFrame(()=>planInput.focus({preventScroll:true}));
+      }
+    }
+
+    function updatePreventifRow(row, values){
+      const ds = row.dataset;
+      ds.plan = values.plan;
+      ds.machine = values.machine;
+      ds.periodicite = values.periodicite;
+      ds.dernier = values.displayDernier;
+      ds.dernierIso = values.dernier;
+      ds.prochain = values.displayProchain;
+      ds.prochainIso = values.prochain;
+      ds.etat = values.etat;
+      ds.etatClass = values.etatClass;
+      const cells = row.cells;
+      if(cells[0]) cells[0].textContent = values.plan || '—';
+      if(cells[1]) cells[1].textContent = values.machine || '—';
+      if(cells[2]) cells[2].textContent = values.periodicite || '—';
+      if(cells[3]) cells[3].textContent = values.displayDernier || '—';
+      if(cells[4]) cells[4].textContent = values.displayProchain || '—';
+      if(cells[5]){
+        cells[5].innerHTML = '';
+        const span = document.createElement('span');
+        span.className = ['status', values.etatClass].filter(Boolean).join(' ');
+        span.textContent = values.etat || '—';
+        cells[5].appendChild(span);
+      }
+      const label = values.plan ? `Voir le plan préventif ${values.plan}` : 'Voir le plan préventif';
+      row.setAttribute('aria-label', label);
+    }
+
+    function submitPreventifForm(){
+      const plan = (document.getElementById('preventif-plan')?.value || '').trim();
+      const machine = (document.getElementById('preventif-machine')?.value || '').trim();
+      if(!plan || !machine){
+        alert('Merci de renseigner au minimum le plan et la machine.');
+        return;
+      }
+      const periodicite = (document.getElementById('preventif-periodicite')?.value || '').trim();
+      const dernier = document.getElementById('preventif-dernier')?.value || '';
+      const prochain = document.getElementById('preventif-prochain')?.value || '';
+      const etat = (document.getElementById('preventif-etat')?.value || '').trim();
+      let etatClass = document.getElementById('preventif-etat-class')?.value || '';
+      const displayDernier = formatDisplayDate(dernier);
+      const displayProchain = formatDisplayDate(prochain);
+      const values = {plan, machine, periodicite, dernier, prochain, displayDernier, displayProchain, etat, etatClass};
+      if(!etatClass && currentPreventifRow){
+        etatClass = currentPreventifRow.dataset.etatClass || '';
+        values.etatClass = etatClass;
+      }else{
+        values.etatClass = etatClass;
+      }
+      if(preventifModalMode === 'edit' && currentPreventifRow){
+        updatePreventifRow(currentPreventifRow, values);
+      }else{
+        const tbody = document.getElementById('tblPrev');
+        if(!tbody){
+          closeModal('preventifEditModal');
+          return;
+        }
+        const tr = document.createElement('tr');
+        tr.classList.add('clickable');
+        tr.setAttribute('role','button');
+        tr.tabIndex = 0;
+        ['plan','machine','periodicite','displayDernier','displayProchain'].forEach((key, idx)=>{
+          const td = document.createElement('td');
+          td.textContent = values[key] || '—';
+          tr.appendChild(td);
+        });
+        const statusCell = document.createElement('td');
+        const span = document.createElement('span');
+        span.className = ['status', values.etatClass].filter(Boolean).join(' ');
+        span.textContent = values.etat || '—';
+        statusCell.appendChild(span);
+        tr.appendChild(statusCell);
+        updatePreventifRow(tr, values);
+        attachInteractiveRow(tr, openPreventifDetail);
+        tbody.appendChild(tr);
+      }
+      closeModal('preventifEditModal');
+      preventifModalMode = 'edit';
+      currentPreventifRow = null;
+    }
+
+    function beginEditPreventif(){
+      if(!currentPreventifRow) return;
+      const ds = currentPreventifRow.dataset || {};
+      closeModal('preventifDetailModal');
+      openPreventifForm('edit', {
+        plan: ds.plan || '',
+        machine: ds.machine || '',
+        periodicite: ds.periodicite || '',
+        dernier: ds.dernier || '',
+        prochain: ds.prochain || '',
+        etat: ds.etat || '',
+        etatClass: ds.etatClass || '',
+        dernierIso: ds.dernierIso || toIsoDate(ds.dernier || ''),
+        prochainIso: ds.prochainIso || toIsoDate(ds.prochain || '')
+      }, currentPreventifRow);
+    }
+
+    function setupContactRows(){
+      document.querySelectorAll('#tblContacts tr.clickable').forEach(tr=>{
+        attachInteractiveRow(tr, openContactDetail);
+      });
+    }
+
+    function openContactDetail(row){
+      currentContactRow = row;
+      const ds = row.dataset || {};
+      setDetailText('contactDetailEntreprise', ds.entreprise);
+      setDetailText('contactDetailActivite', ds.activite);
+      setDetailText('contactDetailNom', ds.contact);
+      setDetailText('contactDetailEmail', ds.email);
+      setDetailText('contactDetailTelephone', ds.telephone);
+      openModal('contactDetailModal');
+    }
+
+    function openContactForm(mode='create', defaults={}, row=null){
+      contactModalMode = mode;
+      currentContactRow = mode === 'edit' ? row : null;
+      const modal = document.getElementById('contactModal');
+      if(modal){
+        modal.setAttribute('aria-label', mode === 'edit' ? 'Modifier un contact' : 'Créer un contact');
+      }
+      const title = document.getElementById('contactModalTitle');
+      if(title){
+        title.textContent = mode === 'edit' ? 'Modifier un contact' : 'Nouveau contact';
+      }
+      const submit = document.getElementById('contactModalSubmit');
+      if(submit){
+        submit.textContent = mode === 'edit' ? 'Mettre à jour' : 'Enregistrer';
+      }
+      const form = document.getElementById('contactForm');
+      if(form) form.reset();
+      const companyInput = document.getElementById('contact-company');
+      const activityInput = document.getElementById('contact-activity');
+      const nameInput = document.getElementById('contact-name');
+      const emailInput = document.getElementById('contact-email');
+      const phoneInput = document.getElementById('contact-phone');
+      if(companyInput) companyInput.value = defaults.entreprise || defaults.company || '';
+      if(activityInput) activityInput.value = defaults.activite || defaults.activity || '';
+      if(nameInput) nameInput.value = defaults.contact || defaults.name || '';
+      if(emailInput) emailInput.value = defaults.email || '';
+      if(phoneInput) phoneInput.value = defaults.telephone || defaults.phone || '';
+      openModal('contactModal');
+      if(companyInput){
+        requestAnimationFrame(()=>companyInput.focus({preventScroll:true}));
+      }
+    }
+
+    function gatherContactValues(){
+      const company = (document.getElementById('contact-company')?.value || '').trim();
+      const activity = (document.getElementById('contact-activity')?.value || '').trim();
+      const name = (document.getElementById('contact-name')?.value || '').trim();
+      const email = (document.getElementById('contact-email')?.value || '').trim();
+      const phone = (document.getElementById('contact-phone')?.value || '').trim();
+      return {company, activity, name, email, phone};
+    }
+
+    function updateContactRow(row, values){
+      const ds = row.dataset;
+      ds.entreprise = values.company;
+      ds.activite = values.activity;
+      ds.contact = values.name;
+      ds.email = values.email;
+      ds.telephone = values.phone;
+      const cells = row.cells;
+      if(cells[0]) cells[0].textContent = values.company || '—';
+      if(cells[1]) cells[1].textContent = values.activity || '—';
+      if(cells[2]) cells[2].textContent = values.name || '—';
+      if(cells[3]) cells[3].textContent = values.email || '—';
+      if(cells[4]) cells[4].textContent = values.phone || '—';
+      const label = values.company ? `Voir le contact ${values.company}` : 'Voir le contact';
+      row.setAttribute('aria-label', label);
+    }
+
+    function submitContactForm(){
+      const values = gatherContactValues();
+      if(!values.company){
+        alert('Merci de renseigner le nom de l’entreprise.');
+        return;
+      }
+      if(contactModalMode === 'edit' && currentContactRow){
+        updateContactRow(currentContactRow, values);
+      }else{
+        const tbody = document.getElementById('tblContacts');
+        if(!tbody){
+          closeModal('contactModal');
+          return;
+        }
+        const tr = document.createElement('tr');
+        tr.classList.add('clickable');
+        tr.setAttribute('role','button');
+        tr.tabIndex = 0;
+        for(const text of [values.company, values.activity, values.name, values.email, values.phone]){
+          const td = document.createElement('td');
+          td.textContent = text || '—';
+          tr.appendChild(td);
+        }
+        updateContactRow(tr, values);
+        attachInteractiveRow(tr, openContactDetail);
+        tbody.appendChild(tr);
+      }
+      closeModal('contactModal');
+      contactModalMode = 'create';
+      const form = document.getElementById('contactForm');
+      if(form) form.reset();
+      currentContactRow = null;
+    }
+
+    function beginEditContact(){
+      if(!currentContactRow) return;
+      const ds = currentContactRow.dataset || {};
+      closeModal('contactDetailModal');
+      openContactForm('edit', {
+        entreprise: ds.entreprise || '',
+        activite: ds.activite || '',
+        contact: ds.contact || '',
+        email: ds.email || '',
+        telephone: ds.telephone || ''
+      }, currentContactRow);
+    }
+
+    function openInterventionDetail(row){
+      currentInterventionRow = row;
+      const ds = row.dataset;
+      resetAttachmentContext('intervention');
+      const fields = {
+        ot:document.getElementById('interventionOt'),
+        machine:document.getElementById('interventionMachine'),
+        statut:document.getElementById('interventionStatut'),
+        priorite:document.getElementById('interventionPriorite'),
+        intervenant:document.getElementById('interventionIntervenant'),
+        type:document.getElementById('interventionType'),
+        description:document.getElementById('interventionDescription'),
+        duree:document.getElementById('interventionDuree'),
+        arret:document.getElementById('interventionArret'),
+        resolution:document.getElementById('interventionResolution')
+      };
+
+      if(!fields.ot) return;
+
+      fields.ot.value = ds.ot || '';
+      fields.machine.value = ds.machine || '';
+      fields.statut.value = ds.statut || '';
+      fields.priorite.value = ds.priorite || 'P1';
+      fields.intervenant.value = ds.intervenant || '';
+      fields.type.value = ds.typeIntervention || 'correctif';
+      fields.description.value = ds.description || '';
+      fields.duree.value = ds.tempsIntervention || '';
+      fields.arret.value = ds.tempsArret || '';
+      fields.resolution.value = ds.resolution || '';
+
+      renderInterventionPieces(ds.ot || '');
+
+      openModal('interventionModal');
+      if(fields.intervenant){
+        requestAnimationFrame(()=>{
+          fields.intervenant.focus({preventScroll:true});
+        });
+      }
+    }
+
+    function saveInterventionDetails(){
+      if(!currentInterventionRow){
+        closeModal('interventionModal');
+        return;
+      }
+      const ds = currentInterventionRow.dataset;
+      const priorite = document.getElementById('interventionPriorite').value;
+      const intervenant = document.getElementById('interventionIntervenant').value.trim();
+      const type = document.getElementById('interventionType').value;
+      const description = document.getElementById('interventionDescription').value.trim();
+      const duree = document.getElementById('interventionDuree').value;
+      const arret = document.getElementById('interventionArret').value;
+      const resolution = document.getElementById('interventionResolution').value;
+      const typeLabel = INTERVENTION_TYPE_LABELS[type] || type;
+
+      ds.priorite = priorite;
+      ds.type = typeLabel;
+      ds.intervenant = intervenant;
+      ds.typeIntervention = type;
+      ds.description = description;
+      ds.tempsIntervention = duree;
+      ds.tempsArret = arret;
+      ds.resolution = resolution;
+
+      currentInterventionRow.cells[2].innerText = typeLabel;
+      currentInterventionRow.cells[3].innerText = priorite;
+
+      closeModal('interventionModal');
+    }
+
+    function fakeExport(){
+      const rows = [['OT','Machine','Priorité','Statut','Prévu'], ...Array.from(document.querySelectorAll('#tblOT tr')).map(tr=>[...tr.cells].slice(0,5).map(td=>td.innerText.trim()))];
+      const csv = rows.map(r=>r.join(';')).join('\n');
+      const blob = new Blob([csv],{type:'text/csv;charset=utf-8;'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'export_ot.csv'; a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function init(){
+      let savedTheme = null;
+      try{ savedTheme = localStorage.getItem('gmao-theme'); }catch(_e){ savedTheme = null; }
+      applyTheme(savedTheme || 'dark', {persist:false});
+
+      document.querySelectorAll('.modal').forEach(modal=>{
+        modal.addEventListener('click', evt=>{
+          if(evt.target === modal) closeModal(modal.id);
+        });
+      });
+
+      setupInterventionRows();
+      setupParcRows();
+      setupPreventifRows();
+      setupContactRows();
+
+      ['di','intervention'].forEach(setupAttachmentHandlers);
+
+      const pieceForm = document.getElementById('pieceForm');
+      if(pieceForm){
+        pieceForm.addEventListener('submit', evt=>{
+          evt.preventDefault();
+          saveSparePart();
+        });
+      }
+
+      const equipForm = document.getElementById('equipForm');
+      if(equipForm){
+        equipForm.addEventListener('submit', evt=>{
+          evt.preventDefault();
+          submitEquipmentForm();
+        });
+      }
+
+      const contactFormEl = document.getElementById('contactForm');
+      if(contactFormEl){
+        contactFormEl.addEventListener('submit', evt=>{
+          evt.preventDefault();
+          submitContactForm();
+        });
+      }
+
+      const preventifFormEl = document.getElementById('preventifForm');
+      if(preventifFormEl){
+        preventifFormEl.addEventListener('submit', evt=>{
+          evt.preventDefault();
+          submitPreventifForm();
+        });
+      }
+
+      const addPieceBtn = document.getElementById('interventionAddPieceBtn');
+      if(addPieceBtn){
+        addPieceBtn.addEventListener('click', ()=>{
+          const defaults = currentInterventionRow ? {
+            ot: currentInterventionRow.dataset.ot || '',
+            machine: currentInterventionRow.dataset.machine || '',
+            status:'used'
+          } : {status:'used'};
+          openSparePartModal('intervention', defaults);
+        });
+      }
+
+      renderSpareParts();
+      renderInterventionPieces('');
+
+      document.addEventListener('keydown', evt=>{
+        if(evt.key === 'Escape' && activeModal){
+          evt.preventDefault();
+          closeActiveModal();
+        }else if(evt.key === 'Tab' && activeModal){
+          const focusable = Array.from(activeModal.querySelectorAll(FOCUSABLE_SELECTOR)).filter(el=>!el.hasAttribute('disabled') && !el.getAttribute('aria-hidden'));
+          if(!focusable.length) return;
+          const first = focusable[0];
+          const last = focusable[focusable.length-1];
+          const active = document.activeElement;
+          if(evt.shiftKey && active === first){
+            evt.preventDefault();
+            last.focus();
+          }else if(!evt.shiftKey && active === last){
+            evt.preventDefault();
+            first.focus();
+          }
+        }
+      });
+
+    }
+
+    if(document.readyState === 'loading'){
+      document.addEventListener('DOMContentLoaded', init);
+    }else{
+      init();
+    }
+  </script>
+</body>
+</html>
+

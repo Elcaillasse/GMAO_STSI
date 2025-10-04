@@ -389,7 +389,7 @@
             <option>Tornos</option>
             <option>Kaeser</option>
           </select>
-          <button class="btn" onclick="openModal('equipModal')">➕ Ajouter équipement</button>
+          <button class="btn" onclick="openEquipmentForm('create')">➕ Ajouter équipement</button>
         </div>
         <table aria-label="Parc">
           <thead><tr><th>Zone</th><th>Machine</th><th>Fabricant</th><th>Modèle</th><th>Numéro série</th><th>Année</th></tr></thead>
@@ -594,7 +594,7 @@
       <section id="contacts" class="section" aria-label="Contacts">
         <div class="toolbar">
           <input class="input" placeholder="Rechercher fournisseur/intervenant…" oninput="filterTable('tblContacts', this.value, [0,1,2,3])">
-          <button class="btn" onclick="openModal('contactModal')">➕ Nouveau contact</button>
+          <button class="btn" onclick="openContactForm('create')">➕ Nouveau contact</button>
         </div>
         <table aria-label="Contacts">
           <thead><tr><th>Entreprise</th><th>Activité</th><th>Contact</th><th>Email</th><th>Téléphone</th></tr></thead>
@@ -827,6 +827,7 @@
       </div>
       <div class="actions">
         <button class="btn" type="button" onclick="closeModal('parcDetailModal')">Fermer</button>
+        <button class="btn primary" type="button" onclick="beginEditEquipment()">Modifier</button>
       </div>
     </div>
   </div>
@@ -850,6 +851,7 @@
       </div>
       <div class="actions">
         <button class="btn" type="button" onclick="closeModal('pieceDetailModal')">Fermer</button>
+        <button class="btn primary" type="button" onclick="beginEditSparePart()">Modifier</button>
       </div>
     </div>
   </div>
@@ -871,6 +873,39 @@
       </div>
       <div class="actions">
         <button class="btn" type="button" onclick="closeModal('preventifDetailModal')">Fermer</button>
+        <button class="btn primary" type="button" onclick="beginEditPreventif()">Modifier</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="preventifEditModal" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Modifier un plan préventif">
+    <div class="sheet">
+      <header>
+        <div class="brand"><div class="logo" style="width:28px;height:28px"></div><h1 id="preventifModalTitle">Modifier plan préventif</h1></div>
+      </header>
+      <div class="content">
+        <form id="preventifForm">
+          <div class="grid">
+            <div class="field"><label for="preventif-plan">Plan</label><input id="preventif-plan" type="text" required></div>
+            <div class="field"><label for="preventif-machine">Machine</label><input id="preventif-machine" type="text" required></div>
+            <div class="field"><label for="preventif-periodicite">Périodicité</label><input id="preventif-periodicite" type="text"></div>
+            <div class="field"><label for="preventif-dernier">Dernier passage</label><input id="preventif-dernier" type="date"></div>
+            <div class="field"><label for="preventif-prochain">Prochain passage</label><input id="preventif-prochain" type="date"></div>
+            <div class="field"><label for="preventif-etat">État</label><input id="preventif-etat" type="text"></div>
+            <div class="field"><label for="preventif-etat-class">Code couleur</label>
+              <select id="preventif-etat-class">
+                <option value="">Automatique</option>
+                <option value="ok">Vert (OK)</option>
+                <option value="warn">Orange (Attention)</option>
+                <option value="bad">Rouge (En retard)</option>
+              </select>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="actions">
+        <button class="btn" type="button" onclick="closeModal('preventifEditModal')">Annuler</button>
+        <button class="btn primary" type="submit" form="preventifForm" id="preventifModalSubmit">Mettre à jour</button>
       </div>
     </div>
   </div>
@@ -891,6 +926,7 @@
       </div>
       <div class="actions">
         <button class="btn" type="button" onclick="closeModal('contactDetailModal')">Fermer</button>
+        <button class="btn primary" type="button" onclick="beginEditContact()">Modifier</button>
       </div>
     </div>
   </div>
@@ -898,7 +934,7 @@
   <div class="modal" id="pieceModal" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Ajouter une pièce détachée">
     <div class="sheet">
       <header>
-        <div class="brand"><div class="logo" style="width:28px;height:28px"></div><h1>Nouvelle pièce détachée</h1></div>
+        <div class="brand"><div class="logo" style="width:28px;height:28px"></div><h1 id="pieceModalTitle">Nouvelle pièce détachée</h1></div>
       </header>
       <div class="content">
         <form id="pieceForm">
@@ -917,13 +953,56 @@
       </div>
       <div class="actions">
         <button class="btn" type="button" onclick="closeModal('pieceModal')">Annuler</button>
-        <button class="btn primary" type="submit" form="pieceForm">Enregistrer</button>
+        <button class="btn primary" type="submit" form="pieceForm" id="pieceModalSubmit">Enregistrer</button>
       </div>
     </div>
   </div>
 
-  <div class="modal" id="equipModal" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Ajouter un équipement"><div class="sheet"><header><div class="brand"><div class="logo" style="width:28px;height:28px"></div><h1>Ajouter équipement</h1></div></header><div class="content"><div class="grid"><div class="field"><label for="equip-zone">Zone</label><input id="equip-zone" type="text" placeholder="Zone de l'équipement"></div><div class="field"><label for="equip-machine">Machine</label><input id="equip-machine" type="text" placeholder="Nom de la machine"></div><div class="field"><label for="equip-fabricant">Fabricant</label><input id="equip-fabricant" type="text" placeholder="Fabricant"></div><div class="field"><label for="equip-modele">Modèle</label><input id="equip-modele" type="text" placeholder="Référence ou modèle"></div><div class="field"><label for="equip-serial">Numéro de série</label><input id="equip-serial" type="text" placeholder="Numéro de série"></div><div class="field"><label for="equip-annee">Année</label><input id="equip-annee" type="number" inputmode="numeric" min="1900" max="2100" placeholder="Année de mise en service"></div></div></div><div class="actions"><button class="btn" onclick="closeModal('equipModal')">Fermer</button><button class="btn primary" onclick="closeModal('equipModal')">Enregistrer</button></div></div></div>
-  <div class="modal" id="contactModal" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Créer un contact"><div class="sheet"><header><div class="brand"><div class="logo" style="width:28px;height:28px"></div><h1>Nouveau contact</h1></div></header><div class="content"><div class="grid"><div class="field"><label>Entreprise</label><input></div><div class="field"><label>Activité</label><input></div><div class="field"><label>Contact</label><input></div><div class="field"><label>Email</label><input type="email"></div><div class="field"><label>Téléphone</label><input></div></div></div><div class="actions"><button class="btn" onclick="closeModal('contactModal')">Fermer</button><button class="btn primary" onclick="closeModal('contactModal')">Enregistrer</button></div></div></div>
+  <div class="modal" id="equipModal" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Ajouter un équipement">
+    <div class="sheet">
+      <header>
+        <div class="brand"><div class="logo" style="width:28px;height:28px"></div><h1 id="equipModalTitle">Ajouter équipement</h1></div>
+      </header>
+      <div class="content">
+        <form id="equipForm">
+          <div class="grid">
+            <div class="field"><label for="equip-zone">Zone</label><input id="equip-zone" type="text" placeholder="Zone de l'équipement"></div>
+            <div class="field"><label for="equip-machine">Machine</label><input id="equip-machine" type="text" placeholder="Nom de la machine"></div>
+            <div class="field"><label for="equip-fabricant">Fabricant</label><input id="equip-fabricant" type="text" placeholder="Fabricant"></div>
+            <div class="field"><label for="equip-modele">Modèle</label><input id="equip-modele" type="text" placeholder="Référence ou modèle"></div>
+            <div class="field"><label for="equip-serial">Numéro de série</label><input id="equip-serial" type="text" placeholder="Numéro de série"></div>
+            <div class="field"><label for="equip-annee">Année</label><input id="equip-annee" type="number" inputmode="numeric" min="1900" max="2100" placeholder="Année de mise en service"></div>
+          </div>
+        </form>
+      </div>
+      <div class="actions">
+        <button class="btn" type="button" onclick="closeModal('equipModal')">Fermer</button>
+        <button class="btn primary" type="submit" form="equipForm" id="equipModalSubmit">Enregistrer</button>
+      </div>
+    </div>
+  </div>
+  <div class="modal" id="contactModal" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Créer un contact">
+    <div class="sheet">
+      <header>
+        <div class="brand"><div class="logo" style="width:28px;height:28px"></div><h1 id="contactModalTitle">Nouveau contact</h1></div>
+      </header>
+      <div class="content">
+        <form id="contactForm">
+          <div class="grid">
+            <div class="field"><label for="contact-company">Entreprise</label><input id="contact-company" type="text"></div>
+            <div class="field"><label for="contact-activity">Activité</label><input id="contact-activity" type="text"></div>
+            <div class="field"><label for="contact-name">Contact</label><input id="contact-name" type="text"></div>
+            <div class="field"><label for="contact-email">Email</label><input id="contact-email" type="email"></div>
+            <div class="field"><label for="contact-phone">Téléphone</label><input id="contact-phone" type="text"></div>
+          </div>
+        </form>
+      </div>
+      <div class="actions">
+        <button class="btn" type="button" onclick="closeModal('contactModal')">Fermer</button>
+        <button class="btn primary" type="submit" form="contactForm" id="contactModalSubmit">Enregistrer</button>
+      </div>
+    </div>
+  </div>
   <div class="modal" id="planModal" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Générer des OT préventifs"><div class="sheet"><header><div class="brand"><div class="logo" style="width:28px;height:28px"></div><h1>Générer OT préventifs</h1></div></header><div class="content"><p>Sélectionner l'horizon de planification et la périodicité.</p><div class="grid"><div class="field"><label>Horizon (jours)</label><input type="number" value="30"></div><div class="field"><label>Inclure retard</label><select><option>Oui</option><option>Non</option></select></div></div></div><div class="actions"><button class="btn" onclick="closeModal('planModal')">Fermer</button><button class="btn primary" onclick="closeModal('planModal')">Générer</button></div></div></div>
   <div class="modal" id="reportModal" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Exporter les données"><div class="sheet"><header><div class="brand"><div class="logo" style="width:28px;height:28px"></div><h1>Export rapide</h1></div></header><div class="content"><p>Ce prototype exportera un CSV fictif. À connecter à votre backend plus tard.</p></div><div class="actions"><button class="btn" onclick="closeModal('reportModal')">Fermer</button><button class="btn primary" onclick="fakeExport()">Exporter CSV</button></div></div></div>
 
@@ -970,6 +1049,13 @@
     let activeModal = null;
     let lastFocusedElement = null;
     let currentInterventionRow = null;
+    let currentParcRow = null;
+    let equipmentModalMode = 'create';
+    let currentSparePartIndex = null;
+    let currentPreventifRow = null;
+    let preventifModalMode = 'edit';
+    let currentContactRow = null;
+    let contactModalMode = 'create';
     const ATTACHMENT_CONTEXTS = {
       di:{
         attachments:[],
@@ -1008,7 +1094,7 @@
       {reference:'RB-0001', designation:'Kit roulements broche', ot:'OT-1024', machine:'DMU 70', status:'ordered', quantity:1, date:'2025-09-18', note:'Commande urgente fournisseur AirTech'},
       {reference:'FL-0450', designation:'Filtre air KAESER', ot:'OT-1026', machine:'Compresseur KAESER', status:'used', quantity:1, date:'2025-09-22', note:'Installé lors de l’intervention'}
     ];
-    let sparePartModalContext = {source:'pieces', defaults:{}};
+    let sparePartModalContext = {source:'pieces', defaults:{}, index:null};
 
     function switchSection(e){
       e.preventDefault();
@@ -1345,6 +1431,19 @@
       return value;
     }
 
+    function toIsoDate(value){
+      if(!value) return '';
+      if(/^\d{4}-\d{2}-\d{2}$/.test(value)) return value;
+      const parts = value.split('/');
+      if(parts.length === 3){
+        const [day, month, year] = parts;
+        if(day.length === 2 && month.length === 2 && year.length === 4){
+          return `${year}-${month}-${day}`;
+        }
+      }
+      return '';
+    }
+
     function getSpareFilters(){
       const searchInput = document.getElementById('piecesSearch');
       const statusSelect = document.getElementById('piecesStatusFilter');
@@ -1396,6 +1495,8 @@
         if(labelParts){
           tr.setAttribute('aria-label', `Voir la pièce ${labelParts}`);
         }
+        const index = spareParts.indexOf(part);
+        tr.dataset.index = index >= 0 ? String(index) : '';
         const statusMeta = getSparePartStatusMeta(part.status);
         const displayDate = formatDisplayDate(part.date);
         tr.dataset.reference = part.reference || '';
@@ -1477,9 +1578,22 @@
     }
 
     function resetSparePartModal(){
-      sparePartModalContext = {source:'pieces', defaults:{}};
+      sparePartModalContext = {source:'pieces', defaults:{}, index:null};
+      currentSparePartIndex = null;
       const form = document.getElementById('pieceForm');
       if(form) form.reset();
+      const modal = document.getElementById('pieceModal');
+      if(modal){
+        modal.setAttribute('aria-label', 'Ajouter une pièce détachée');
+      }
+      const title = document.getElementById('pieceModalTitle');
+      if(title){
+        title.textContent = 'Nouvelle pièce détachée';
+      }
+      const submit = document.getElementById('pieceModalSubmit');
+      if(submit){
+        submit.textContent = 'Enregistrer';
+      }
       const info = document.getElementById('pieceContextInfo');
       if(info){
         info.textContent = 'Associer une pièce détachée au stock ou à une intervention.';
@@ -1487,9 +1601,23 @@
     }
 
     function openSparePartModal(source='pieces', defaults={}){
-      sparePartModalContext = {source, defaults};
+      const index = typeof defaults.index === 'number' && defaults.index >= 0 ? defaults.index : null;
+      sparePartModalContext = {source, defaults, index};
+      currentSparePartIndex = index;
       const form = document.getElementById('pieceForm');
       if(form) form.reset();
+      const modal = document.getElementById('pieceModal');
+      if(modal){
+        modal.setAttribute('aria-label', index != null ? 'Modifier une pièce détachée' : 'Ajouter une pièce détachée');
+      }
+      const title = document.getElementById('pieceModalTitle');
+      if(title){
+        title.textContent = index != null ? 'Modifier une pièce détachée' : 'Nouvelle pièce détachée';
+      }
+      const submit = document.getElementById('pieceModalSubmit');
+      if(submit){
+        submit.textContent = index != null ? 'Mettre à jour' : 'Enregistrer';
+      }
       const referenceInput = document.getElementById('pieceReference');
       const designationInput = document.getElementById('pieceDesignation');
       const otInput = document.getElementById('pieceOt');
@@ -1552,15 +1680,25 @@
         status = 'ordered';
       }
 
-      spareParts.push({reference, designation, ot, machine, status, quantity, date, note});
-      renderSpareParts();
-      const targetOt = currentInterventionRow ? (currentInterventionRow.dataset.ot || '') : (ot || sparePartModalContext.defaults.ot || '');
-      if(targetOt){
-        renderInterventionPieces(targetOt);
+      const partData = {reference, designation, ot, machine, status, quantity, date, note};
+      const index = typeof sparePartModalContext.index === 'number' ? sparePartModalContext.index : null;
+      if(index != null && spareParts[index]){
+        spareParts[index] = partData;
       }else{
-        renderInterventionPieces('');
+        spareParts.push(partData);
       }
+      renderSpareParts();
+      let targetOt = '';
+      if(currentInterventionRow){
+        targetOt = currentInterventionRow.dataset.ot || '';
+      }else if(partData.ot){
+        targetOt = partData.ot;
+      }else if(sparePartModalContext.defaults.ot){
+        targetOt = sparePartModalContext.defaults.ot;
+      }
+      renderInterventionPieces(targetOt);
       closeModal('pieceModal');
+      resetSparePartModal();
     }
 
     // Simple global filter across visible table bodies
@@ -1639,6 +1777,7 @@
     }
 
     function openParcDetail(row){
+      currentParcRow = row;
       const ds = row.dataset || {};
       setDetailText('parcDetailZone', ds.zone);
       setDetailText('parcDetailMachine', ds.machine);
@@ -1649,7 +1788,133 @@
       openModal('parcDetailModal');
     }
 
+    function getEquipmentFields(){
+      return {
+        zone:document.getElementById('equip-zone'),
+        machine:document.getElementById('equip-machine'),
+        fabricant:document.getElementById('equip-fabricant'),
+        modele:document.getElementById('equip-modele'),
+        serie:document.getElementById('equip-serial'),
+        annee:document.getElementById('equip-annee')
+      };
+    }
+
+    function resetEquipmentForm(){
+      const form = document.getElementById('equipForm');
+      if(form) form.reset();
+    }
+
+    function openEquipmentForm(mode='create', defaults={}, row=null){
+      equipmentModalMode = mode;
+      currentParcRow = mode === 'edit' ? row : null;
+      const modal = document.getElementById('equipModal');
+      if(modal){
+        modal.setAttribute('aria-label', mode === 'edit' ? 'Modifier un équipement' : 'Ajouter un équipement');
+      }
+      const title = document.getElementById('equipModalTitle');
+      if(title){
+        title.textContent = mode === 'edit' ? 'Modifier équipement' : 'Ajouter équipement';
+      }
+      const submit = document.getElementById('equipModalSubmit');
+      if(submit){
+        submit.textContent = mode === 'edit' ? 'Mettre à jour' : 'Enregistrer';
+      }
+      resetEquipmentForm();
+      const fields = getEquipmentFields();
+      if(fields.zone) fields.zone.value = defaults.zone || '';
+      if(fields.machine) fields.machine.value = defaults.machine || '';
+      if(fields.fabricant) fields.fabricant.value = defaults.fabricant || '';
+      if(fields.modele) fields.modele.value = defaults.modele || '';
+      if(fields.serie) fields.serie.value = defaults.serie || '';
+      if(fields.annee) fields.annee.value = defaults.annee || '';
+      openModal('equipModal');
+      const focusTarget = fields.machine || fields.zone;
+      if(focusTarget){
+        requestAnimationFrame(()=>focusTarget.focus({preventScroll:true}));
+      }
+    }
+
+    function gatherEquipmentValues(){
+      const fields = getEquipmentFields();
+      return {
+        zone:(fields.zone?.value || '').trim(),
+        machine:(fields.machine?.value || '').trim(),
+        fabricant:(fields.fabricant?.value || '').trim(),
+        modele:(fields.modele?.value || '').trim(),
+        serie:(fields.serie?.value || '').trim(),
+        annee:(fields.annee?.value || '').trim()
+      };
+    }
+
+    function updateEquipmentRow(row, values){
+      const ds = row.dataset;
+      ds.zone = values.zone;
+      ds.machine = values.machine;
+      ds.fabricant = values.fabricant;
+      ds.modele = values.modele;
+      ds.serie = values.serie;
+      ds.annee = values.annee;
+      const cells = row.cells;
+      if(cells[0]) cells[0].textContent = values.zone || '—';
+      if(cells[1]) cells[1].textContent = values.machine || '—';
+      if(cells[2]) cells[2].textContent = values.fabricant || '—';
+      if(cells[3]) cells[3].textContent = values.modele || '—';
+      if(cells[4]) cells[4].textContent = values.serie || '—';
+      if(cells[5]) cells[5].textContent = values.annee || '—';
+      const labelMachine = values.machine || 'l’équipement';
+      row.setAttribute('aria-label', `Voir le détail de ${labelMachine}`);
+    }
+
+    function submitEquipmentForm(){
+      const values = gatherEquipmentValues();
+      if(!values.machine){
+        alert('Merci de renseigner le nom de la machine.');
+        return;
+      }
+      if(equipmentModalMode === 'edit' && currentParcRow){
+        updateEquipmentRow(currentParcRow, values);
+      }else{
+        const tbody = document.getElementById('tblParc');
+        if(!tbody){
+          closeModal('equipModal');
+          return;
+        }
+        const tr = document.createElement('tr');
+        tr.classList.add('clickable');
+        tr.setAttribute('role', 'button');
+        tr.tabIndex = 0;
+        updateEquipmentRow(tr, values);
+        ['zone','machine','fabricant','modele','serie','annee'].forEach((key,index)=>{
+          const td = tr.cells[index] || tr.appendChild(document.createElement('td'));
+          td.textContent = values[key] || '—';
+        });
+        attachInteractiveRow(tr, openParcDetail);
+        tbody.appendChild(tr);
+      }
+      closeModal('equipModal');
+      resetEquipmentForm();
+      equipmentModalMode = 'create';
+      currentParcRow = null;
+    }
+
+    function beginEditEquipment(){
+      if(!currentParcRow) return;
+      const ds = currentParcRow.dataset || {};
+      closeModal('parcDetailModal');
+      openEquipmentForm('edit', {
+        zone: ds.zone || '',
+        machine: ds.machine || '',
+        fabricant: ds.fabricant || '',
+        modele: ds.modele || '',
+        serie: ds.serie || '',
+        annee: ds.annee || ''
+      }, currentParcRow);
+    }
+
     function openSparePartDetail(row){
+      const indexRaw = row.dataset ? row.dataset.index : undefined;
+      const parsedIndex = indexRaw !== undefined && indexRaw !== '' ? Number(indexRaw) : NaN;
+      currentSparePartIndex = Number.isNaN(parsedIndex) ? null : parsedIndex;
       const ds = row.dataset || {};
       const displayDate = ds.dateDisplay || formatDisplayDate(ds.date || '');
       setDetailText('pieceDetailReference', ds.reference);
@@ -1664,6 +1929,14 @@
       openModal('pieceDetailModal');
     }
 
+    function beginEditSparePart(){
+      if(currentSparePartIndex == null) return;
+      const part = spareParts[currentSparePartIndex];
+      if(!part) return;
+      closeModal('pieceDetailModal');
+      openSparePartModal('pieces', {...part, index: currentSparePartIndex});
+    }
+
     function setupPreventifRows(){
       document.querySelectorAll('#tblPrev tr.clickable').forEach(tr=>{
         attachInteractiveRow(tr, openPreventifDetail);
@@ -1671,6 +1944,7 @@
     }
 
     function openPreventifDetail(row){
+      currentPreventifRow = row;
       const ds = row.dataset || {};
       setDetailText('preventifDetailPlan', ds.plan);
       setDetailText('preventifDetailMachine', ds.machine);
@@ -1681,6 +1955,143 @@
       openModal('preventifDetailModal');
     }
 
+    function openPreventifForm(mode='edit', defaults={}, row=null){
+      preventifModalMode = mode;
+      currentPreventifRow = mode === 'edit' ? row : null;
+      const modal = document.getElementById('preventifEditModal');
+      if(modal){
+        modal.setAttribute('aria-label', mode === 'edit' ? 'Modifier un plan préventif' : 'Créer un plan préventif');
+      }
+      const title = document.getElementById('preventifModalTitle');
+      if(title){
+        title.textContent = mode === 'edit' ? 'Modifier plan préventif' : 'Nouveau plan préventif';
+      }
+      const submit = document.getElementById('preventifModalSubmit');
+      if(submit){
+        submit.textContent = mode === 'edit' ? 'Mettre à jour' : 'Enregistrer';
+      }
+      const form = document.getElementById('preventifForm');
+      if(form) form.reset();
+      const planInput = document.getElementById('preventif-plan');
+      const machineInput = document.getElementById('preventif-machine');
+      const periodiciteInput = document.getElementById('preventif-periodicite');
+      const dernierInput = document.getElementById('preventif-dernier');
+      const prochainInput = document.getElementById('preventif-prochain');
+      const etatInput = document.getElementById('preventif-etat');
+      const etatClassSelect = document.getElementById('preventif-etat-class');
+      const dernierIso = defaults.dernierIso || toIsoDate(defaults.dernier || '');
+      const prochainIso = defaults.prochainIso || toIsoDate(defaults.prochain || '');
+      if(planInput) planInput.value = defaults.plan || '';
+      if(machineInput) machineInput.value = defaults.machine || '';
+      if(periodiciteInput) periodiciteInput.value = defaults.periodicite || '';
+      if(dernierInput) dernierInput.value = dernierIso;
+      if(prochainInput) prochainInput.value = prochainIso;
+      if(etatInput) etatInput.value = defaults.etat || '';
+      if(etatClassSelect) etatClassSelect.value = defaults.etatClass || '';
+      openModal('preventifEditModal');
+      if(planInput){
+        requestAnimationFrame(()=>planInput.focus({preventScroll:true}));
+      }
+    }
+
+    function updatePreventifRow(row, values){
+      const ds = row.dataset;
+      ds.plan = values.plan;
+      ds.machine = values.machine;
+      ds.periodicite = values.periodicite;
+      ds.dernier = values.displayDernier;
+      ds.dernierIso = values.dernier;
+      ds.prochain = values.displayProchain;
+      ds.prochainIso = values.prochain;
+      ds.etat = values.etat;
+      ds.etatClass = values.etatClass;
+      const cells = row.cells;
+      if(cells[0]) cells[0].textContent = values.plan || '—';
+      if(cells[1]) cells[1].textContent = values.machine || '—';
+      if(cells[2]) cells[2].textContent = values.periodicite || '—';
+      if(cells[3]) cells[3].textContent = values.displayDernier || '—';
+      if(cells[4]) cells[4].textContent = values.displayProchain || '—';
+      if(cells[5]){
+        cells[5].innerHTML = '';
+        const span = document.createElement('span');
+        span.className = ['status', values.etatClass].filter(Boolean).join(' ');
+        span.textContent = values.etat || '—';
+        cells[5].appendChild(span);
+      }
+      const label = values.plan ? `Voir le plan préventif ${values.plan}` : 'Voir le plan préventif';
+      row.setAttribute('aria-label', label);
+    }
+
+    function submitPreventifForm(){
+      const plan = (document.getElementById('preventif-plan')?.value || '').trim();
+      const machine = (document.getElementById('preventif-machine')?.value || '').trim();
+      if(!plan || !machine){
+        alert('Merci de renseigner au minimum le plan et la machine.');
+        return;
+      }
+      const periodicite = (document.getElementById('preventif-periodicite')?.value || '').trim();
+      const dernier = document.getElementById('preventif-dernier')?.value || '';
+      const prochain = document.getElementById('preventif-prochain')?.value || '';
+      const etat = (document.getElementById('preventif-etat')?.value || '').trim();
+      let etatClass = document.getElementById('preventif-etat-class')?.value || '';
+      const displayDernier = formatDisplayDate(dernier);
+      const displayProchain = formatDisplayDate(prochain);
+      const values = {plan, machine, periodicite, dernier, prochain, displayDernier, displayProchain, etat, etatClass};
+      if(!etatClass && currentPreventifRow){
+        etatClass = currentPreventifRow.dataset.etatClass || '';
+        values.etatClass = etatClass;
+      }else{
+        values.etatClass = etatClass;
+      }
+      if(preventifModalMode === 'edit' && currentPreventifRow){
+        updatePreventifRow(currentPreventifRow, values);
+      }else{
+        const tbody = document.getElementById('tblPrev');
+        if(!tbody){
+          closeModal('preventifEditModal');
+          return;
+        }
+        const tr = document.createElement('tr');
+        tr.classList.add('clickable');
+        tr.setAttribute('role','button');
+        tr.tabIndex = 0;
+        ['plan','machine','periodicite','displayDernier','displayProchain'].forEach((key, idx)=>{
+          const td = document.createElement('td');
+          td.textContent = values[key] || '—';
+          tr.appendChild(td);
+        });
+        const statusCell = document.createElement('td');
+        const span = document.createElement('span');
+        span.className = ['status', values.etatClass].filter(Boolean).join(' ');
+        span.textContent = values.etat || '—';
+        statusCell.appendChild(span);
+        tr.appendChild(statusCell);
+        updatePreventifRow(tr, values);
+        attachInteractiveRow(tr, openPreventifDetail);
+        tbody.appendChild(tr);
+      }
+      closeModal('preventifEditModal');
+      preventifModalMode = 'edit';
+      currentPreventifRow = null;
+    }
+
+    function beginEditPreventif(){
+      if(!currentPreventifRow) return;
+      const ds = currentPreventifRow.dataset || {};
+      closeModal('preventifDetailModal');
+      openPreventifForm('edit', {
+        plan: ds.plan || '',
+        machine: ds.machine || '',
+        periodicite: ds.periodicite || '',
+        dernier: ds.dernier || '',
+        prochain: ds.prochain || '',
+        etat: ds.etat || '',
+        etatClass: ds.etatClass || '',
+        dernierIso: ds.dernierIso || toIsoDate(ds.dernier || ''),
+        prochainIso: ds.prochainIso || toIsoDate(ds.prochain || '')
+      }, currentPreventifRow);
+    }
+
     function setupContactRows(){
       document.querySelectorAll('#tblContacts tr.clickable').forEach(tr=>{
         attachInteractiveRow(tr, openContactDetail);
@@ -1688,6 +2099,7 @@
     }
 
     function openContactDetail(row){
+      currentContactRow = row;
       const ds = row.dataset || {};
       setDetailText('contactDetailEntreprise', ds.entreprise);
       setDetailText('contactDetailActivite', ds.activite);
@@ -1695,6 +2107,112 @@
       setDetailText('contactDetailEmail', ds.email);
       setDetailText('contactDetailTelephone', ds.telephone);
       openModal('contactDetailModal');
+    }
+
+    function openContactForm(mode='create', defaults={}, row=null){
+      contactModalMode = mode;
+      currentContactRow = mode === 'edit' ? row : null;
+      const modal = document.getElementById('contactModal');
+      if(modal){
+        modal.setAttribute('aria-label', mode === 'edit' ? 'Modifier un contact' : 'Créer un contact');
+      }
+      const title = document.getElementById('contactModalTitle');
+      if(title){
+        title.textContent = mode === 'edit' ? 'Modifier un contact' : 'Nouveau contact';
+      }
+      const submit = document.getElementById('contactModalSubmit');
+      if(submit){
+        submit.textContent = mode === 'edit' ? 'Mettre à jour' : 'Enregistrer';
+      }
+      const form = document.getElementById('contactForm');
+      if(form) form.reset();
+      const companyInput = document.getElementById('contact-company');
+      const activityInput = document.getElementById('contact-activity');
+      const nameInput = document.getElementById('contact-name');
+      const emailInput = document.getElementById('contact-email');
+      const phoneInput = document.getElementById('contact-phone');
+      if(companyInput) companyInput.value = defaults.entreprise || defaults.company || '';
+      if(activityInput) activityInput.value = defaults.activite || defaults.activity || '';
+      if(nameInput) nameInput.value = defaults.contact || defaults.name || '';
+      if(emailInput) emailInput.value = defaults.email || '';
+      if(phoneInput) phoneInput.value = defaults.telephone || defaults.phone || '';
+      openModal('contactModal');
+      if(companyInput){
+        requestAnimationFrame(()=>companyInput.focus({preventScroll:true}));
+      }
+    }
+
+    function gatherContactValues(){
+      const company = (document.getElementById('contact-company')?.value || '').trim();
+      const activity = (document.getElementById('contact-activity')?.value || '').trim();
+      const name = (document.getElementById('contact-name')?.value || '').trim();
+      const email = (document.getElementById('contact-email')?.value || '').trim();
+      const phone = (document.getElementById('contact-phone')?.value || '').trim();
+      return {company, activity, name, email, phone};
+    }
+
+    function updateContactRow(row, values){
+      const ds = row.dataset;
+      ds.entreprise = values.company;
+      ds.activite = values.activity;
+      ds.contact = values.name;
+      ds.email = values.email;
+      ds.telephone = values.phone;
+      const cells = row.cells;
+      if(cells[0]) cells[0].textContent = values.company || '—';
+      if(cells[1]) cells[1].textContent = values.activity || '—';
+      if(cells[2]) cells[2].textContent = values.name || '—';
+      if(cells[3]) cells[3].textContent = values.email || '—';
+      if(cells[4]) cells[4].textContent = values.phone || '—';
+      const label = values.company ? `Voir le contact ${values.company}` : 'Voir le contact';
+      row.setAttribute('aria-label', label);
+    }
+
+    function submitContactForm(){
+      const values = gatherContactValues();
+      if(!values.company){
+        alert('Merci de renseigner le nom de l’entreprise.');
+        return;
+      }
+      if(contactModalMode === 'edit' && currentContactRow){
+        updateContactRow(currentContactRow, values);
+      }else{
+        const tbody = document.getElementById('tblContacts');
+        if(!tbody){
+          closeModal('contactModal');
+          return;
+        }
+        const tr = document.createElement('tr');
+        tr.classList.add('clickable');
+        tr.setAttribute('role','button');
+        tr.tabIndex = 0;
+        for(const text of [values.company, values.activity, values.name, values.email, values.phone]){
+          const td = document.createElement('td');
+          td.textContent = text || '—';
+          tr.appendChild(td);
+        }
+        updateContactRow(tr, values);
+        attachInteractiveRow(tr, openContactDetail);
+        tbody.appendChild(tr);
+      }
+      closeModal('contactModal');
+      contactModalMode = 'create';
+      const form = document.getElementById('contactForm');
+      if(form) form.reset();
+      currentContactRow = null;
+    }
+
+    function beginEditContact(){
+      if(!currentContactRow) return;
+      const ds = currentContactRow.dataset || {};
+      closeModal('contactDetailModal');
+      openContactForm('edit', {
+        entreprise: ds.entreprise || '',
+        activite: ds.activite || '',
+        contact: ds.contact || '',
+        email: ds.email || '',
+        telephone: ds.telephone || ''
+      }, currentContactRow);
     }
 
     function openInterventionDetail(row){
@@ -1800,6 +2318,30 @@
         pieceForm.addEventListener('submit', evt=>{
           evt.preventDefault();
           saveSparePart();
+        });
+      }
+
+      const equipForm = document.getElementById('equipForm');
+      if(equipForm){
+        equipForm.addEventListener('submit', evt=>{
+          evt.preventDefault();
+          submitEquipmentForm();
+        });
+      }
+
+      const contactFormEl = document.getElementById('contactForm');
+      if(contactFormEl){
+        contactFormEl.addEventListener('submit', evt=>{
+          evt.preventDefault();
+          submitContactForm();
+        });
+      }
+
+      const preventifFormEl = document.getElementById('preventifForm');
+      if(preventifFormEl){
+        preventifFormEl.addEventListener('submit', evt=>{
+          evt.preventDefault();
+          submitPreventifForm();
         });
       }
 

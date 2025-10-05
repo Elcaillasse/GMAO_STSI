@@ -224,7 +224,7 @@
     <nav>
       <div class="search" role="search">
         <span>🔎</span>
-        <input id="globalSearch" placeholder="Rechercher… (machines, OT, pièces, fournisseurs)" oninput="globalFilter(this.value)">
+        <input id="globalSearch" placeholder="Rechercher… (machines, DI, pièces, fournisseurs)" oninput="globalFilter(this.value)">
       </div>
       <div class="menu" role="navigation">
         <a href="#" class="active" data-target="dashboard" onclick="switchSection(event)">📊 Tableau de bord</a>
@@ -355,7 +355,7 @@
         </div>
 
         <div class="kpis">
-          <div class="card"><h3>OT Ouverts</h3><div class="value">18</div><span class="tag warn">+3 cette semaine</span></div>
+          <div class="card"><h3>DI ouvertes</h3><div class="value">18</div><span class="tag warn">+3 cette semaine</span></div>
           <div class="card"><h3>Taux préventif réalisé</h3><div class="value">86%</div><span class="tag ok">Objectif ≥ 80%</span></div>
         </div>
 
@@ -368,12 +368,12 @@
             <button class="btn" onclick="openModal('reportModal')">📈 Export rapide</button>
           </div>
           <div class="table-wrapper">
-            <table aria-label="Backlog OT">
-              <thead><tr><th>OT</th><th>Machine</th><th>Type</th><th>Priorité</th><th>Statut</th><th>Prévu</th></tr></thead>
+            <table aria-label="Backlog DI">
+              <thead><tr><th>DI</th><th>Machine</th><th>Type</th><th>Priorité</th><th>Statut</th><th>Prévu</th></tr></thead>
               <tbody id="tblBacklog">
-                <tr><td>OT-1024</td><td>DMU 70</td><td>Correctif</td><td>P1</td><td><span class="status warn">En cours</span></td><td>24/09/2025</td></tr>
-                <tr><td>OT-1025</td><td>Tornos Deco</td><td>Qualité</td><td>P2</td><td><span class="status ok">Planifié</span></td><td>26/09/2025</td></tr>
-                <tr><td>OT-1026</td><td>Compresseur KAESER</td><td>Sécurité</td><td>P1</td><td><span class="status bad">En retard</span></td><td>22/09/2025</td></tr>
+                <tr><td>DI-1024</td><td>DMU 70</td><td>Correctif</td><td>P1</td><td><span class="status warn">En cours</span></td><td>24/09/2025</td></tr>
+                <tr><td>DI-1025</td><td>Tornos Deco</td><td>Qualité</td><td>P2</td><td><span class="status ok">Planifié</span></td><td>26/09/2025</td></tr>
+                <tr><td>DI-1026</td><td>Compresseur KAESER</td><td>Sécurité</td><td>P1</td><td><span class="status bad">En retard</span></td><td>22/09/2025</td></tr>
               </tbody>
             </table>
           </div>
@@ -432,26 +432,26 @@
       <!-- Interventions -->
       <section id="interventions" class="section" aria-label="Interventions">
         <div class="toolbar">
-          <select id="selType" class="input" onchange="filterTable('tblOT', this.value, [2])">
+          <select id="selType" class="input" onchange="filterTable('tblDI', this.value, [2])">
             <option value="">Type: Tous</option>
             <option>Correctif</option>
             <option>Palliatif</option>
             <option>Qualité</option>
             <option>Sécurité</option>
           </select>
-          <select id="selPrio" class="input" onchange="filterTable('tblOT', this.value, [3])">
+          <select id="selPrio" class="input" onchange="filterTable('tblDI', this.value, [3])">
             <option value="">Priorité: Toutes</option>
             <option>P1</option>
             <option>P2</option>
             <option>P3</option>
           </select>
-          <input class="input" placeholder="Rechercher travaux…" oninput="filterTable('tblOT', this.value, [5])">
+          <input class="input" placeholder="Rechercher travaux…" oninput="filterTable('tblDI', this.value, [5])">
         </div>
         <table aria-label="Interventions">
-          <thead><tr><th>OT</th><th>Machine</th><th>Type</th><th>Priorité</th><th>Statut</th><th>Travaux</th><th>Prévu</th></tr></thead>
-          <tbody id="tblOT">
-            <tr class="clickable" role="button" tabindex="0" aria-label="Ouvrir l'intervention OT-1024"
-                data-ot="OT-1024"
+          <thead><tr><th>DI</th><th>Machine</th><th>Type</th><th>Priorité</th><th>Statut</th><th>Travaux</th><th>Prévu</th></tr></thead>
+          <tbody id="tblDI">
+            <tr class="clickable" role="button" tabindex="0" aria-label="Ouvrir l'intervention DI-1024"
+                data-ot="DI-1024"
                 data-machine="DMU 70"
                 data-type="Correctif"
                 data-priorite="P1"
@@ -464,7 +464,7 @@
                 data-temps-arret="2"
                 data-resolution="2025-09-24"
                 data-type-intervention="curatif">
-              <td>OT-1024</td>
+              <td>DI-1024</td>
               <td>DMU 70</td>
               <td>Correctif</td>
               <td>P1</td>
@@ -472,8 +472,8 @@
               <td>Vibrations broche</td>
               <td>24/09/2025</td>
             </tr>
-            <tr class="clickable" role="button" tabindex="0" aria-label="Ouvrir l'intervention OT-1025"
-                data-ot="OT-1025"
+            <tr class="clickable" role="button" tabindex="0" aria-label="Ouvrir l'intervention DI-1025"
+                data-ot="DI-1025"
                 data-machine="Tornos Deco"
                 data-type="Qualité"
                 data-priorite="P2"
@@ -486,7 +486,7 @@
                 data-temps-arret="0"
                 data-resolution=""
                 data-type-intervention="preventif">
-              <td>OT-1025</td>
+              <td>DI-1025</td>
               <td>Tornos Deco</td>
               <td>Qualité</td>
               <td>P2</td>
@@ -494,8 +494,8 @@
               <td>Contrôle géométrie</td>
               <td>26/09/2025</td>
             </tr>
-            <tr class="clickable" role="button" tabindex="0" aria-label="Ouvrir l'intervention OT-1026"
-                data-ot="OT-1026"
+            <tr class="clickable" role="button" tabindex="0" aria-label="Ouvrir l'intervention DI-1026"
+                data-ot="DI-1026"
                 data-machine="Compresseur KAESER"
                 data-type="Sécurité"
                 data-priorite="P1"
@@ -508,7 +508,7 @@
                 data-temps-arret="1.5"
                 data-resolution="2025-09-22"
                 data-type-intervention="correctif">
-              <td>OT-1026</td>
+              <td>DI-1026</td>
               <td>Compresseur KAESER</td>
               <td>Sécurité</td>
               <td>P1</td>
@@ -533,7 +533,7 @@
         </div>
         <table aria-label="Pièces détachées">
           <thead>
-            <tr><th>Référence</th><th>Désignation</th><th>OT</th><th>Machine</th><th>Statut</th><th>Quantité</th><th>Date</th><th>Commentaire</th></tr>
+          <tr><th>Référence</th><th>Désignation</th><th>DI</th><th>Machine</th><th>Statut</th><th>Quantité</th><th>Date</th><th>Commentaire</th></tr>
           </thead>
           <tbody id="tblPieces"></tbody>
         </table>
@@ -548,7 +548,7 @@
             <option>Mensuel</option>
             <option>Trimestriel</option>
           </select>
-          <button class="btn" onclick="openModal('planModal')">⚙️ Générer OT préventifs</button>
+        <button class="btn" onclick="openModal('planModal')">⚙️ Générer DI préventives</button>
         </div>
         <table aria-label="Plan préventif">
           <thead><tr><th>Plan</th><th>Machine</th><th>Périodicité</th><th>Dernier</th><th>Prochain</th><th>État</th></tr></thead>
@@ -625,10 +625,10 @@
   </div>
 
   <!-- Modals -->
-  <div class="modal" id="otModal" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Créer un OT">
+  <div class="modal" id="otModal" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Créer une DI">
     <div class="sheet">
       <header>
-        <div class="brand"><div class="logo" style="width:28px;height:28px"></div><h1>Nouvel ordre de travail</h1></div>
+        <div class="brand"><div class="logo" style="width:28px;height:28px"></div><h1>Nouvelle demande d’intervention</h1></div>
       </header>
       <div class="content">
         <div class="grid">
@@ -728,8 +728,8 @@
       <div class="content">
         <div class="grid">
           <div class="field">
-            <label for="interventionOt">OT</label>
-            <input id="interventionOt" type="text" readonly>
+            <label for="interventionDi">DI</label>
+            <input id="interventionDi" type="text" readonly>
           </div>
           <div class="field">
             <label for="interventionMachine">Machine</label>
@@ -842,7 +842,7 @@
         <div class="detail-grid">
           <div class="detail-item"><span class="detail-label">Référence</span><span class="detail-value" id="pieceDetailReference">—</span></div>
           <div class="detail-item"><span class="detail-label">Désignation</span><span class="detail-value" id="pieceDetailDesignation">—</span></div>
-          <div class="detail-item"><span class="detail-label">OT lié</span><span class="detail-value" id="pieceDetailOt">—</span></div>
+          <div class="detail-item"><span class="detail-label">DI liée</span><span class="detail-value" id="pieceDetailDi">—</span></div>
           <div class="detail-item"><span class="detail-label">Machine</span><span class="detail-value" id="pieceDetailMachine">—</span></div>
           <div class="detail-item"><span class="detail-label">Statut</span><span class="detail-value"><span id="pieceDetailStatus" class="tag">—</span></span></div>
           <div class="detail-item"><span class="detail-label">Quantité</span><span class="detail-value" id="pieceDetailQuantity">—</span></div>
@@ -943,7 +943,7 @@
           <div class="grid">
             <div class="field"><label for="pieceReference">Référence</label><input id="pieceReference" type="text" placeholder="Ex. RB-0001"></div>
             <div class="field"><label for="pieceDesignation">Désignation</label><input id="pieceDesignation" type="text" required placeholder="Nom de la pièce"></div>
-            <div class="field"><label for="pieceOt">OT lié</label><input id="pieceOt" type="text" placeholder="Numéro d'OT"></div>
+            <div class="field"><label for="pieceDi">DI liée</label><input id="pieceDi" type="text" placeholder="Numéro de DI"></div>
             <div class="field"><label for="pieceMachine">Machine</label><input id="pieceMachine" type="text" placeholder="Machine concernée"></div>
             <div class="field"><label for="pieceStatus">Statut</label><select id="pieceStatus"><option value="ordered">Commandée</option><option value="used">Utilisée</option></select></div>
             <div class="field"><label for="pieceQuantity">Quantité</label><input id="pieceQuantity" type="number" min="1" step="1" value="1"></div>
@@ -1023,7 +1023,7 @@
       </div>
     </div>
   </div>
-  <div class="modal" id="planModal" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Générer des OT préventifs"><div class="sheet"><header><div class="brand"><div class="logo" style="width:28px;height:28px"></div><h1>Générer OT préventifs</h1></div></header><div class="content"><p>Sélectionner l'horizon de planification et la périodicité.</p><div class="grid"><div class="field"><label>Horizon (jours)</label><input type="number" value="30"></div><div class="field"><label>Inclure retard</label><select><option>Oui</option><option>Non</option></select></div></div></div><div class="actions"><button class="btn" onclick="closeModal('planModal')">Fermer</button><button class="btn primary" onclick="closeModal('planModal')">Générer</button></div></div></div>
+  <div class="modal" id="planModal" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Générer des DI préventives"><div class="sheet"><header><div class="brand"><div class="logo" style="width:28px;height:28px"></div><h1>Générer DI préventives</h1></div></header><div class="content"><p>Sélectionner l'horizon de planification et la périodicité.</p><div class="grid"><div class="field"><label>Horizon (jours)</label><input type="number" value="30"></div><div class="field"><label>Inclure retard</label><select><option>Oui</option><option>Non</option></select></div></div></div><div class="actions"><button class="btn" onclick="closeModal('planModal')">Fermer</button><button class="btn primary" onclick="closeModal('planModal')">Générer</button></div></div></div>
   <div class="modal" id="reportModal" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Exporter les données"><div class="sheet"><header><div class="brand"><div class="logo" style="width:28px;height:28px"></div><h1>Export rapide</h1></div></header><div class="content"><p>Ce prototype exportera un CSV fictif. À connecter à votre backend plus tard.</p></div><div class="actions"><button class="btn" onclick="closeModal('reportModal')">Fermer</button><button class="btn primary" onclick="fakeExport()">Exporter CSV</button></div></div></div>
 
   <script>
@@ -1111,8 +1111,8 @@
       used:{label:'Utilisée', tagClass:'ok'}
     };
     let spareParts = [
-      {reference:'RB-0001', designation:'Kit roulements broche', ot:'OT-1024', machine:'DMU 70', status:'ordered', quantity:1, date:'2025-09-18', note:'Commande urgente fournisseur AirTech'},
-      {reference:'FL-0450', designation:'Filtre air KAESER', ot:'OT-1026', machine:'Compresseur KAESER', status:'used', quantity:1, date:'2025-09-22', note:'Installé lors de l’intervention'}
+      {reference:'RB-0001', designation:'Kit roulements broche', ot:'DI-1024', machine:'DMU 70', status:'ordered', quantity:1, date:'2025-09-18', note:'Commande urgente fournisseur AirTech'},
+      {reference:'FL-0450', designation:'Filtre air KAESER', ot:'DI-1026', machine:'Compresseur KAESER', status:'used', quantity:1, date:'2025-09-22', note:'Installé lors de l’intervention'}
     ];
     let sparePartModalContext = {source:'pieces', defaults:{}, index:null};
 
@@ -1707,15 +1707,15 @@
       }
       const part = spareParts[numericIndex];
       if(!part) return;
-      const otInput = document.getElementById('interventionOt');
+      const diInput = document.getElementById('interventionDi');
       const machineInput = document.getElementById('interventionMachine');
-      const otValue = (otInput?.value || '').trim();
-      if(!otValue){
-        alert('Aucun OT n’est associé à cette intervention.');
+      const diValue = (diInput?.value || '').trim();
+      if(!diValue){
+        alert('Aucune DI n’est associée à cette intervention.');
         return;
       }
       const machineValue = (machineInput?.value || '').trim();
-      part.ot = otValue;
+      part.ot = diValue;
       if(machineValue){
         part.machine = machineValue;
       }
@@ -1723,14 +1723,14 @@
         part.status = 'used';
       }
       renderSpareParts();
-      renderInterventionPieces(otValue);
+      renderInterventionPieces(diValue);
       fermerRecherchePiece();
     }
 
     function openSpareSearchModal(){
-      const otInput = document.getElementById('interventionOt');
-      const otValue = (otInput?.value || '').trim();
-      if(!otValue){
+      const diInput = document.getElementById('interventionDi');
+      const diValue = (diInput?.value || '').trim();
+      if(!diValue){
         alert('Aucune intervention sélectionnée.');
         return;
       }
@@ -1794,7 +1794,7 @@
       }
       const referenceInput = document.getElementById('pieceReference');
       const designationInput = document.getElementById('pieceDesignation');
-      const otInput = document.getElementById('pieceOt');
+      const diInput = document.getElementById('pieceDi');
       const machineInput = document.getElementById('pieceMachine');
       const statusSelect = document.getElementById('pieceStatus');
       const quantityInput = document.getElementById('pieceQuantity');
@@ -1803,7 +1803,7 @@
       const today = new Date().toISOString().slice(0,10);
       if(referenceInput) referenceInput.value = defaults.reference || '';
       if(designationInput) designationInput.value = defaults.designation || '';
-      if(otInput) otInput.value = defaults.ot || '';
+      if(diInput) diInput.value = defaults.ot || '';
       if(machineInput) machineInput.value = defaults.machine || '';
       if(statusSelect){
         const fallbackStatus = source === 'intervention' ? 'used' : 'ordered';
@@ -1833,7 +1833,7 @@
     function saveSparePart(){
       const reference = (document.getElementById('pieceReference')?.value || '').trim();
       const designation = (document.getElementById('pieceDesignation')?.value || '').trim();
-      const ot = (document.getElementById('pieceOt')?.value || '').trim();
+      const ot = (document.getElementById('pieceDi')?.value || '').trim();
       const machine = (document.getElementById('pieceMachine')?.value || '').trim();
       let status = document.getElementById('pieceStatus')?.value || 'ordered';
       const quantityRaw = document.getElementById('pieceQuantity')?.value;
@@ -1939,7 +1939,7 @@
     }
 
     function setupInterventionRows(){
-      document.querySelectorAll('#tblOT tr').forEach(tr=>{
+      document.querySelectorAll('#tblDI tr').forEach(tr=>{
         attachInteractiveRow(tr, openInterventionDetail);
       });
     }
@@ -2093,7 +2093,7 @@
       const displayDate = ds.dateDisplay || formatDisplayDate(ds.date || '');
       setDetailText('pieceDetailReference', ds.reference);
       setDetailText('pieceDetailDesignation', ds.designation);
-      setDetailText('pieceDetailOt', ds.ot);
+      setDetailText('pieceDetailDi', ds.ot);
       setDetailText('pieceDetailMachine', ds.machine);
       const statusLabel = ds.statusLabel || ds.status;
       setDetailBadge('pieceDetailStatus', 'tag', ds.statusClass || '', statusLabel);
@@ -2419,7 +2419,7 @@
       const ds = row.dataset;
       resetAttachmentContext('intervention');
       const fields = {
-        ot:document.getElementById('interventionOt'),
+        di:document.getElementById('interventionDi'),
         machine:document.getElementById('interventionMachine'),
         statut:document.getElementById('interventionStatut'),
         priorite:document.getElementById('interventionPriorite'),
@@ -2431,9 +2431,9 @@
         resolution:document.getElementById('interventionResolution')
       };
 
-      if(!fields.ot) return;
+      if(!fields.di) return;
 
-      fields.ot.value = ds.ot || '';
+      fields.di.value = ds.ot || '';
       fields.machine.value = ds.machine || '';
       fields.statut.value = ds.statut || '';
       fields.priorite.value = ds.priorite || 'P1';
@@ -2485,12 +2485,12 @@
     }
 
     function fakeExport(){
-      const rows = [['OT','Machine','Priorité','Statut','Prévu'], ...Array.from(document.querySelectorAll('#tblOT tr')).map(tr=>[...tr.cells].slice(0,5).map(td=>td.innerText.trim()))];
+      const rows = [['DI','Machine','Priorité','Statut','Prévu'], ...Array.from(document.querySelectorAll('#tblDI tr')).map(tr=>[...tr.cells].slice(0,5).map(td=>td.innerText.trim()))];
       const csv = rows.map(r=>r.join(';')).join('\n');
       const blob = new Blob([csv],{type:'text/csv;charset=utf-8;'});
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
-      a.href = url; a.download = 'export_ot.csv'; a.click();
+        a.href = url; a.download = 'export_di.csv'; a.click();
       URL.revokeObjectURL(url);
     }
 

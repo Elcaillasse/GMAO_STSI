@@ -130,11 +130,16 @@
     .field{display:flex;flex-direction:column;gap:6px}
     .field label{font-size:12px;color:var(--ink-dim)}
     .field input,.field select,.field textarea{background:rgba(15,23,42,.6);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:8px 10px;color:var(--ink)}
+    .field input[type="checkbox"]{width:18px;height:18px;min-width:18px;padding:0;background:transparent;border:1px solid rgba(255,255,255,.25);border-radius:6px;accent-color:var(--accent)}
     .field textarea{min-height:140px;resize:vertical}
     .field select option{background:var(--panel);color:var(--ink)}
+    .field.checkbox-field{flex-direction:row;align-items:center;gap:10px}
+    .field.checkbox-field label{margin:0;font-size:14px;color:var(--ink);display:inline-flex;align-items:center;gap:10px;font-weight:500;cursor:pointer;user-select:none}
     :root[data-theme="light"] .field input,
     :root[data-theme="light"] .field select,
     :root[data-theme="light"] .field textarea{background:rgba(226,232,240,.6);border:1px solid rgba(148,163,184,.4)}
+    :root[data-theme="light"] .field input[type="checkbox"]{background:transparent;border:1px solid rgba(148,163,184,.6)}
+    :root[data-theme="light"] .field.checkbox-field label{color:var(--ink)}
     :root[data-theme="light"] .field select option{background:rgba(226,232,240,.95);color:var(--ink)}
     .actions{display:flex;gap:8px;justify-content:flex-end;padding:0 16px 16px}
 
@@ -459,6 +464,7 @@
                 data-status="En cours"
                 data-travaux="Vibrations broche"
                 data-intervenant="N. Dupont"
+                data-demandeur="J. Bernard"
                 data-description="Remplacement des roulements de broche et réalignement."
                 data-temps-intervention="3.5"
                 data-temps-arret="2"
@@ -477,10 +483,11 @@
                 data-machine="Tornos Deco"
                 data-type="Qualité"
                 data-priorite="P2"
-                data-statut="Planifié"
-                data-status="Planifié"
+                data-statut="En attente"
+                data-status="En attente"
                 data-travaux="Contrôle géométrie"
-                data-intervenant=""
+                data-intervenant="C. Leroy"
+                data-demandeur="L. Moreau"
                 data-description=""
                 data-temps-intervention=""
                 data-temps-arret="0"
@@ -490,7 +497,7 @@
               <td>Tornos Deco</td>
               <td>Qualité</td>
               <td>P2</td>
-              <td><span class="status ok">Planifié</span></td>
+              <td><span class="status warn">En attente</span></td>
               <td>Contrôle géométrie</td>
               <td>26/09/2025</td>
             </tr>
@@ -499,10 +506,11 @@
                 data-machine="Compresseur KAESER"
                 data-type="Sécurité"
                 data-priorite="P1"
-                data-statut="En retard"
-                data-status="En retard"
+                data-statut="À surveiller"
+                data-status="À surveiller"
                 data-travaux="Remplacer cartouche"
-                data-intervenant="Equipe maintenance"
+                data-intervenant="A. Martin"
+                data-demandeur="S. Fontaine"
                 data-description="Attente de la pièce de rechange, intervention planifiée."
                 data-temps-intervention="1.5"
                 data-temps-arret="1.5"
@@ -512,7 +520,7 @@
               <td>Compresseur KAESER</td>
               <td>Sécurité</td>
               <td>P1</td>
-              <td><span class="status bad">En retard</span></td>
+              <td><span class="status bad">À surveiller</span></td>
               <td>Remplacer cartouche</td>
               <td>22/09/2025</td>
             </tr>
@@ -661,8 +669,17 @@
             <input type="date"/>
           </div>
           <div class="field">
-            <label>Machine</label>
-            <input type="text" placeholder="Nom de la machine…"/>
+            <label for="diDemandeur">Demandeur</label>
+            <input id="diDemandeur" type="text" placeholder="Nom du demandeur…"/>
+          </div>
+          <div class="field">
+            <label for="diMachine">Machine</label>
+            <select id="diMachine">
+              <option value="">Sélectionner une machine…</option>
+              <option value="DMU 70">DMU 70</option>
+              <option value="Tornos Deco">Tornos Deco</option>
+              <option value="Compresseur KAESER">Compresseur KAESER</option>
+            </select>
           </div>
           <div class="field">
             <label>Type</label>
@@ -682,11 +699,19 @@
             </select>
           </div>
           <div class="field">
-            <label>Machine à l’arrêt</label>
-            <select>
-              <option value="oui">Oui</option>
-              <option value="non">Non</option>
+            <label for="diIntervenant">Intervenant</label>
+            <select id="diIntervenant">
+              <option value="">Sélectionner un intervenant…</option>
+              <option value="N. Dupont">N. Dupont</option>
+              <option value="C. Leroy">C. Leroy</option>
+              <option value="A. Martin">A. Martin</option>
             </select>
+          </div>
+          <div class="field checkbox-field">
+            <label for="diMachineStop">
+              <input type="checkbox" id="diMachineStop"/>
+              Machine à l’arrêt
+            </label>
           </div>
           <div class="field" style="grid-column:1/-1">
             <label>Travaux à effectuer</label>
@@ -712,7 +737,7 @@
       </div>
       <div class="actions">
         <button class="btn" onclick="closeModal('diModal')">Annuler</button>
-        <button class="btn primary" onclick="closeModal('diModal')">Envoyer</button>
+        <button class="btn primary" onclick="submitDiModal()">Envoyer</button>
       </div>
     </div>
   </div>
@@ -736,8 +761,17 @@
             <input id="interventionMachine" type="text" readonly>
           </div>
           <div class="field">
+            <label for="interventionDemandeur">Demandeur</label>
+            <input id="interventionDemandeur" type="text" readonly>
+          </div>
+          <div class="field">
             <label for="interventionStatut">Statut</label>
-            <input id="interventionStatut" type="text" readonly>
+            <select id="interventionStatut">
+              <option value="En attente">En attente</option>
+              <option value="En cours">En cours</option>
+              <option value="À surveiller">À surveiller</option>
+              <option value="Terminée">Terminée</option>
+            </select>
           </div>
           <div class="field">
             <label for="interventionPriorite">Priorité</label>
@@ -749,7 +783,12 @@
           </div>
           <div class="field">
             <label for="interventionIntervenant">Intervenant</label>
-            <input id="interventionIntervenant" type="text" placeholder="Nom de l'intervenant">
+            <select id="interventionIntervenant">
+              <option value="">Sélectionner un intervenant…</option>
+              <option value="N. Dupont">N. Dupont</option>
+              <option value="C. Leroy">C. Leroy</option>
+              <option value="A. Martin">A. Martin</option>
+            </select>
           </div>
           <div class="field">
             <label for="interventionType">Type d’intervention</label>
@@ -1065,6 +1104,13 @@
       amelioration:'Amélioration',
       securite:'Sécurité'
     };
+    const TECHNICIANS = ['N. Dupont','C. Leroy','A. Martin'];
+    const STATUS_CLASS_MAP = {
+      'En attente':'warn',
+      'En cours':'warn',
+      'À surveiller':'bad',
+      'Terminée':'ok'
+    };
     let currentTheme = 'dark';
     let activeModal = null;
     let lastFocusedElement = null;
@@ -1076,6 +1122,7 @@
     let preventifModalMode = 'edit';
     let currentContactRow = null;
     let contactModalMode = 'create';
+    let lastDiRequester = '';
     const ATTACHMENT_CONTEXTS = {
       di:{
         attachments:[],
@@ -1376,6 +1423,28 @@
 
     function resetDemandModal(){
       resetAttachmentContext('di');
+      const modal = document.getElementById('diModal');
+      if(!modal) return;
+      modal.querySelectorAll('input:not([type="file"]):not([type="checkbox"]), textarea').forEach(el=>{
+        if(el.type === 'date'){
+          el.value = '';
+        }else{
+          el.value = '';
+        }
+      });
+      modal.querySelectorAll('select').forEach(select=>{ select.selectedIndex = 0; });
+      const stopCheckbox = document.getElementById('diMachineStop');
+      if(stopCheckbox){
+        stopCheckbox.checked = false;
+      }
+    }
+
+    function submitDiModal(){
+      const demandeurInput = document.getElementById('diDemandeur');
+      if(demandeurInput){
+        lastDiRequester = demandeurInput.value.trim();
+      }
+      closeModal('diModal');
     }
 
     function setupAttachmentHandlers(contextKey){
@@ -1927,6 +1996,37 @@
       el.className = classes.join(' ');
     }
 
+    function setSelectValue(select, value){
+      if(!select) return;
+      const options = Array.from(select.options || []);
+      const hasValue = options.some(opt=>opt.value === value);
+      if(hasValue){
+        select.value = value;
+      }else if(options.length){
+        const placeholder = options.find(opt=>opt.value === '');
+        select.value = placeholder ? '' : options[0].value;
+      }
+    }
+
+    function populateTechnicianSelect(select){
+      if(!select) return;
+      const previousValue = select.value;
+      select.innerHTML = '';
+      const placeholder = document.createElement('option');
+      placeholder.value = '';
+      placeholder.textContent = 'Sélectionner un intervenant…';
+      select.appendChild(placeholder);
+      TECHNICIANS.forEach(name=>{
+        const option = document.createElement('option');
+        option.value = name;
+        option.textContent = name;
+        select.appendChild(option);
+      });
+      if(previousValue){
+        setSelectValue(select, previousValue);
+      }
+    }
+
     function attachInteractiveRow(tr, handler){
       if(!tr || typeof handler !== 'function') return;
       tr.addEventListener('click', ()=>handler(tr));
@@ -2421,6 +2521,7 @@
       const fields = {
         di:document.getElementById('interventionDi'),
         machine:document.getElementById('interventionMachine'),
+        demandeur:document.getElementById('interventionDemandeur'),
         statut:document.getElementById('interventionStatut'),
         priorite:document.getElementById('interventionPriorite'),
         intervenant:document.getElementById('interventionIntervenant'),
@@ -2435,10 +2536,13 @@
 
       fields.di.value = ds.ot || '';
       fields.machine.value = ds.machine || '';
-      fields.statut.value = ds.statut || '';
-      fields.priorite.value = ds.priorite || 'P1';
-      fields.intervenant.value = ds.intervenant || '';
-      fields.type.value = ds.typeIntervention || 'correctif';
+      if(fields.demandeur){
+        fields.demandeur.value = ds.demandeur || lastDiRequester || '';
+      }
+      setSelectValue(fields.statut, ds.statut || 'En attente');
+      setSelectValue(fields.priorite, ds.priorite || 'P1');
+      setSelectValue(fields.intervenant, ds.intervenant || '');
+      setSelectValue(fields.type, ds.typeIntervention || 'correctif');
       fields.description.value = ds.description || '';
       fields.duree.value = ds.tempsIntervention || '';
       fields.arret.value = ds.tempsArret || '';
@@ -2460,8 +2564,9 @@
         return;
       }
       const ds = currentInterventionRow.dataset;
+      const statut = document.getElementById('interventionStatut').value;
       const priorite = document.getElementById('interventionPriorite').value;
-      const intervenant = document.getElementById('interventionIntervenant').value.trim();
+      const intervenant = document.getElementById('interventionIntervenant').value;
       const type = document.getElementById('interventionType').value;
       const description = document.getElementById('interventionDescription').value.trim();
       const duree = document.getElementById('interventionDuree').value;
@@ -2469,6 +2574,8 @@
       const resolution = document.getElementById('interventionResolution').value;
       const typeLabel = INTERVENTION_TYPE_LABELS[type] || type;
 
+      ds.statut = statut;
+      ds.status = statut;
       ds.priorite = priorite;
       ds.type = typeLabel;
       ds.intervenant = intervenant;
@@ -2480,6 +2587,15 @@
 
       currentInterventionRow.cells[2].innerText = typeLabel;
       currentInterventionRow.cells[3].innerText = priorite;
+      const statusCell = currentInterventionRow.cells[4];
+      if(statusCell){
+        statusCell.innerHTML = '';
+        const span = document.createElement('span');
+        const statusClass = STATUS_CLASS_MAP[statut] || '';
+        span.className = ['status', statusClass].filter(Boolean).join(' ');
+        span.textContent = statut || '—';
+        statusCell.appendChild(span);
+      }
 
       closeModal('interventionModal');
     }
@@ -2511,6 +2627,9 @@
       setupContactRows();
 
       ['di','intervention'].forEach(setupAttachmentHandlers);
+
+      populateTechnicianSelect(document.getElementById('diIntervenant'));
+      populateTechnicianSelect(document.getElementById('interventionIntervenant'));
 
       const pieceForm = document.getElementById('pieceForm');
       if(pieceForm){

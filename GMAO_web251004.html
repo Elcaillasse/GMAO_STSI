@@ -229,7 +229,7 @@
     <nav>
       <div class="search" role="search">
         <span>🔎</span>
-        <input id="globalSearch" placeholder="Rechercher… (machines, DI, pièces, fournisseurs)" oninput="globalFilter(this.value)">
+        <input id="globalSearch" placeholder="Rechercher… (machines, DI, pièces, fournisseurs, personnels)" oninput="globalFilter(this.value)">
       </div>
       <div class="menu" role="navigation">
         <a href="#" class="active" data-target="dashboard" onclick="switchSection(event)">📊 Tableau de bord</a>
@@ -238,6 +238,7 @@
         <a href="#" data-target="pieces" onclick="switchSection(event)">🔩 Pièces détachées</a>
         <a href="#" data-target="preventif" onclick="switchSection(event)">⏱️ Préventif</a>
         <a href="#" data-target="contacts" onclick="switchSection(event)">📇 Contacts</a>
+        <a href="#" data-target="personnels" onclick="switchSection(event)">👤 Personnels</a>
       </div>
     </nav>
 
@@ -624,6 +625,37 @@
                 data-email="contact@mecapro.tld"
                 data-telephone="+33 1 98 76 54 32">
               <td>MecaPro</td><td>Fourniture Mécanique</td><td>S. Leroy</td><td>contact@mecapro.tld</td><td>+33 1 98 76 54 32</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- Personnels -->
+      <section id="personnels" class="section" aria-label="Personnels">
+        <div class="toolbar">
+          <input class="input" placeholder="Rechercher un personnel…" oninput="filterTable('tblPersonnel', this.value, [0,1,2,3,4])">
+          <button class="btn" onclick="openPersonnelForm('create')">➕ Nouveau personnel</button>
+        </div>
+        <table aria-label="Personnels">
+          <thead><tr><th>Nom</th><th>Prénom</th><th>Poste</th><th>Téléphone</th><th>Email</th></tr></thead>
+          <tbody id="tblPersonnel">
+            <tr class="clickable" role="button" tabindex="0"
+                aria-label="Voir la fiche de Claire Bernard"
+                data-nom="Bernard"
+                data-prenom="Claire"
+                data-poste="Responsable maintenance"
+                data-telephone="+33 4 44 55 66 77"
+                data-email="claire.bernard@gillet.tld">
+              <td>Bernard</td><td>Claire</td><td>Responsable maintenance</td><td>+33 4 44 55 66 77</td><td>claire.bernard@gillet.tld</td>
+            </tr>
+            <tr class="clickable" role="button" tabindex="0"
+                aria-label="Voir la fiche de Yannis Dupuis"
+                data-nom="Dupuis"
+                data-prenom="Yannis"
+                data-poste="Technicien polyvalent"
+                data-telephone="+33 6 12 34 56 78"
+                data-email="y.dupuis@gillet.tld">
+              <td>Dupuis</td><td>Yannis</td><td>Technicien polyvalent</td><td>+33 6 12 34 56 78</td><td>y.dupuis@gillet.tld</td>
             </tr>
           </tbody>
         </table>
@@ -1062,6 +1094,51 @@
       </div>
     </div>
   </div>
+
+  <div class="modal" id="personnelDetailModal" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Fiche personnel">
+    <div class="sheet">
+      <header>
+        <div class="brand"><div class="logo" style="width:28px;height:28px"></div><h1>Personnel</h1></div>
+      </header>
+      <div class="content">
+        <div class="detail-grid">
+          <div class="detail-item"><span class="detail-label">Nom</span><span class="detail-value" id="personnelDetailNom">—</span></div>
+          <div class="detail-item"><span class="detail-label">Prénom</span><span class="detail-value" id="personnelDetailPrenom">—</span></div>
+          <div class="detail-item"><span class="detail-label">Poste</span><span class="detail-value" id="personnelDetailPoste">—</span></div>
+          <div class="detail-item"><span class="detail-label">Téléphone</span><span class="detail-value" id="personnelDetailTelephone">—</span></div>
+          <div class="detail-item detail-wide"><span class="detail-label">Email</span><span class="detail-value" id="personnelDetailEmail">—</span></div>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="btn" type="button" onclick="closeModal('personnelDetailModal')">Fermer</button>
+        <button class="btn" type="button" onclick="deletePersonnel()">🗑️ Supprimer</button>
+        <button class="btn primary" type="button" onclick="beginEditPersonnel()">Modifier</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="personnelModal" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Créer un personnel">
+    <div class="sheet">
+      <header>
+        <div class="brand"><div class="logo" style="width:28px;height:28px"></div><h1 id="personnelModalTitle">Nouveau personnel</h1></div>
+      </header>
+      <div class="content">
+        <form id="personnelForm">
+          <div class="grid">
+            <div class="field"><label for="personnel-lastname">Nom</label><input id="personnel-lastname" type="text" required></div>
+            <div class="field"><label for="personnel-firstname">Prénom</label><input id="personnel-firstname" type="text" required></div>
+            <div class="field"><label for="personnel-role">Poste</label><input id="personnel-role" type="text"></div>
+            <div class="field"><label for="personnel-phone">Téléphone</label><input id="personnel-phone" type="text"></div>
+            <div class="field"><label for="personnel-email">Email</label><input id="personnel-email" type="email"></div>
+          </div>
+        </form>
+      </div>
+      <div class="actions">
+        <button class="btn" type="button" onclick="closeModal('personnelModal')">Annuler</button>
+        <button class="btn primary" type="submit" form="personnelForm" id="personnelModalSubmit">Enregistrer</button>
+      </div>
+    </div>
+  </div>
   <div class="modal" id="planModal" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Générer des DI préventives"><div class="sheet"><header><div class="brand"><div class="logo" style="width:28px;height:28px"></div><h1>Générer DI préventives</h1></div></header><div class="content"><p>Sélectionner l'horizon de planification et la périodicité.</p><div class="grid"><div class="field"><label>Horizon (jours)</label><input type="number" value="30"></div><div class="field"><label>Inclure retard</label><select><option>Oui</option><option>Non</option></select></div></div></div><div class="actions"><button class="btn" onclick="closeModal('planModal')">Fermer</button><button class="btn primary" onclick="closeModal('planModal')">Générer</button></div></div></div>
   <div class="modal" id="reportModal" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Exporter les données"><div class="sheet"><header><div class="brand"><div class="logo" style="width:28px;height:28px"></div><h1>Export rapide</h1></div></header><div class="content"><p>Ce prototype exportera un CSV fictif. À connecter à votre backend plus tard.</p></div><div class="actions"><button class="btn" onclick="closeModal('reportModal')">Fermer</button><button class="btn primary" onclick="fakeExport()">Exporter CSV</button></div></div></div>
 
@@ -1122,6 +1199,8 @@
     let preventifModalMode = 'edit';
     let currentContactRow = null;
     let contactModalMode = 'create';
+    let currentPersonnelRow = null;
+    let personnelModalMode = 'create';
     let lastDiRequester = '';
     const ATTACHMENT_CONTEXTS = {
       di:{
@@ -2391,6 +2470,147 @@
       }, currentPreventifRow);
     }
 
+    function setupPersonnelRows(){
+      document.querySelectorAll('#tblPersonnel tr.clickable').forEach(tr=>{
+        attachInteractiveRow(tr, openPersonnelDetail);
+      });
+    }
+
+    function openPersonnelDetail(row){
+      currentPersonnelRow = row;
+      const ds = row.dataset || {};
+      setDetailText('personnelDetailNom', ds.nom);
+      setDetailText('personnelDetailPrenom', ds.prenom);
+      setDetailText('personnelDetailPoste', ds.poste);
+      setDetailText('personnelDetailTelephone', ds.telephone);
+      setDetailText('personnelDetailEmail', ds.email);
+      openModal('personnelDetailModal');
+    }
+
+    function openPersonnelForm(mode='create', defaults={}, row=null){
+      personnelModalMode = mode;
+      currentPersonnelRow = mode === 'edit' ? row : null;
+      const modal = document.getElementById('personnelModal');
+      if(modal){
+        modal.setAttribute('aria-label', mode === 'edit' ? 'Modifier un personnel' : 'Créer un personnel');
+      }
+      const title = document.getElementById('personnelModalTitle');
+      if(title){
+        title.textContent = mode === 'edit' ? 'Modifier un personnel' : 'Nouveau personnel';
+      }
+      const submit = document.getElementById('personnelModalSubmit');
+      if(submit){
+        submit.textContent = mode === 'edit' ? 'Mettre à jour' : 'Enregistrer';
+      }
+      const form = document.getElementById('personnelForm');
+      if(form) form.reset();
+      const lastnameInput = document.getElementById('personnel-lastname');
+      const firstnameInput = document.getElementById('personnel-firstname');
+      const roleInput = document.getElementById('personnel-role');
+      const phoneInput = document.getElementById('personnel-phone');
+      const emailInput = document.getElementById('personnel-email');
+      if(lastnameInput) lastnameInput.value = defaults.nom || defaults.lastName || '';
+      if(firstnameInput) firstnameInput.value = defaults.prenom || defaults.firstName || '';
+      if(roleInput) roleInput.value = defaults.poste || defaults.role || '';
+      if(phoneInput) phoneInput.value = defaults.telephone || defaults.phone || '';
+      if(emailInput) emailInput.value = defaults.email || '';
+      openModal('personnelModal');
+      if(lastnameInput){
+        requestAnimationFrame(()=>lastnameInput.focus({preventScroll:true}));
+      }
+    }
+
+    function gatherPersonnelValues(){
+      const lastName = (document.getElementById('personnel-lastname')?.value || '').trim();
+      const firstName = (document.getElementById('personnel-firstname')?.value || '').trim();
+      const role = (document.getElementById('personnel-role')?.value || '').trim();
+      const phone = (document.getElementById('personnel-phone')?.value || '').trim();
+      const email = (document.getElementById('personnel-email')?.value || '').trim();
+      return {lastName, firstName, role, phone, email};
+    }
+
+    function updatePersonnelRow(row, values){
+      const ds = row.dataset;
+      ds.nom = values.lastName;
+      ds.prenom = values.firstName;
+      ds.poste = values.role;
+      ds.telephone = values.phone;
+      ds.email = values.email;
+      const columns = [values.lastName, values.firstName, values.role, values.phone, values.email];
+      columns.forEach((text, index)=>{
+        const cell = row.cells[index] || row.appendChild(document.createElement('td'));
+        cell.textContent = text || '—';
+      });
+      const fullName = [values.firstName, values.lastName].filter(Boolean).join(' ').trim();
+      const label = fullName ? `Voir la fiche de ${fullName}` : 'Voir la fiche personnel';
+      row.setAttribute('aria-label', label);
+    }
+
+    function submitPersonnelForm(){
+      const values = gatherPersonnelValues();
+      if(!values.lastName || !values.firstName){
+        alert('Merci de renseigner au minimum le nom et le prénom.');
+        return;
+      }
+      const editingRow = personnelModalMode === 'edit' ? currentPersonnelRow : null;
+      if(personnelModalMode === 'edit' && currentPersonnelRow){
+        updatePersonnelRow(currentPersonnelRow, values);
+      }else{
+        const tbody = document.getElementById('tblPersonnel');
+        if(!tbody){
+          closeModal('personnelModal');
+          return;
+        }
+        const tr = document.createElement('tr');
+        tr.classList.add('clickable');
+        tr.setAttribute('role','button');
+        tr.tabIndex = 0;
+        updatePersonnelRow(tr, values);
+        attachInteractiveRow(tr, openPersonnelDetail);
+        tbody.appendChild(tr);
+      }
+      closeModal('personnelModal');
+      const form = document.getElementById('personnelForm');
+      if(form) form.reset();
+      personnelModalMode = 'create';
+      if(editingRow){
+        openPersonnelDetail(editingRow);
+      }else{
+        currentPersonnelRow = null;
+      }
+    }
+
+    function beginEditPersonnel(){
+      if(!currentPersonnelRow) return;
+      const ds = currentPersonnelRow.dataset || {};
+      closeModal('personnelDetailModal');
+      openPersonnelForm('edit', {
+        nom: ds.nom || '',
+        prenom: ds.prenom || '',
+        poste: ds.poste || '',
+        telephone: ds.telephone || '',
+        email: ds.email || ''
+      }, currentPersonnelRow);
+    }
+
+    function deletePersonnel(){
+      if(!currentPersonnelRow) return;
+      const ds = currentPersonnelRow.dataset || {};
+      const label = [ds.prenom, ds.nom].filter(Boolean).join(' ').trim();
+      const message = label ? `Supprimer la fiche de ${label} ?` : 'Supprimer cette fiche personnel ?';
+      if(typeof window !== 'undefined' && !window.confirm(message)){
+        return;
+      }
+      const row = currentPersonnelRow;
+      currentPersonnelRow = null;
+      if(row && row.parentElement){
+        row.parentElement.removeChild(row);
+      }else if(row){
+        row.remove();
+      }
+      closeModal('personnelDetailModal');
+    }
+
     function setupContactRows(){
       document.querySelectorAll('#tblContacts tr.clickable').forEach(tr=>{
         attachInteractiveRow(tr, openContactDetail);
@@ -2625,6 +2845,7 @@
       setupParcRows();
       setupPreventifRows();
       setupContactRows();
+      setupPersonnelRows();
 
       ['di','intervention'].forEach(setupAttachmentHandlers);
 
@@ -2652,6 +2873,14 @@
         contactFormEl.addEventListener('submit', evt=>{
           evt.preventDefault();
           submitContactForm();
+        });
+      }
+
+      const personnelFormEl = document.getElementById('personnelForm');
+      if(personnelFormEl){
+        personnelFormEl.addEventListener('submit', evt=>{
+          evt.preventDefault();
+          submitPersonnelForm();
         });
       }
 

@@ -464,8 +464,8 @@
                 data-statut="En cours"
                 data-status="En cours"
                 data-travaux="Vibrations broche"
-                data-intervenant="N. Dupont"
-                data-demandeur="J. Bernard"
+                data-demandeur-id="pers-bernard"
+                data-demandeur="Claire Bernard"
                 data-description="Remplacement des roulements de broche et réalignement."
                 data-temps-intervention="3.5"
                 data-temps-arret="2"
@@ -487,8 +487,8 @@
                 data-statut="En attente"
                 data-status="En attente"
                 data-travaux="Contrôle géométrie"
-                data-intervenant="C. Leroy"
-                data-demandeur="L. Moreau"
+                data-demandeur-id="pers-moreau"
+                data-demandeur="Léa Moreau"
                 data-description=""
                 data-temps-intervention=""
                 data-temps-arret="0"
@@ -510,8 +510,8 @@
                 data-statut="À surveiller"
                 data-status="À surveiller"
                 data-travaux="Remplacer cartouche"
-                data-intervenant="A. Martin"
-                data-demandeur="S. Fontaine"
+                data-demandeur-id="pers-fontaine"
+                data-demandeur="Samuel Fontaine"
                 data-description="Attente de la pièce de rechange, intervention planifiée."
                 data-temps-intervention="1.5"
                 data-temps-arret="1.5"
@@ -641,6 +641,7 @@
           <tbody id="tblPersonnel">
             <tr class="clickable" role="button" tabindex="0"
                 aria-label="Voir la fiche de Claire Bernard"
+                data-personnel-id="pers-bernard"
                 data-nom="Bernard"
                 data-prenom="Claire"
                 data-poste="Responsable maintenance"
@@ -650,12 +651,33 @@
             </tr>
             <tr class="clickable" role="button" tabindex="0"
                 aria-label="Voir la fiche de Yannis Dupuis"
+                data-personnel-id="pers-dupuis"
                 data-nom="Dupuis"
                 data-prenom="Yannis"
                 data-poste="Technicien polyvalent"
                 data-telephone="+33 6 12 34 56 78"
                 data-email="y.dupuis@gillet.tld">
               <td>Dupuis</td><td>Yannis</td><td>Technicien polyvalent</td><td>+33 6 12 34 56 78</td><td>y.dupuis@gillet.tld</td>
+            </tr>
+            <tr class="clickable" role="button" tabindex="0"
+                aria-label="Voir la fiche de Léa Moreau"
+                data-personnel-id="pers-moreau"
+                data-nom="Moreau"
+                data-prenom="Léa"
+                data-poste="Opératrice qualité"
+                data-telephone="+33 6 98 76 54 32"
+                data-email="lea.moreau@gillet.tld">
+              <td>Moreau</td><td>Léa</td><td>Opératrice qualité</td><td>+33 6 98 76 54 32</td><td>lea.moreau@gillet.tld</td>
+            </tr>
+            <tr class="clickable" role="button" tabindex="0"
+                aria-label="Voir la fiche de Samuel Fontaine"
+                data-personnel-id="pers-fontaine"
+                data-nom="Fontaine"
+                data-prenom="Samuel"
+                data-poste="Responsable production"
+                data-telephone="+33 1 23 45 67 89"
+                data-email="samuel.fontaine@gillet.tld">
+              <td>Fontaine</td><td>Samuel</td><td>Responsable production</td><td>+33 1 23 45 67 89</td><td>samuel.fontaine@gillet.tld</td>
             </tr>
           </tbody>
         </table>
@@ -702,7 +724,9 @@
           </div>
           <div class="field">
             <label for="diDemandeur">Demandeur</label>
-            <input id="diDemandeur" type="text" placeholder="Nom du demandeur…"/>
+            <select id="diDemandeur">
+              <option value="">Sélectionner un demandeur…</option>
+            </select>
           </div>
           <div class="field">
             <label for="diMachine">Machine</label>
@@ -728,15 +752,6 @@
               <option value="P1">P1 — Urgent (machine à l’arrêt)</option>
               <option value="P2">P2 — Moyen (défaut sans interruption)</option>
               <option value="P3">P3 — Faible</option>
-            </select>
-          </div>
-          <div class="field">
-            <label for="diIntervenant">Intervenant</label>
-            <select id="diIntervenant">
-              <option value="">Sélectionner un intervenant…</option>
-              <option value="N. Dupont">N. Dupont</option>
-              <option value="C. Leroy">C. Leroy</option>
-              <option value="A. Martin">A. Martin</option>
             </select>
           </div>
           <div class="field checkbox-field">
@@ -794,7 +809,9 @@
           </div>
           <div class="field">
             <label for="interventionDemandeur">Demandeur</label>
-            <input id="interventionDemandeur" type="text" readonly>
+            <select id="interventionDemandeur">
+              <option value="">Sélectionner un demandeur…</option>
+            </select>
           </div>
           <div class="field">
             <label for="interventionStatut">Statut</label>
@@ -811,15 +828,6 @@
               <option value="P1">P1 — Urgent (machine à l’arrêt)</option>
               <option value="P2">P2 — Moyen (défaut sans interruption)</option>
               <option value="P3">P3 — Faible</option>
-            </select>
-          </div>
-          <div class="field">
-            <label for="interventionIntervenant">Intervenant</label>
-            <select id="interventionIntervenant">
-              <option value="">Sélectionner un intervenant…</option>
-              <option value="N. Dupont">N. Dupont</option>
-              <option value="C. Leroy">C. Leroy</option>
-              <option value="A. Martin">A. Martin</option>
             </select>
           </div>
           <div class="field">
@@ -1181,7 +1189,6 @@
       amelioration:'Amélioration',
       securite:'Sécurité'
     };
-    const TECHNICIANS = ['N. Dupont','C. Leroy','A. Martin'];
     const STATUS_CLASS_MAP = {
       'En attente':'warn',
       'En cours':'warn',
@@ -1202,6 +1209,8 @@
     let currentPersonnelRow = null;
     let personnelModalMode = 'create';
     let lastDiRequester = '';
+    let lastDiRequesterId = '';
+    let uniqueIdCounter = 0;
     const ATTACHMENT_CONTEXTS = {
       di:{
         attachments:[],
@@ -1519,9 +1528,10 @@
     }
 
     function submitDiModal(){
-      const demandeurInput = document.getElementById('diDemandeur');
-      if(demandeurInput){
-        lastDiRequester = demandeurInput.value.trim();
+      const demandeurSelect = document.getElementById('diDemandeur');
+      if(demandeurSelect){
+        lastDiRequesterId = demandeurSelect.value;
+        lastDiRequester = getPersonnelLabelById(lastDiRequesterId) || '';
       }
       closeModal('diModal');
     }
@@ -2087,23 +2097,83 @@
       }
     }
 
-    function populateTechnicianSelect(select){
+    function generatePersonnelId(){
+      uniqueIdCounter += 1;
+      return `pers-${Date.now().toString(36)}-${uniqueIdCounter}`;
+    }
+
+    function getPersonnelRows(){
+      return Array.from(document.querySelectorAll('#tblPersonnel tr.clickable'));
+    }
+
+    function getPersonnelOptions(){
+      return getPersonnelRows().map(row=>{
+        const ds = row.dataset || {};
+        if(!ds.personnelId){
+          ds.personnelId = generatePersonnelId();
+        }
+        const labelParts = [ds.prenom, ds.nom].filter(Boolean).map(part=>part.trim()).filter(Boolean);
+        let label = labelParts.join(' ').trim();
+        if(!label && ds.email){
+          label = ds.email;
+        }
+        if(!label){
+          const cells = Array.from(row.cells || []);
+          label = cells.slice(0,2).map(td=>td?.innerText?.trim()||'').filter(Boolean).join(' ').trim();
+        }
+        if(!label){
+          label = ds.personnelId;
+        }
+        return {id: ds.personnelId, label};
+      }).filter(option=>option.id);
+    }
+
+    function getPersonnelLabelById(id){
+      if(!id) return '';
+      const rows = getPersonnelRows();
+      for(const row of rows){
+        const ds = row.dataset || {};
+        if((ds.personnelId || '') === id){
+          const parts = [ds.prenom, ds.nom].filter(Boolean).map(part=>part.trim()).filter(Boolean);
+          if(parts.length){
+            return parts.join(' ');
+          }
+          if(ds.email){
+            return ds.email;
+          }
+          const cells = Array.from(row.cells || []);
+          const cellLabel = cells.slice(0,2).map(td=>td?.innerText?.trim()||'').filter(Boolean).join(' ').trim();
+          if(cellLabel){
+            return cellLabel;
+          }
+          return id;
+        }
+      }
+      return '';
+    }
+
+    function populatePersonnelSelect(select,{placeholder='Sélectionner un demandeur…'}={}){
       if(!select) return;
       const previousValue = select.value;
       select.innerHTML = '';
-      const placeholder = document.createElement('option');
-      placeholder.value = '';
-      placeholder.textContent = 'Sélectionner un intervenant…';
-      select.appendChild(placeholder);
-      TECHNICIANS.forEach(name=>{
+      const placeholderOption = document.createElement('option');
+      placeholderOption.value = '';
+      placeholderOption.textContent = placeholder;
+      select.appendChild(placeholderOption);
+      getPersonnelOptions().forEach(({id,label})=>{
         const option = document.createElement('option');
-        option.value = name;
-        option.textContent = name;
+        option.value = id;
+        option.textContent = label || id;
         select.appendChild(option);
       });
       if(previousValue){
         setSelectValue(select, previousValue);
       }
+    }
+
+    function refreshDemandeurOptions(){
+      populatePersonnelSelect(document.getElementById('diDemandeur'));
+      populatePersonnelSelect(document.getElementById('interventionDemandeur'));
     }
 
     function attachInteractiveRow(tr, handler){
@@ -2531,6 +2601,9 @@
 
     function updatePersonnelRow(row, values){
       const ds = row.dataset;
+      if(!ds.personnelId){
+        ds.personnelId = generatePersonnelId();
+      }
       ds.nom = values.lastName;
       ds.prenom = values.firstName;
       ds.poste = values.role;
@@ -2569,6 +2642,7 @@
         attachInteractiveRow(tr, openPersonnelDetail);
         tbody.appendChild(tr);
       }
+      refreshDemandeurOptions();
       closeModal('personnelModal');
       const form = document.getElementById('personnelForm');
       if(form) form.reset();
@@ -2608,6 +2682,7 @@
       }else if(row){
         row.remove();
       }
+      refreshDemandeurOptions();
       closeModal('personnelDetailModal');
     }
 
@@ -2744,7 +2819,6 @@
         demandeur:document.getElementById('interventionDemandeur'),
         statut:document.getElementById('interventionStatut'),
         priorite:document.getElementById('interventionPriorite'),
-        intervenant:document.getElementById('interventionIntervenant'),
         type:document.getElementById('interventionType'),
         description:document.getElementById('interventionDescription'),
         duree:document.getElementById('interventionDuree'),
@@ -2757,11 +2831,22 @@
       fields.di.value = ds.ot || '';
       fields.machine.value = ds.machine || '';
       if(fields.demandeur){
-        fields.demandeur.value = ds.demandeur || lastDiRequester || '';
+        const demandeurId = ds.demandeurId || lastDiRequesterId || '';
+        setSelectValue(fields.demandeur, demandeurId);
+        if(!fields.demandeur.value && ds.demandeur){
+          const value = demandeurId || ds.demandeur;
+          const exists = Array.from(fields.demandeur.options || []).some(opt=>opt.value === value);
+          if(!exists){
+            const customOption = document.createElement('option');
+            customOption.value = value;
+            customOption.textContent = ds.demandeur;
+            fields.demandeur.appendChild(customOption);
+          }
+          setSelectValue(fields.demandeur, value);
+        }
       }
       setSelectValue(fields.statut, ds.statut || 'En attente');
       setSelectValue(fields.priorite, ds.priorite || 'P1');
-      setSelectValue(fields.intervenant, ds.intervenant || '');
       setSelectValue(fields.type, ds.typeIntervention || 'correctif');
       fields.description.value = ds.description || '';
       fields.duree.value = ds.tempsIntervention || '';
@@ -2771,9 +2856,9 @@
       renderInterventionPieces(ds.ot || '');
 
       openModal('interventionModal');
-      if(fields.intervenant){
+      if(fields.demandeur){
         requestAnimationFrame(()=>{
-          fields.intervenant.focus({preventScroll:true});
+          fields.demandeur.focus({preventScroll:true});
         });
       }
     }
@@ -2786,7 +2871,9 @@
       const ds = currentInterventionRow.dataset;
       const statut = document.getElementById('interventionStatut').value;
       const priorite = document.getElementById('interventionPriorite').value;
-      const intervenant = document.getElementById('interventionIntervenant').value;
+      const demandeurSelect = document.getElementById('interventionDemandeur');
+      const demandeurId = demandeurSelect ? demandeurSelect.value : '';
+      const demandeurLabel = demandeurId ? (getPersonnelLabelById(demandeurId) || '') : '';
       const type = document.getElementById('interventionType').value;
       const description = document.getElementById('interventionDescription').value.trim();
       const duree = document.getElementById('interventionDuree').value;
@@ -2798,12 +2885,18 @@
       ds.status = statut;
       ds.priorite = priorite;
       ds.type = typeLabel;
-      ds.intervenant = intervenant;
+      ds.demandeurId = demandeurId;
+      ds.demandeur = demandeurId ? (demandeurLabel || ds.demandeur || '') : '';
       ds.typeIntervention = type;
       ds.description = description;
       ds.tempsIntervention = duree;
       ds.tempsArret = arret;
       ds.resolution = resolution;
+
+      if(demandeurId){
+        lastDiRequesterId = demandeurId;
+        lastDiRequester = ds.demandeur;
+      }
 
       currentInterventionRow.cells[2].innerText = typeLabel;
       currentInterventionRow.cells[3].innerText = priorite;
@@ -2849,8 +2942,7 @@
 
       ['di','intervention'].forEach(setupAttachmentHandlers);
 
-      populateTechnicianSelect(document.getElementById('diIntervenant'));
-      populateTechnicianSelect(document.getElementById('interventionIntervenant'));
+      refreshDemandeurOptions();
 
       const pieceForm = document.getElementById('pieceForm');
       if(pieceForm){

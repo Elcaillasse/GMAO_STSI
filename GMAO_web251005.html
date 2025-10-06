@@ -615,7 +615,9 @@
               data-dernier="28/08/2025"
               data-prochain="28/09/2025"
               data-etat="À l'heure"
-              data-etat-class="ok">
+              data-etat-class="ok"
+              data-tache="Contrôle lubrification broche"
+              data-description="Vérifier les niveaux de lubrifiant, remplacer le filtre et contrôler les vibrations de la broche.">
             <td>PV-001</td><td>DMU 70</td><td>Mensuel</td><td>28/08/2025</td><td>28/09/2025</td><td><span class="status ok">À l'heure</span></td>
           </tr>
           <tr class="clickable" role="button" tabindex="0"
@@ -626,7 +628,9 @@
               data-dernier="18/09/2025"
               data-prochain="25/09/2025"
               data-etat="À lancer"
-              data-etat-class="warn">
+              data-etat-class="warn"
+              data-tache="Nettoyage et contrôle des axes"
+              data-description="Dégraisser les glissières, vérifier les jeux mécaniques et contrôler la tension des courroies.">
             <td>PV-017</td><td>Tornos Deco</td><td>Hebdo</td><td>18/09/2025</td><td>25/09/2025</td><td><span class="status warn">À lancer</span></td>
           </tr>
           <tr class="clickable" role="button" tabindex="0"
@@ -637,7 +641,9 @@
               data-dernier="10/07/2025"
               data-prochain="10/10/2025"
               data-etat="OK"
-              data-etat-class="ok">
+              data-etat-class="ok"
+              data-tache="Remplacement cartouche filtrante"
+              data-description="Couper l'alimentation, purger la cuve et remplacer la cartouche filtrante principale.">
             <td>PV-023</td><td>Compresseur KAESER</td><td>Trimestriel</td><td>10/07/2025</td><td>10/10/2025</td><td><span class="status ok">OK</span></td>
           </tr>
         </tbody>
@@ -984,32 +990,10 @@
     </div>
   </div>
 
-  <div class="modal" id="preventifDetailModal" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Détails du plan préventif">
+  <div class="modal" id="preventifDetailModal" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Plan préventif">
     <div class="sheet">
       <header>
         <div class="brand"><div class="logo" style="width:28px;height:28px"></div><h1>Plan préventif</h1></div>
-      </header>
-      <div class="content">
-        <div class="detail-grid">
-          <div class="detail-item"><span class="detail-label">Plan</span><span class="detail-value" id="preventifDetailPlan">—</span></div>
-          <div class="detail-item"><span class="detail-label">Machine</span><span class="detail-value" id="preventifDetailMachine">—</span></div>
-          <div class="detail-item"><span class="detail-label">Périodicité</span><span class="detail-value" id="preventifDetailPeriodicite">—</span></div>
-          <div class="detail-item"><span class="detail-label">Dernière réalisation</span><span class="detail-value" id="preventifDetailDernier">—</span></div>
-          <div class="detail-item"><span class="detail-label">Prochaine échéance</span><span class="detail-value" id="preventifDetailProchain">—</span></div>
-          <div class="detail-item"><span class="detail-label">État</span><span class="detail-value"><span id="preventifDetailEtat" class="status">—</span></span></div>
-        </div>
-      </div>
-      <div class="actions">
-        <button class="btn" type="button" onclick="closeModal('preventifDetailModal')">Fermer</button>
-        <button class="btn primary" type="button" onclick="beginEditPreventif()">Modifier</button>
-      </div>
-    </div>
-  </div>
-
-  <div class="modal" id="preventifEditModal" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Modifier un plan préventif">
-    <div class="sheet">
-      <header>
-        <div class="brand"><div class="logo" style="width:28px;height:28px"></div><h1 id="preventifModalTitle">Modifier plan préventif</h1></div>
       </header>
       <div class="content">
         <form id="preventifForm">
@@ -1028,12 +1012,40 @@
                 <option value="bad">Rouge (En retard)</option>
               </select>
             </div>
+            <div class="field" style="grid-column:1/-1"><label for="preventif-tache">Tâche</label><input id="preventif-tache" type="text" placeholder="Opération à réaliser"></div>
+            <div class="field" style="grid-column:1/-1"><label for="preventif-description">Description détaillée</label><textarea id="preventif-description" rows="4" placeholder="Décrire les étapes de la maintenance préventive…"></textarea></div>
+            <div class="field attachments" style="grid-column:1/-1">
+              <label>Documents</label>
+              <div class="attachment-actions">
+                <input id="preventifDocInput" type="file" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt" multiple hidden>
+                <button type="button" class="btn" id="preventifDocUpload">📎 Ajouter un document</button>
+              </div>
+              <ul id="preventifDocList" class="attachment-list"></ul>
+            </div>
+            <div class="field attachments" style="grid-column:1/-1">
+              <label>Photos</label>
+              <div class="attachment-actions">
+                <input id="preventifPhotoInput" type="file" accept="image/*" multiple hidden>
+                <button type="button" class="btn" id="preventifPhotoUpload">🖼️ Ajouter une photo</button>
+                <button type="button" class="btn" id="preventifPhotoCameraButton" aria-expanded="false">📷 Prendre une photo</button>
+              </div>
+              <ul id="preventifPhotoList" class="attachment-list"></ul>
+              <div class="camera-preview" id="preventifPhotoPreview" hidden>
+                <video id="preventifPhotoVideo" autoplay playsinline></video>
+                <div class="camera-actions">
+                  <button type="button" class="btn primary" id="preventifPhotoCapture">📸 Capturer</button>
+                  <button type="button" class="btn" id="preventifPhotoClose">✖️ Fermer</button>
+                </div>
+              </div>
+            </div>
           </div>
         </form>
       </div>
       <div class="actions">
-        <button class="btn" type="button" onclick="closeModal('preventifEditModal')">Annuler</button>
-        <button class="btn primary" type="submit" form="preventifForm" id="preventifModalSubmit">Mettre à jour</button>
+        <button class="btn" type="button" onclick="deletePreventif()">🗑️ Supprimer</button>
+        <button class="btn" type="button" onclick="closeModal('preventifDetailModal')">Fermer</button>
+        <button class="btn" type="button" onclick="createPreventifDemand()">📨 Envoyer demande d’intervention</button>
+        <button class="btn primary" type="submit" form="preventifForm" id="preventifModalSubmit">Enregistrer</button>
       </div>
     </div>
   </div>
@@ -1251,7 +1263,7 @@
     let equipmentModalMode = 'create';
     let currentSparePartIndex = null;
     let currentPreventifRow = null;
-    let preventifModalMode = 'edit';
+    let currentPreventifPlanKey = '';
     let currentContactRow = null;
     let contactModalMode = 'create';
     let currentPersonnelRow = null;
@@ -1259,6 +1271,7 @@
     let lastDiRequester = '';
     let lastDiRequesterId = '';
     let uniqueIdCounter = 0;
+    const preventifDataStore = {};
     const ATTACHMENT_CONTEXTS = {
       di:{
         attachments:[],
@@ -1286,6 +1299,29 @@
         captureButtonId:'interventionCaptureBtn',
         closeCameraButtonId:'interventionCloseCameraBtn',
         emptyText:'Aucune pièce jointe pour le moment.',
+        objectUrls:[]
+      },
+      preventifDocs:{
+        attachments:[],
+        cameraStream:null,
+        inputId:'preventifDocInput',
+        uploadButtonId:'preventifDocUpload',
+        listId:'preventifDocList',
+        emptyText:'Aucun document ajouté.',
+        objectUrls:[]
+      },
+      preventifPhotos:{
+        attachments:[],
+        cameraStream:null,
+        inputId:'preventifPhotoInput',
+        uploadButtonId:'preventifPhotoUpload',
+        listId:'preventifPhotoList',
+        cameraButtonId:'preventifPhotoCameraButton',
+        previewId:'preventifPhotoPreview',
+        videoId:'preventifPhotoVideo',
+        captureButtonId:'preventifPhotoCapture',
+        closeCameraButtonId:'preventifPhotoClose',
+        emptyText:'Aucune photo ajoutée.',
         objectUrls:[]
       }
     };
@@ -1363,6 +1399,21 @@
         renderInterventionPieces('');
       }else if(id === 'diModal'){
         resetDemandModal();
+      }else if(id === 'preventifDetailModal'){
+        savePreventifAttachments(currentPreventifPlanKey);
+        closeCamera('preventifPhotos');
+        const docCtx = getAttachmentContext('preventifDocs');
+        if(docCtx){
+          docCtx.onUpdate = null;
+          docCtx.planKey = '';
+        }
+        const photoCtx = getAttachmentContext('preventifPhotos');
+        if(photoCtx){
+          photoCtx.onUpdate = null;
+          photoCtx.planKey = '';
+        }
+        currentPreventifRow = null;
+        currentPreventifPlanKey = '';
       }else if(id === 'pieceModal'){
         resetSparePartModal();
       }else if(id === 'spareSearchModal'){
@@ -1393,6 +1444,9 @@
       if(!ctx || !files || !files.length) return;
       ctx.attachments = ctx.attachments.concat(files);
       renderAttachments(contextKey);
+      if(typeof ctx.onUpdate === 'function'){
+        ctx.onUpdate(ctx);
+      }
     }
 
     function renderAttachments(contextKey){
@@ -1465,6 +1519,9 @@
       if(index<0 || index>=ctx.attachments.length) return;
       ctx.attachments.splice(index,1);
       renderAttachments(contextKey);
+      if(typeof ctx.onUpdate === 'function'){
+        ctx.onUpdate(ctx);
+      }
     }
 
     async function openCamera(contextKey){
@@ -1560,6 +1617,9 @@
       }
       renderAttachments(contextKey);
       closeCamera(contextKey);
+      if(typeof ctx.onUpdate === 'function'){
+        ctx.onUpdate(ctx);
+      }
     }
 
     function resetDemandModal(){
@@ -2482,35 +2542,94 @@
       });
     }
 
+    function getPreventifRowKey(row){
+      if(!row) return '';
+      const ds = row.dataset || {};
+      const plan = (ds.plan || '').trim();
+      if(plan){
+        return plan;
+      }
+      if(!ds.preventifKey){
+        ds.preventifKey = `preventif-${Date.now().toString(36)}-${Math.random().toString(36).slice(2,6)}`;
+      }
+      return ds.preventifKey;
+    }
+
+    function ensurePreventifRecord(key){
+      if(!key) return null;
+      if(!preventifDataStore[key]){
+        preventifDataStore[key] = {documents:[], photos:[], tache:'', description:''};
+      }
+      const record = preventifDataStore[key];
+      if(!Array.isArray(record.documents)) record.documents = [];
+      if(!Array.isArray(record.photos)) record.photos = [];
+      record.tache = typeof record.tache === 'string' ? record.tache : '';
+      record.description = typeof record.description === 'string' ? record.description : '';
+      return record;
+    }
+
+    function loadPreventifAttachments(planKey){
+      if(!planKey) return;
+      const record = ensurePreventifRecord(planKey) || {documents:[], photos:[]};
+      const docCtx = getAttachmentContext('preventifDocs');
+      if(docCtx){
+        docCtx.planKey = planKey;
+        docCtx.onUpdate = ctx=>savePreventifAttachments(ctx.planKey);
+        docCtx.attachments = Array.isArray(record.documents) ? record.documents.slice() : [];
+        docCtx.objectUrls = [];
+        const input = document.getElementById(docCtx.inputId);
+        if(input){
+          input.value = '';
+        }
+        renderAttachments('preventifDocs');
+      }
+      const photoCtx = getAttachmentContext('preventifPhotos');
+      if(photoCtx){
+        closeCamera('preventifPhotos');
+        photoCtx.planKey = planKey;
+        photoCtx.onUpdate = ctx=>savePreventifAttachments(ctx.planKey);
+        photoCtx.attachments = Array.isArray(record.photos) ? record.photos.slice() : [];
+        photoCtx.objectUrls = [];
+        const input = document.getElementById(photoCtx.inputId);
+        if(input){
+          input.value = '';
+        }
+        renderAttachments('preventifPhotos');
+      }
+    }
+
+    function savePreventifAttachments(planKey){
+      if(!planKey) return;
+      const record = ensurePreventifRecord(planKey);
+      if(!record) return;
+      const docCtx = getAttachmentContext('preventifDocs');
+      if(docCtx && docCtx.planKey === planKey){
+        record.documents = docCtx.attachments.slice();
+      }
+      const photoCtx = getAttachmentContext('preventifPhotos');
+      if(photoCtx && photoCtx.planKey === planKey){
+        record.photos = photoCtx.attachments.slice();
+      }
+    }
+
     function openPreventifDetail(row){
       currentPreventifRow = row;
       const ds = row.dataset || {};
-      setDetailText('preventifDetailPlan', ds.plan);
-      setDetailText('preventifDetailMachine', ds.machine);
-      setDetailText('preventifDetailPeriodicite', ds.periodicite);
-      setDetailText('preventifDetailDernier', ds.dernier);
-      setDetailText('preventifDetailProchain', ds.prochain);
-      setDetailBadge('preventifDetailEtat', 'status', ds.etatClass || '', ds.etat);
-      openModal('preventifDetailModal');
-    }
-
-    function openPreventifForm(mode='edit', defaults={}, row=null){
-      preventifModalMode = mode;
-      currentPreventifRow = mode === 'edit' ? row : null;
-      const modal = document.getElementById('preventifEditModal');
-      if(modal){
-        modal.setAttribute('aria-label', mode === 'edit' ? 'Modifier un plan préventif' : 'Créer un plan préventif');
-      }
-      const title = document.getElementById('preventifModalTitle');
-      if(title){
-        title.textContent = mode === 'edit' ? 'Modifier plan préventif' : 'Nouveau plan préventif';
-      }
-      const submit = document.getElementById('preventifModalSubmit');
-      if(submit){
-        submit.textContent = mode === 'edit' ? 'Mettre à jour' : 'Enregistrer';
-      }
       const form = document.getElementById('preventifForm');
-      if(form) form.reset();
+      if(form){
+        form.reset();
+      }
+      const planKey = getPreventifRowKey(row);
+      currentPreventifPlanKey = planKey;
+      const record = ensurePreventifRecord(planKey);
+      if(record){
+        if(!record.tache && ds.tache){
+          record.tache = ds.tache;
+        }
+        if(!record.description && ds.description){
+          record.description = ds.description;
+        }
+      }
       const planInput = document.getElementById('preventif-plan');
       const machineInput = document.getElementById('preventif-machine');
       const periodiciteInput = document.getElementById('preventif-periodicite');
@@ -2518,16 +2637,27 @@
       const prochainInput = document.getElementById('preventif-prochain');
       const etatInput = document.getElementById('preventif-etat');
       const etatClassSelect = document.getElementById('preventif-etat-class');
-      const dernierIso = defaults.dernierIso || toIsoDate(defaults.dernier || '');
-      const prochainIso = defaults.prochainIso || toIsoDate(defaults.prochain || '');
-      if(planInput) planInput.value = defaults.plan || '';
-      if(machineInput) machineInput.value = defaults.machine || '';
-      if(periodiciteInput) periodiciteInput.value = defaults.periodicite || '';
+      const tacheInput = document.getElementById('preventif-tache');
+      const descriptionInput = document.getElementById('preventif-description');
+      const dernierIso = ds.dernierIso || toIsoDate(ds.dernier || '');
+      const prochainIso = ds.prochainIso || toIsoDate(ds.prochain || '');
+      if(dernierIso && !ds.dernierIso){
+        ds.dernierIso = dernierIso;
+      }
+      if(prochainIso && !ds.prochainIso){
+        ds.prochainIso = prochainIso;
+      }
+      if(planInput) planInput.value = ds.plan || '';
+      if(machineInput) machineInput.value = ds.machine || '';
+      if(periodiciteInput) periodiciteInput.value = ds.periodicite || '';
       if(dernierInput) dernierInput.value = dernierIso;
       if(prochainInput) prochainInput.value = prochainIso;
-      if(etatInput) etatInput.value = defaults.etat || '';
-      if(etatClassSelect) etatClassSelect.value = defaults.etatClass || '';
-      openModal('preventifEditModal');
+      if(etatInput) etatInput.value = ds.etat || '';
+      if(etatClassSelect) setSelectValue(etatClassSelect, ds.etatClass || '');
+      if(tacheInput) tacheInput.value = (record?.tache || ds.tache || '');
+      if(descriptionInput) descriptionInput.value = (record?.description || ds.description || '');
+      loadPreventifAttachments(planKey);
+      openModal('preventifDetailModal');
       if(planInput){
         requestAnimationFrame(()=>planInput.focus({preventScroll:true}));
       }
@@ -2544,6 +2674,11 @@
       ds.prochainIso = values.prochain;
       ds.etat = values.etat;
       ds.etatClass = values.etatClass;
+      ds.tache = values.tache || '';
+      ds.description = values.description || '';
+      if(ds.preventifKey && ds.preventifKey !== values.plan){
+        delete ds.preventifKey;
+      }
       const cells = row.cells;
       if(cells[0]) cells[0].textContent = values.plan || '—';
       if(cells[1]) cells[1].textContent = values.machine || '—';
@@ -2562,6 +2697,10 @@
     }
 
     function submitPreventifForm(){
+      if(!currentPreventifRow){
+        closeModal('preventifDetailModal');
+        return;
+      }
       const plan = (document.getElementById('preventif-plan')?.value || '').trim();
       const machine = (document.getElementById('preventif-machine')?.value || '').trim();
       if(!plan || !machine){
@@ -2573,62 +2712,99 @@
       const prochain = document.getElementById('preventif-prochain')?.value || '';
       const etat = (document.getElementById('preventif-etat')?.value || '').trim();
       let etatClass = document.getElementById('preventif-etat-class')?.value || '';
+      const tache = (document.getElementById('preventif-tache')?.value || '').trim();
+      const description = (document.getElementById('preventif-description')?.value || '').trim();
       const displayDernier = formatDisplayDate(dernier);
       const displayProchain = formatDisplayDate(prochain);
-      const values = {plan, machine, periodicite, dernier, prochain, displayDernier, displayProchain, etat, etatClass};
-      if(!etatClass && currentPreventifRow){
+      const values = {plan, machine, periodicite, dernier, prochain, displayDernier, displayProchain, etat, etatClass, tache, description};
+      if(!etatClass){
         etatClass = currentPreventifRow.dataset.etatClass || '';
         values.etatClass = etatClass;
-      }else{
-        values.etatClass = etatClass;
       }
-      if(preventifModalMode === 'edit' && currentPreventifRow){
-        updatePreventifRow(currentPreventifRow, values);
-      }else{
-        const tbody = document.getElementById('tblPrev');
-        if(!tbody){
-          closeModal('preventifEditModal');
-          return;
+      updatePreventifRow(currentPreventifRow, values);
+      const docCtx = getAttachmentContext('preventifDocs');
+      const photoCtx = getAttachmentContext('preventifPhotos');
+      const previousKey = currentPreventifPlanKey;
+      const newKey = plan || previousKey;
+      if(previousKey && newKey && newKey !== previousKey){
+        const existing = ensurePreventifRecord(previousKey) || {documents:[], photos:[], tache:'', description:''};
+        const target = ensurePreventifRecord(newKey);
+        target.documents = docCtx ? docCtx.attachments.slice() : existing.documents.slice();
+        target.photos = photoCtx ? photoCtx.attachments.slice() : existing.photos.slice();
+        target.tache = tache;
+        target.description = description;
+        if(previousKey !== newKey){
+          delete preventifDataStore[previousKey];
         }
-        const tr = document.createElement('tr');
-        tr.classList.add('clickable');
-        tr.setAttribute('role','button');
-        tr.tabIndex = 0;
-        ['plan','machine','periodicite','displayDernier','displayProchain'].forEach((key, idx)=>{
-          const td = document.createElement('td');
-          td.textContent = values[key] || '—';
-          tr.appendChild(td);
-        });
-        const statusCell = document.createElement('td');
-        const span = document.createElement('span');
-        span.className = ['status', values.etatClass].filter(Boolean).join(' ');
-        span.textContent = values.etat || '—';
-        statusCell.appendChild(span);
-        tr.appendChild(statusCell);
-        updatePreventifRow(tr, values);
-        attachInteractiveRow(tr, openPreventifDetail);
-        tbody.appendChild(tr);
+        if(docCtx){
+          docCtx.planKey = newKey;
+        }
+        if(photoCtx){
+          photoCtx.planKey = newKey;
+        }
+        currentPreventifPlanKey = newKey;
+      }else{
+        const record = ensurePreventifRecord(newKey);
+        if(record){
+          record.tache = tache;
+          record.description = description;
+          record.documents = docCtx ? docCtx.attachments.slice() : [];
+          record.photos = photoCtx ? photoCtx.attachments.slice() : [];
+        }
       }
-      closeModal('preventifEditModal');
-      preventifModalMode = 'edit';
-      currentPreventifRow = null;
+      savePreventifAttachments(currentPreventifPlanKey || newKey);
+      closeModal('preventifDetailModal');
     }
 
-    function beginEditPreventif(){
+    function deletePreventif(){
       if(!currentPreventifRow) return;
       const ds = currentPreventifRow.dataset || {};
+      const planLabel = ds.plan ? ` ${ds.plan}` : '';
+      if(!confirm(`Supprimer le plan préventif${planLabel} ?`)){
+        return;
+      }
+      const key = currentPreventifPlanKey || getPreventifRowKey(currentPreventifRow);
+      if(key && preventifDataStore[key]){
+        delete preventifDataStore[key];
+      }
+      currentPreventifRow.remove();
+      currentPreventifRow = null;
+      currentPreventifPlanKey = '';
       closeModal('preventifDetailModal');
-      openPreventifForm('edit', {
-        plan: ds.plan || '',
-        machine: ds.machine || '',
-        periodicite: ds.periodicite || '',
-        dernier: ds.dernier || '',
-        prochain: ds.prochain || '',
-        etat: ds.etat || '',
-        etatClass: ds.etatClass || '',
-        dernierIso: ds.dernierIso || toIsoDate(ds.dernier || ''),
-        prochainIso: ds.prochainIso || toIsoDate(ds.prochain || '')
-      }, currentPreventifRow);
+    }
+
+    function createPreventifDemand(){
+      if(!currentPreventifRow) return;
+      const ds = currentPreventifRow.dataset || {};
+      const key = currentPreventifPlanKey || getPreventifRowKey(currentPreventifRow);
+      savePreventifAttachments(key);
+      closeModal('preventifDetailModal');
+      resetDemandModal();
+      const machine = ds.machine || '';
+      const machineSelect = document.getElementById('diMachine');
+      if(machineSelect && machine){
+        let option = Array.from(machineSelect.options || []).find(opt=>opt.value === machine);
+        if(!option){
+          option = document.createElement('option');
+          option.value = machine;
+          option.textContent = machine;
+          machineSelect.appendChild(option);
+        }
+        setSelectValue(machineSelect, machine);
+      }
+      const typeSelect = document.getElementById('diType');
+      if(typeSelect){
+        setSelectValue(typeSelect, 'preventif');
+      }
+      const travauxTextarea = document.querySelector('#diModal textarea');
+      const record = ensurePreventifRecord(key);
+      if(travauxTextarea){
+        const parts = [record?.tache || ds.tache || '', record?.description || ds.description || '']
+          .map(part=>part.trim())
+          .filter(Boolean);
+        travauxTextarea.value = parts.join(' — ');
+      }
+      openModal('diModal');
     }
 
     function setupPersonnelRows(){
@@ -3053,7 +3229,7 @@
       setupContactRows();
       setupPersonnelRows();
 
-      ['di','intervention'].forEach(setupAttachmentHandlers);
+      ['di','intervention','preventifDocs','preventifPhotos'].forEach(setupAttachmentHandlers);
 
       refreshDemandeurOptions();
       populateInterventionTypeSelect(document.getElementById('interventionType'));

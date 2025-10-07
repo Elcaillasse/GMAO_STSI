@@ -616,7 +616,6 @@
               data-prochain="28/09/2025"
               data-etat="À l'heure"
               data-etat-class="ok"
-              data-tache="Contrôle lubrification broche"
               data-description="Vérifier les niveaux de lubrifiant, remplacer le filtre et contrôler les vibrations de la broche.">
             <td>PV-001</td><td>DMU 70</td><td>Mensuel</td><td>28/08/2025</td><td>28/09/2025</td><td><span class="status ok">À l'heure</span></td>
           </tr>
@@ -629,7 +628,6 @@
               data-prochain="25/09/2025"
               data-etat="À lancer"
               data-etat-class="warn"
-              data-tache="Nettoyage et contrôle des axes"
               data-description="Dégraisser les glissières, vérifier les jeux mécaniques et contrôler la tension des courroies.">
             <td>PV-017</td><td>Tornos Deco</td><td>Hebdo</td><td>18/09/2025</td><td>25/09/2025</td><td><span class="status warn">À lancer</span></td>
           </tr>
@@ -642,7 +640,6 @@
               data-prochain="10/10/2025"
               data-etat="OK"
               data-etat-class="ok"
-              data-tache="Remplacement cartouche filtrante"
               data-description="Couper l'alimentation, purger la cuve et remplacer la cartouche filtrante principale.">
             <td>PV-023</td><td>Compresseur KAESER</td><td>Trimestriel</td><td>10/07/2025</td><td>10/10/2025</td><td><span class="status ok">OK</span></td>
           </tr>
@@ -999,20 +996,23 @@
         <form id="preventifForm">
           <div class="grid">
             <div class="field"><label for="preventif-plan">Plan</label><input id="preventif-plan" type="text" required></div>
-            <div class="field"><label for="preventif-machine">Machine</label><input id="preventif-machine" type="text" required></div>
-            <div class="field"><label for="preventif-periodicite">Périodicité</label><input id="preventif-periodicite" type="text"></div>
-            <div class="field"><label for="preventif-dernier">Dernier passage</label><input id="preventif-dernier" type="date"></div>
-            <div class="field"><label for="preventif-prochain">Prochain passage</label><input id="preventif-prochain" type="date"></div>
-            <div class="field"><label for="preventif-etat">État</label><input id="preventif-etat" type="text"></div>
-            <div class="field"><label for="preventif-etat-class">Code couleur</label>
-              <select id="preventif-etat-class">
-                <option value="">Automatique</option>
-                <option value="ok">Vert (OK)</option>
-                <option value="warn">Orange (Attention)</option>
-                <option value="bad">Rouge (En retard)</option>
+            <div class="field"><label for="preventif-machine">Machine</label>
+              <select id="preventif-machine" required>
+                <option value="">Sélectionner une machine…</option>
               </select>
             </div>
-            <div class="field" style="grid-column:1/-1"><label for="preventif-tache">Tâche</label><input id="preventif-tache" type="text" placeholder="Opération à réaliser"></div>
+            <div class="field"><label for="preventif-periodicite">Périodicité</label>
+              <select id="preventif-periodicite">
+                <option value="">Sélectionner…</option>
+                <option value="Mensuel">Mensuel</option>
+                <option value="Trimestriel">Trimestriel</option>
+                <option value="Semestriel">Semestriel</option>
+                <option value="Annuel">Annuel</option>
+              </select>
+            </div>
+            <div class="field"><label for="preventif-dernier">Dernier passage</label><input id="preventif-dernier" type="date"></div>
+            <div class="field"><label for="preventif-prochain">Prochain passage</label><input id="preventif-prochain" type="date"></div>
+            <div class="field"><label for="preventif-etat">État</label><input id="preventif-etat" type="text" readonly></div>
             <div class="field" style="grid-column:1/-1"><label for="preventif-description">Description détaillée</label><textarea id="preventif-description" rows="4" placeholder="Décrire les étapes de la maintenance préventive…"></textarea></div>
             <div class="field attachments" style="grid-column:1/-1">
               <label>Documents</label>
@@ -1043,6 +1043,7 @@
       </div>
       <div class="actions">
         <button class="btn" type="button" onclick="deletePreventif()">🗑️ Supprimer</button>
+        <button class="btn" type="button" id="preventifEditButton">Modifier</button>
         <button class="btn" type="button" onclick="closeModal('preventifDetailModal')">Fermer</button>
         <button class="btn" type="button" onclick="createPreventifDemand()">📨 Envoyer demande d’intervention</button>
         <button class="btn primary" type="submit" form="preventifForm" id="preventifModalSubmit">Enregistrer</button>
@@ -1264,6 +1265,7 @@
     let currentSparePartIndex = null;
     let currentPreventifRow = null;
     let currentPreventifPlanKey = '';
+    let preventifFormLocked = false;
     let currentContactRow = null;
     let contactModalMode = 'create';
     let currentPersonnelRow = null;
@@ -1414,6 +1416,7 @@
         }
         currentPreventifRow = null;
         currentPreventifPlanKey = '';
+        preventifFormLocked = false;
       }else if(id === 'pieceModal'){
         resetSparePartModal();
       }else if(id === 'spareSearchModal'){
@@ -1440,6 +1443,7 @@
     }
 
     function addAttachments(contextKey, files){
+      if(isPreventifAttachmentLocked(contextKey)) return;
       const ctx = getAttachmentContext(contextKey);
       if(!ctx || !files || !files.length) return;
       ctx.attachments = ctx.attachments.concat(files);
@@ -1466,6 +1470,7 @@
         list.appendChild(empty);
         return;
       }
+      const locked = isPreventifAttachmentLocked(contextKey);
       ctx.attachments.forEach((file,index)=>{
         const li = document.createElement('li');
         li.className = 'attachment-item';
@@ -1507,6 +1512,10 @@
         remove.setAttribute('data-remove-index', index);
         remove.setAttribute('aria-label', `Retirer ${nameText}`);
         remove.textContent = '✖️';
+        remove.disabled = locked;
+        if(locked){
+          remove.setAttribute('aria-disabled','true');
+        }
         li.appendChild(info);
         li.appendChild(remove);
         list.appendChild(li);
@@ -1514,6 +1523,7 @@
     }
 
     function removeAttachment(contextKey, index){
+      if(isPreventifAttachmentLocked(contextKey)) return;
       const ctx = getAttachmentContext(contextKey);
       if(!ctx) return;
       if(index<0 || index>=ctx.attachments.length) return;
@@ -1525,6 +1535,7 @@
     }
 
     async function openCamera(contextKey){
+      if(isPreventifAttachmentLocked(contextKey)) return;
       const ctx = getAttachmentContext(contextKey);
       if(!ctx) return;
       const preview = document.getElementById(ctx.previewId);
@@ -1575,6 +1586,7 @@
     }
 
     function capturePhoto(contextKey){
+      if(isPreventifAttachmentLocked(contextKey)) return;
       const ctx = getAttachmentContext(contextKey);
       if(!ctx) return;
       const video = document.getElementById(ctx.videoId);
@@ -1735,6 +1747,151 @@
         }
       }
       return '';
+    }
+
+    function getParcMachineNames(){
+      const names = new Set();
+      document.querySelectorAll('#tblParc tr').forEach(tr=>{
+        const ds = tr.dataset || {};
+        const modele = (ds.modele || '').trim();
+        const machine = (ds.machine || '').trim();
+        if(modele) names.add(modele);
+        if(machine) names.add(machine);
+      });
+      return Array.from(names).filter(Boolean).sort((a,b)=>a.localeCompare(b,'fr',{sensitivity:'base'}));
+    }
+
+    function populatePreventifMachineOptions(currentValue){
+      const select = document.getElementById('preventif-machine');
+      if(!select) return;
+      const machines = getParcMachineNames();
+      select.innerHTML = '';
+      const placeholder = document.createElement('option');
+      placeholder.value = '';
+      placeholder.textContent = 'Sélectionner une machine…';
+      select.appendChild(placeholder);
+      machines.forEach(name=>{
+        const option = document.createElement('option');
+        option.value = name;
+        option.textContent = name;
+        select.appendChild(option);
+      });
+      if(currentValue && !machines.includes(currentValue)){
+        const extra = document.createElement('option');
+        extra.value = currentValue;
+        extra.textContent = currentValue;
+        select.appendChild(extra);
+      }
+      setSelectValue(select, currentValue || '');
+    }
+
+    function computePreventifEtatMeta(prochain){
+      if(!prochain){
+        return {label:'', className:''};
+      }
+      const dueDate = new Date(prochain);
+      if(Number.isNaN(dueDate.getTime())){
+        return {label:'', className:''};
+      }
+      const today = new Date();
+      today.setHours(0,0,0,0);
+      dueDate.setHours(0,0,0,0);
+      if(dueDate < today){
+        return {label:'En retard', className:'bad'};
+      }
+      return {label:"À l'heure", className:'ok'};
+    }
+
+    function refreshPreventifEtatField(){
+      const prochainInput = document.getElementById('preventif-prochain');
+      const prochain = prochainInput ? prochainInput.value : '';
+      const meta = computePreventifEtatMeta(prochain);
+      const etatInput = document.getElementById('preventif-etat');
+      if(etatInput){
+        etatInput.value = meta.label || '';
+      }
+      return meta;
+    }
+
+    function applyPreventifEtatToRow(row, meta){
+      if(!row || !meta) return;
+      const ds = row.dataset || {};
+      const label = meta.label || '';
+      ds.etat = label;
+      ds.etatClass = meta.className || '';
+      const cell = row.cells[5];
+      if(cell){
+        cell.innerHTML = '';
+        const span = document.createElement('span');
+        span.className = ['status', meta.className || ''].filter(Boolean).join(' ');
+        span.textContent = label || '—';
+        cell.appendChild(span);
+      }
+    }
+
+    function isPreventifAttachmentLocked(contextKey){
+      return preventifFormLocked && (contextKey === 'preventifDocs' || contextKey === 'preventifPhotos');
+    }
+
+    function setPreventifAttachmentsDisabled(contextKey, disabled){
+      const ctx = getAttachmentContext(contextKey);
+      if(!ctx) return;
+      ['inputId','uploadButtonId','cameraButtonId','captureButtonId','closeCameraButtonId'].forEach(key=>{
+        const id = ctx[key];
+        if(!id) return;
+        const el = document.getElementById(id);
+        if(!el) return;
+        if(key === 'inputId'){
+          el.disabled = disabled;
+        }else{
+          el.disabled = disabled;
+          if(disabled){
+            el.setAttribute('aria-disabled','true');
+          }else{
+            el.removeAttribute('aria-disabled');
+          }
+        }
+      });
+    }
+
+    function setPreventifFormLocked(locked,{restore=false}={}){
+      preventifFormLocked = !!locked;
+      const form = document.getElementById('preventifForm');
+      if(form){
+        const controls = form.querySelectorAll('input, select, textarea');
+        controls.forEach(control=>{
+          if(control.id === 'preventif-etat'){
+            control.readOnly = true;
+            control.disabled = true;
+            return;
+          }
+          if(control.tagName === 'TEXTAREA'){
+            control.readOnly = locked;
+            control.disabled = locked;
+          }else if(control.tagName === 'SELECT'){
+            control.disabled = locked;
+          }else{
+            control.readOnly = locked;
+            control.disabled = locked;
+          }
+        });
+      }
+      const submit = document.getElementById('preventifModalSubmit');
+      if(submit){
+        submit.disabled = locked;
+      }
+      const editBtn = document.getElementById('preventifEditButton');
+      if(editBtn){
+        editBtn.textContent = locked ? 'Modifier' : 'Annuler';
+        editBtn.setAttribute('aria-pressed', locked ? 'false' : 'true');
+      }
+      setPreventifAttachmentsDisabled('preventifDocs', locked);
+      setPreventifAttachmentsDisabled('preventifPhotos', locked);
+      renderAttachments('preventifDocs');
+      renderAttachments('preventifPhotos');
+      if(locked && restore && currentPreventifRow){
+        populatePreventifFormFromRow(currentPreventifRow, {focus:false});
+      }
     }
 
     function getSpareFilters(){
@@ -2558,12 +2715,11 @@
     function ensurePreventifRecord(key){
       if(!key) return null;
       if(!preventifDataStore[key]){
-        preventifDataStore[key] = {documents:[], photos:[], tache:'', description:''};
+        preventifDataStore[key] = {documents:[], photos:[], description:''};
       }
       const record = preventifDataStore[key];
       if(!Array.isArray(record.documents)) record.documents = [];
       if(!Array.isArray(record.photos)) record.photos = [];
-      record.tache = typeof record.tache === 'string' ? record.tache : '';
       record.description = typeof record.description === 'string' ? record.description : '';
       return record;
     }
@@ -2612,32 +2768,24 @@
       }
     }
 
-    function openPreventifDetail(row){
-      currentPreventifRow = row;
-      const ds = row.dataset || {};
+    function populatePreventifFormFromRow(row,{focus=true}={}){
+      if(!row) return;
       const form = document.getElementById('preventifForm');
       if(form){
         form.reset();
       }
       const planKey = getPreventifRowKey(row);
       currentPreventifPlanKey = planKey;
+      const ds = row.dataset || {};
       const record = ensurePreventifRecord(planKey);
-      if(record){
-        if(!record.tache && ds.tache){
-          record.tache = ds.tache;
-        }
-        if(!record.description && ds.description){
-          record.description = ds.description;
-        }
+      if(record && !record.description && ds.description){
+        record.description = ds.description;
       }
       const planInput = document.getElementById('preventif-plan');
-      const machineInput = document.getElementById('preventif-machine');
-      const periodiciteInput = document.getElementById('preventif-periodicite');
+      const periodiciteSelect = document.getElementById('preventif-periodicite');
       const dernierInput = document.getElementById('preventif-dernier');
       const prochainInput = document.getElementById('preventif-prochain');
       const etatInput = document.getElementById('preventif-etat');
-      const etatClassSelect = document.getElementById('preventif-etat-class');
-      const tacheInput = document.getElementById('preventif-tache');
       const descriptionInput = document.getElementById('preventif-description');
       const dernierIso = ds.dernierIso || toIsoDate(ds.dernier || '');
       const prochainIso = ds.prochainIso || toIsoDate(ds.prochain || '');
@@ -2648,19 +2796,36 @@
         ds.prochainIso = prochainIso;
       }
       if(planInput) planInput.value = ds.plan || '';
-      if(machineInput) machineInput.value = ds.machine || '';
-      if(periodiciteInput) periodiciteInput.value = ds.periodicite || '';
+      populatePreventifMachineOptions(ds.machine || '');
+      if(periodiciteSelect) setSelectValue(periodiciteSelect, ds.periodicite || '');
       if(dernierInput) dernierInput.value = dernierIso;
       if(prochainInput) prochainInput.value = prochainIso;
-      if(etatInput) etatInput.value = ds.etat || '';
-      if(etatClassSelect) setSelectValue(etatClassSelect, ds.etatClass || '');
-      if(tacheInput) tacheInput.value = (record?.tache || ds.tache || '');
+      const etatMeta = computePreventifEtatMeta(prochainIso);
+      if(etatInput){
+        etatInput.value = etatMeta.label || '';
+      }
+      applyPreventifEtatToRow(row, etatMeta);
       if(descriptionInput) descriptionInput.value = (record?.description || ds.description || '');
       loadPreventifAttachments(planKey);
-      openModal('preventifDetailModal');
-      if(planInput){
+      if(focus && planInput && !preventifFormLocked){
         requestAnimationFrame(()=>planInput.focus({preventScroll:true}));
       }
+    }
+
+    function openPreventifDetail(row){
+      currentPreventifRow = row;
+      const ds = row.dataset || {};
+      const planKey = getPreventifRowKey(row);
+      currentPreventifPlanKey = planKey;
+      const isExistingPlan = Boolean((ds.plan || '').trim());
+      setPreventifFormLocked(isExistingPlan);
+      populatePreventifFormFromRow(row, {focus:!isExistingPlan});
+      const editBtn = document.getElementById('preventifEditButton');
+      if(editBtn){
+        editBtn.hidden = !isExistingPlan;
+        editBtn.disabled = !isExistingPlan;
+      }
+      openModal('preventifDetailModal');
     }
 
     function updatePreventifRow(row, values){
@@ -2674,7 +2839,6 @@
       ds.prochainIso = values.prochain;
       ds.etat = values.etat;
       ds.etatClass = values.etatClass;
-      ds.tache = values.tache || '';
       ds.description = values.description || '';
       if(ds.preventifKey && ds.preventifKey !== values.plan){
         delete ds.preventifKey;
@@ -2710,28 +2874,23 @@
       const periodicite = (document.getElementById('preventif-periodicite')?.value || '').trim();
       const dernier = document.getElementById('preventif-dernier')?.value || '';
       const prochain = document.getElementById('preventif-prochain')?.value || '';
-      const etat = (document.getElementById('preventif-etat')?.value || '').trim();
-      let etatClass = document.getElementById('preventif-etat-class')?.value || '';
-      const tache = (document.getElementById('preventif-tache')?.value || '').trim();
       const description = (document.getElementById('preventif-description')?.value || '').trim();
       const displayDernier = formatDisplayDate(dernier);
       const displayProchain = formatDisplayDate(prochain);
-      const values = {plan, machine, periodicite, dernier, prochain, displayDernier, displayProchain, etat, etatClass, tache, description};
-      if(!etatClass){
-        etatClass = currentPreventifRow.dataset.etatClass || '';
-        values.etatClass = etatClass;
-      }
+      const etatMeta = computePreventifEtatMeta(prochain);
+      const etat = etatMeta.label || '';
+      const etatClass = etatMeta.className || '';
+      const values = {plan, machine, periodicite, dernier, prochain, displayDernier, displayProchain, etat, etatClass, description};
       updatePreventifRow(currentPreventifRow, values);
       const docCtx = getAttachmentContext('preventifDocs');
       const photoCtx = getAttachmentContext('preventifPhotos');
       const previousKey = currentPreventifPlanKey;
       const newKey = plan || previousKey;
       if(previousKey && newKey && newKey !== previousKey){
-        const existing = ensurePreventifRecord(previousKey) || {documents:[], photos:[], tache:'', description:''};
+        const existing = ensurePreventifRecord(previousKey) || {documents:[], photos:[], description:''};
         const target = ensurePreventifRecord(newKey);
         target.documents = docCtx ? docCtx.attachments.slice() : existing.documents.slice();
         target.photos = photoCtx ? photoCtx.attachments.slice() : existing.photos.slice();
-        target.tache = tache;
         target.description = description;
         if(previousKey !== newKey){
           delete preventifDataStore[previousKey];
@@ -2746,7 +2905,6 @@
       }else{
         const record = ensurePreventifRecord(newKey);
         if(record){
-          record.tache = tache;
           record.description = description;
           record.documents = docCtx ? docCtx.attachments.slice() : [];
           record.photos = photoCtx ? photoCtx.attachments.slice() : [];
@@ -2799,7 +2957,7 @@
       const travauxTextarea = document.querySelector('#diModal textarea');
       const record = ensurePreventifRecord(key);
       if(travauxTextarea){
-        const parts = [record?.tache || ds.tache || '', record?.description || ds.description || '']
+        const parts = [record?.description || ds.description || '']
           .map(part=>part.trim())
           .filter(Boolean);
         travauxTextarea.value = parts.join(' — ');
@@ -3273,6 +3431,31 @@
           evt.preventDefault();
           submitPreventifForm();
         });
+      }
+
+      const preventifEditBtn = document.getElementById('preventifEditButton');
+      if(preventifEditBtn){
+        preventifEditBtn.addEventListener('click', ()=>{
+          if(!currentPreventifRow) return;
+          if(preventifFormLocked){
+            setPreventifFormLocked(false);
+            const planInput = document.getElementById('preventif-plan');
+            if(planInput){
+              requestAnimationFrame(()=>planInput.focus({preventScroll:true}));
+            }
+          }else{
+            setPreventifFormLocked(true, {restore:true});
+          }
+        });
+      }
+
+      const preventifProchainInput = document.getElementById('preventif-prochain');
+      if(preventifProchainInput){
+        const updateEtat = ()=>{
+          refreshPreventifEtatField();
+        };
+        preventifProchainInput.addEventListener('change', updateEtat);
+        preventifProchainInput.addEventListener('input', updateEtat);
       }
 
       const addPieceBtn = document.getElementById('interventionAddPieceBtn');

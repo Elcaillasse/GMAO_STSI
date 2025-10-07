@@ -602,7 +602,7 @@
             <option>Mensuel</option>
             <option>Trimestriel</option>
           </select>
-        <button class="btn" onclick="openModal('planModal')">⚙️ Générer DI préventives</button>
+        <button class="btn" onclick="startPreventifCreation()">⚙️ Générer DI préventives</button>
         </div>
         <table aria-label="Plan préventif">
           <thead><tr><th>Plan</th><th>Machine</th><th>Périodicité</th><th>Dernier</th><th>Prochain</th><th>État</th></tr></thead>
@@ -1042,10 +1042,10 @@
         </form>
       </div>
       <div class="actions">
-        <button class="btn" type="button" onclick="deletePreventif()">🗑️ Supprimer</button>
+        <button class="btn" type="button" id="preventifDeleteButton" onclick="deletePreventif()">🗑️ Supprimer</button>
         <button class="btn" type="button" id="preventifEditButton">Modifier</button>
         <button class="btn" type="button" onclick="closeModal('preventifDetailModal')">Fermer</button>
-        <button class="btn" type="button" onclick="createPreventifDemand()">📨 Envoyer demande d’intervention</button>
+        <button class="btn" type="button" id="preventifCreateDiButton" onclick="createPreventifDemand()">📨 Envoyer demande d’intervention</button>
         <button class="btn primary" type="submit" form="preventifForm" id="preventifModalSubmit">Enregistrer</button>
       </div>
     </div>
@@ -1208,7 +1208,6 @@
       </div>
     </div>
   </div>
-  <div class="modal" id="planModal" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Générer des DI préventives"><div class="sheet"><header><div class="brand"><div class="logo" style="width:28px;height:28px"></div><h1>Générer DI préventives</h1></div></header><div class="content"><p>Sélectionner l'horizon de planification et la périodicité.</p><div class="grid"><div class="field"><label>Horizon (jours)</label><input type="number" value="30"></div><div class="field"><label>Inclure retard</label><select><option>Oui</option><option>Non</option></select></div></div></div><div class="actions"><button class="btn" onclick="closeModal('planModal')">Fermer</button><button class="btn primary" onclick="closeModal('planModal')">Générer</button></div></div></div>
   <div class="modal" id="reportModal" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Exporter les données"><div class="sheet"><header><div class="brand"><div class="logo" style="width:28px;height:28px"></div><h1>Export rapide</h1></div></header><div class="content"><p>Ce prototype exportera un CSV fictif. À connecter à votre backend plus tard.</p></div><div class="actions"><button class="btn" onclick="closeModal('reportModal')">Fermer</button><button class="btn primary" onclick="fakeExport()">Exporter CSV</button></div></div></div>
 
   <script>
@@ -1266,6 +1265,7 @@
     let currentPreventifRow = null;
     let currentPreventifPlanKey = '';
     let preventifFormLocked = false;
+    let preventifFormMode = 'view';
     let currentContactRow = null;
     let contactModalMode = 'create';
     let currentPersonnelRow = null;
@@ -1417,6 +1417,8 @@
         currentPreventifRow = null;
         currentPreventifPlanKey = '';
         preventifFormLocked = false;
+        preventifFormMode = 'view';
+        updatePreventifModalActions();
       }else if(id === 'pieceModal'){
         resetSparePartModal();
       }else if(id === 'spareSearchModal'){
@@ -2693,6 +2695,119 @@
       }
     }
 
+    function resetPreventifAttachments(){
+      ['preventifDocs','preventifPhotos'].forEach(key=>{
+        const ctx = getAttachmentContext(key);
+        if(!ctx) return;
+        if(Array.isArray(ctx.objectUrls)){
+          ctx.objectUrls.forEach(url=>URL.revokeObjectURL(url));
+        }
+        ctx.objectUrls = [];
+        ctx.attachments = [];
+        ctx.planKey = '';
+        ctx.onUpdate = null;
+        if(ctx.inputId){
+          const input = document.getElementById(ctx.inputId);
+          if(input){
+            input.value = '';
+          }
+        }
+        if(key === 'preventifPhotos'){
+          closeCamera(key);
+        }
+        renderAttachments(key);
+      });
+    }
+
+    function resetPreventifFormFields(){
+      const form = document.getElementById('preventifForm');
+      if(form){
+        form.reset();
+      }
+      const planInput = document.getElementById('preventif-plan');
+      if(planInput){
+        planInput.value = '';
+      }
+      populatePreventifMachineOptions('');
+      const periodiciteSelect = document.getElementById('preventif-periodicite');
+      if(periodiciteSelect){
+        setSelectValue(periodiciteSelect, '');
+      }
+      const dernierInput = document.getElementById('preventif-dernier');
+      if(dernierInput){
+        dernierInput.value = '';
+      }
+      const prochainInput = document.getElementById('preventif-prochain');
+      if(prochainInput){
+        prochainInput.value = '';
+      }
+      const etatInput = document.getElementById('preventif-etat');
+      if(etatInput){
+        etatInput.value = '';
+      }
+      const descriptionInput = document.getElementById('preventif-description');
+      if(descriptionInput){
+        descriptionInput.value = '';
+      }
+      currentPreventifPlanKey = '';
+      resetPreventifAttachments();
+      refreshPreventifEtatField();
+    }
+
+    function updatePreventifModalActions(){
+      const isCreate = preventifFormMode === 'create';
+      const deleteBtn = document.getElementById('preventifDeleteButton');
+      if(deleteBtn){
+        deleteBtn.hidden = isCreate;
+        deleteBtn.disabled = isCreate;
+      }
+      const editBtn = document.getElementById('preventifEditButton');
+      if(editBtn){
+        editBtn.hidden = isCreate;
+        editBtn.disabled = isCreate;
+      }
+      const demandeBtn = document.getElementById('preventifCreateDiButton');
+      if(demandeBtn){
+        demandeBtn.hidden = isCreate;
+        demandeBtn.disabled = isCreate;
+      }
+      const submitBtn = document.getElementById('preventifModalSubmit');
+      if(submitBtn){
+        submitBtn.textContent = isCreate ? 'Créer' : 'Enregistrer';
+      }
+    }
+
+    function createPreventifRow(){
+      const tbody = document.getElementById('tblPrev');
+      if(!tbody) return null;
+      const tr = document.createElement('tr');
+      tr.classList.add('clickable');
+      tr.setAttribute('role','button');
+      tr.tabIndex = 0;
+      for(let i=0;i<6;i+=1){
+        const td = document.createElement('td');
+        td.textContent = '—';
+        tr.appendChild(td);
+      }
+      tbody.appendChild(tr);
+      attachInteractiveRow(tr, openPreventifDetail);
+      return tr;
+    }
+
+    function startPreventifCreation(){
+      preventifFormMode = 'create';
+      currentPreventifRow = null;
+      currentPreventifPlanKey = '';
+      setPreventifFormLocked(false);
+      resetPreventifFormFields();
+      updatePreventifModalActions();
+      openModal('preventifDetailModal');
+      const planInput = document.getElementById('preventif-plan');
+      if(planInput){
+        requestAnimationFrame(()=>planInput.focus({preventScroll:true}));
+      }
+    }
+
     function setupPreventifRows(){
       document.querySelectorAll('#tblPrev tr.clickable').forEach(tr=>{
         attachInteractiveRow(tr, openPreventifDetail);
@@ -2814,12 +2929,14 @@
 
     function openPreventifDetail(row){
       currentPreventifRow = row;
+      preventifFormMode = 'edit';
       const ds = row.dataset || {};
       const planKey = getPreventifRowKey(row);
       currentPreventifPlanKey = planKey;
       const isExistingPlan = Boolean((ds.plan || '').trim());
       setPreventifFormLocked(isExistingPlan);
       populatePreventifFormFromRow(row, {focus:!isExistingPlan});
+      updatePreventifModalActions();
       const editBtn = document.getElementById('preventifEditButton');
       if(editBtn){
         editBtn.hidden = !isExistingPlan;
@@ -2861,14 +2978,17 @@
     }
 
     function submitPreventifForm(){
-      if(!currentPreventifRow){
-        closeModal('preventifDetailModal');
-        return;
-      }
       const plan = (document.getElementById('preventif-plan')?.value || '').trim();
       const machine = (document.getElementById('preventif-machine')?.value || '').trim();
       if(!plan || !machine){
         alert('Merci de renseigner au minimum le plan et la machine.');
+        return;
+      }
+      if(!currentPreventifRow && preventifFormMode === 'create'){
+        currentPreventifRow = createPreventifRow();
+      }
+      if(!currentPreventifRow){
+        closeModal('preventifDetailModal');
         return;
       }
       const periodicite = (document.getElementById('preventif-periodicite')?.value || '').trim();
@@ -2884,8 +3004,16 @@
       updatePreventifRow(currentPreventifRow, values);
       const docCtx = getAttachmentContext('preventifDocs');
       const photoCtx = getAttachmentContext('preventifPhotos');
-      const previousKey = currentPreventifPlanKey;
-      const newKey = plan || previousKey;
+      const previousKey = currentPreventifPlanKey || '';
+      const newKey = plan || previousKey || getPreventifRowKey(currentPreventifRow);
+      if(docCtx && docCtx.planKey !== newKey){
+        docCtx.planKey = newKey;
+        docCtx.onUpdate = ctx=>savePreventifAttachments(ctx.planKey);
+      }
+      if(photoCtx && photoCtx.planKey !== newKey){
+        photoCtx.planKey = newKey;
+        photoCtx.onUpdate = ctx=>savePreventifAttachments(ctx.planKey);
+      }
       if(previousKey && newKey && newKey !== previousKey){
         const existing = ensurePreventifRecord(previousKey) || {documents:[], photos:[], description:''};
         const target = ensurePreventifRecord(newKey);
@@ -2897,9 +3025,11 @@
         }
         if(docCtx){
           docCtx.planKey = newKey;
+          docCtx.onUpdate = ctx=>savePreventifAttachments(ctx.planKey);
         }
         if(photoCtx){
           photoCtx.planKey = newKey;
+          photoCtx.onUpdate = ctx=>savePreventifAttachments(ctx.planKey);
         }
         currentPreventifPlanKey = newKey;
       }else{
@@ -2909,8 +3039,9 @@
           record.documents = docCtx ? docCtx.attachments.slice() : [];
           record.photos = photoCtx ? photoCtx.attachments.slice() : [];
         }
+        currentPreventifPlanKey = newKey;
       }
-      savePreventifAttachments(currentPreventifPlanKey || newKey);
+      savePreventifAttachments(currentPreventifPlanKey);
       closeModal('preventifDetailModal');
     }
 
